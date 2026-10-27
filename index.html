@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Karumbé & Nhande Ayvu - Kwatiá Marangatu 3D</title>
+    <title>Tape Marangatu 3D - Guardiões da Memória Nhandewa</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <!-- Motor Three.js 3D -->
@@ -60,13 +60,13 @@
     <header class="absolute top-0 left-0 w-full px-4 py-3 flex justify-between items-center z-20 pointer-events-auto">
         <div class="glass-card px-4 py-2 rounded-xl flex items-center space-x-3">
             <div class="w-10 h-10 rounded-full bg-amber-600 border-2 border-amber-300 flex items-center justify-center text-amber-100 font-bold text-xl shadow-lg">
-                📖
+                🐢
             </div>
             <div>
                 <h1 class="font-game text-lg md:text-xl font-bold bg-gradient-to-r from-amber-300 to-emerald-400 bg-clip-text text-transparent">
-                    Kwatiá Marangatu 3D
+                    Tape Marangatu 3D
                 </h1>
-                <p class="text-[10px] text-emerald-300/80">Jornada do Conhecimento Nhandewa</p>
+                <p class="text-[10px] text-emerald-300/80">O Caminho Sagrado da Língua</p>
             </div>
         </div>
 
@@ -82,7 +82,7 @@
     <!-- Canvas 3D -->
     <div id="canvas-container" class="w-full h-full"></div>
 
-    <!-- Botão de Ação / Interatividade (Mobile e Desktop) -->
+    <!-- Botão de Ação / Interatividade -->
     <div class="absolute bottom-6 right-6 z-20 flex flex-col items-end space-y-2 pointer-events-auto">
         <button id="btn-interact" onclick="checkCurrentProximity()" class="hidden glass-card bg-amber-500 hover:bg-amber-400 text-amber-950 font-bold px-5 py-3 rounded-2xl shadow-xl flex items-center space-x-2 text-sm border-2 border-amber-200 animate-bounce">
             <i class="fas fa-hand-pointer text-lg"></i>
@@ -106,10 +106,10 @@
     <!-- Dica Teclado -->
     <div class="hidden md:flex absolute bottom-4 left-4 glass-card px-3 py-1.5 rounded-lg text-[11px] text-emerald-300/80 items-center space-x-2 z-20">
         <i class="fas fa-keyboard"></i>
-        <span>Caminhe com <b>WASD</b> ou <b>Setas</b>. Pressione <b>ESPAÇO</b> para ler quando se aproximar!</span>
+        <span>Caminhe com <b>WASD</b> ou <b>Setas</b>. Pressione <b>ESPAÇO</b> para interagir!</span>
     </div>
 
-    <!-- MODAL: Leitura da Kwatiá (Página do Livro) -->
+    <!-- MODAL: Leitura da Kwatiá -->
     <div id="read-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
         <div class="kwatia-paper max-w-lg w-full rounded-2xl p-6 relative max-h-[90vh] flex flex-col justify-between">
             <div class="flex justify-between items-start border-b-2 border-amber-800/30 pb-3">
@@ -120,17 +120,15 @@
                 <button onclick="closeModal('read-modal')" class="text-amber-900 hover:text-amber-700 text-2xl font-bold">✕</button>
             </div>
 
-            <!-- Conteúdo Textual com Ilustração -->
             <div class="my-4 flex-1 overflow-y-auto space-y-3 pr-1">
                 <div id="kwatia-illustration" class="w-full h-36 bg-amber-100 rounded-xl border-2 border-amber-800/30 flex items-center justify-center text-6xl shadow-inner">
                     🌽
                 </div>
                 <div id="kwatia-text-list" class="space-y-1.5 font-semibold text-sm text-amber-950 font-serif">
-                    <!-- Preenchido dinamicamente via JS -->
+                    <!-- Dinâmico -->
                 </div>
             </div>
 
-            <!-- Ação: Abrir Perguntas -->
             <button onclick="openQuestionModal()" class="w-full py-3 bg-amber-800 hover:bg-amber-700 text-amber-50 font-bold rounded-xl shadow-lg flex items-center justify-center space-x-2 transition text-sm">
                 <span>Responder às Perguntas do Enigma</span>
                 <i class="fas fa-arrow-right"></i>
@@ -138,7 +136,7 @@
         </div>
     </div>
 
-    <!-- MODAL: Caixa de Perguntas e Desafio -->
+    <!-- MODAL: Perguntas -->
     <div id="question-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
         <div class="glass-card max-w-md w-full rounded-2xl p-6 border-2 border-amber-400/60 shadow-2xl">
             <div class="flex items-center space-x-3 mb-4 border-b border-emerald-500/30 pb-3">
@@ -146,18 +144,14 @@
                     ❓
                 </div>
                 <div>
-                    <h3 class="font-game text-lg text-amber-300">Desafio da Kwatiá</h3>
-                    <p class="text-[11px] text-emerald-300">Responda corretamente para passar de fase!</p>
+                    <h3 class="font-game text-lg text-amber-300">Desafio do Tape Marangatu</h3>
+                    <p class="text-[11px] text-emerald-300">Responda corretamente para avançar no caminho!</p>
                 </div>
             </div>
 
-            <p id="question-prompt" class="text-sm text-emerald-100 font-medium mb-4 leading-relaxed">
-                <!-- Pergunta dinamica -->
-            </p>
+            <p id="question-prompt" class="text-sm text-emerald-100 font-medium mb-4 leading-relaxed"></p>
 
-            <div id="options-container" class="space-y-2 mb-4">
-                <!-- Opções dinamicas -->
-            </div>
+            <div id="options-container" class="space-y-2 mb-4"></div>
 
             <div class="flex justify-end">
                 <button onclick="closeModal('question-modal')" class="text-xs text-emerald-400 hover:text-emerald-200">
@@ -167,9 +161,8 @@
         </div>
     </div>
 
-    <!-- Lógica do Motor 3D & Conteúdo Didático -->
+    <!-- Lógica do Jogo 3D -->
     <script>
-        // --- CONTEÚDO EXTRAÍDO DOS TEUS CADERNOS ---
         const gameData = {
             phase1: {
                 letter: "A a A a",
@@ -183,7 +176,7 @@
                     "AWATI DJEGWÁ",
                     "AWATI MARA'ẼY"
                 ],
-                question: "De acordo com o texto da Kwatiá, qual das opções abaixo representa o milho branco?",
+                question: "De acordo com o caderno de campo, qual das opções representa o milho branco?",
                 options: [
                     { text: "Awati Ũ", correct: false },
                     { text: "Awati Morõti", correct: true },
@@ -217,7 +210,6 @@
         let currentPhase = 1;
         let activeInteractiveObject = null;
 
-        // --- MOTOR THREE.JS 3D ---
         const container = document.getElementById('canvas-container');
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0x0a1e12);
@@ -230,119 +222,70 @@
         renderer.shadowMap.enabled = true;
         container.appendChild(renderer.domElement);
 
-        // Iluminação
-        const ambientLight = new THREE.AmbientLight(0xdcfce7, 0.7);
-        scene.add(ambientLight);
-
+        scene.add(new THREE.AmbientLight(0xdcfce7, 0.7));
         const dirLight = new THREE.DirectionalLight(0xfef08a, 0.9);
         dirLight.position.set(20, 40, 20);
         dirLight.castShadow = true;
         scene.add(dirLight);
 
-        // Terreno
-        const terrainGeo = new THREE.PlaneGeometry(100, 100);
-        const terrainMat = new THREE.MeshLambertMaterial({ color: 0x166534 });
-        const terrain = new THREE.Mesh(terrainGeo, terrainMat);
+        // Terreno e Trilha
+        const terrain = new THREE.Mesh(new THREE.PlaneGeometry(100, 100), new THREE.MeshLambertMaterial({ color: 0x166534 }));
         terrain.rotation.x = -Math.PI / 2;
-        terrain.receiveShadow = true;
         scene.add(terrain);
 
-        // Trilha de terra
-        const pathGeo = new THREE.PlaneGeometry(8, 80);
-        const pathMat = new THREE.MeshLambertMaterial({ color: 0x78350f });
-        const path = new THREE.Mesh(pathGeo, pathMat);
+        const path = new THREE.Mesh(new THREE.PlaneGeometry(8, 80), new THREE.MeshLambertMaterial({ color: 0x78350f }));
         path.rotation.x = -Math.PI / 2;
         path.position.set(0, 0.02, 0);
         scene.add(path);
 
-        // --- OBJETOS INTERATIVOS 3D ---
-        
-        // 1. PÉ DE MILHO (AWATI) - FASE 1
+        // Objeto Fase 1 (Awati)
         const awatiGroup = new THREE.Group();
-        const stalkGeo = new THREE.CylinderGeometry(0.1, 0.2, 4, 8);
-        const stalkMat = new THREE.MeshLambertMaterial({ color: 0x84cc16 });
-        const stalk = new THREE.Mesh(stalkGeo, stalkMat);
+        const stalk = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.2, 4, 8), new THREE.MeshLambertMaterial({ color: 0x84cc16 }));
         stalk.position.y = 2;
         awatiGroup.add(stalk);
-
-        // Espigas e Folhas de Milho
-        for (let i = 0; i < 4; i++) {
-            const leafGeo = new THREE.ConeGeometry(0.4, 2, 5);
-            const leafMat = new THREE.MeshLambertMaterial({ color: 0x65a30d });
-            const leaf = new THREE.Mesh(leafGeo, leafMat);
-            leaf.position.set(0, 1 + i * 0.6, 0);
-            leaf.rotation.z = (i % 2 === 0 ? 1 : -1) * 0.8;
-            awatiGroup.add(leaf);
-        }
-        const cornGeo = new THREE.CylinderGeometry(0.25, 0.2, 1.2, 8);
-        const cornMat = new THREE.MeshLambertMaterial({ color: 0xfacc15 });
-        const corn = new THREE.Mesh(cornGeo, cornMat);
+        const corn = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.2, 1.2, 8), new THREE.MeshLambertMaterial({ color: 0xfacc15 }));
         corn.position.set(0.3, 2.2, 0);
         corn.rotation.z = -0.4;
         awatiGroup.add(corn);
-
-        // Anel Indicador Brilhante
-        const ring1Geo = new THREE.RingGeometry(1.2, 1.6, 16);
-        const ring1Mat = new THREE.MeshBasicMaterial({ color: 0xfacc15, side: THREE.DoubleSide });
-        const ring1 = new THREE.Mesh(ring1Geo, ring1Mat);
+        const ring1 = new THREE.Mesh(new THREE.RingGeometry(1.2, 1.6, 16), new THREE.MeshBasicMaterial({ color: 0xfacc15, side: THREE.DoubleSide }));
         ring1.rotation.x = -Math.PI / 2;
         ring1.position.y = 0.05;
         awatiGroup.add(ring1);
-
         awatiGroup.position.set(-6, 0, 10);
         scene.add(awatiGroup);
 
-        // 2. BARREIRA / PORTAL DE ENERGIA (Desbloqueia após Fase 1)
-        const barrierGeo = new THREE.BoxGeometry(12, 6, 0.5);
-        const barrierMat = new THREE.MeshBasicMaterial({ color: 0xef4444, transparent: true, opacity: 0.4 });
-        const barrier = new THREE.Mesh(barrierGeo, barrierMat);
+        // Barreira
+        const barrier = new THREE.Mesh(new THREE.BoxGeometry(12, 6, 0.5), new THREE.MeshBasicMaterial({ color: 0xef4444, transparent: true, opacity: 0.4 }));
         barrier.position.set(0, 3, -8);
         scene.add(barrier);
 
-        // 3. ONÇA (DJAGWARETE) - FASE 2
+        // Objeto Fase 2 (Djagwarete)
         const jaguarGroup = new THREE.Group();
-        const bodyGeo = new THREE.BoxGeometry(1.5, 1.2, 3);
-        const bodyMat = new THREE.MeshLambertMaterial({ color: 0xd97706 });
-        const body = new THREE.Mesh(bodyGeo, bodyMat);
+        const body = new THREE.Mesh(new THREE.BoxGeometry(1.5, 1.2, 3), new THREE.MeshLambertMaterial({ color: 0xd97706 }));
         body.position.y = 1;
         jaguarGroup.add(body);
-
-        const jagHeadGeo = new THREE.BoxGeometry(1, 1, 1.2);
-        const jagHead = new THREE.Mesh(jagHeadGeo, bodyMat);
-        jagHead.position.set(0, 1.6, 1.8);
-        jaguarGroup.add(jagHead);
-
-        const ring2Geo = new THREE.RingGeometry(1.5, 2.0, 16);
-        const ring2Mat = new THREE.MeshBasicMaterial({ color: 0xf59e0b, side: THREE.DoubleSide });
-        const ring2 = new THREE.Mesh(ring2Geo, ring2Mat);
+        const ring2 = new THREE.Mesh(new THREE.RingGeometry(1.5, 2.0, 16), new THREE.MeshBasicMaterial({ color: 0xf59e0b, side: THREE.DoubleSide }));
         ring2.rotation.x = -Math.PI / 2;
         ring2.position.y = 0.05;
         jaguarGroup.add(ring2);
-
         jaguarGroup.position.set(0, 0, -25);
         scene.add(jaguarGroup);
 
-        // --- PERSONAGEM KARUMBÉ ---
+        // Jogador (Karumbé)
         const playerGroup = new THREE.Group();
-        const shellGeo = new THREE.SphereGeometry(1, 8, 8, 0, Math.PI * 2, 0, Math.PI / 2);
-        const shellMat = new THREE.MeshLambertMaterial({ color: 0xd97706, flatShading: true });
-        const shell = new THREE.Mesh(shellGeo, shellMat);
+        const shell = new THREE.Mesh(new THREE.SphereGeometry(1, 8, 8, 0, Math.PI * 2, 0, Math.PI / 2), new THREE.MeshLambertMaterial({ color: 0xd97706 }));
         shell.position.y = 0.4;
         shell.scale.set(1, 0.7, 1.2);
         playerGroup.add(shell);
-
         playerGroup.position.set(0, 0, 25);
         scene.add(playerGroup);
 
-        // Controles e Movimento
         const keys = {};
         let touchDir = { x: 0, z: 0 };
 
         window.addEventListener('keydown', e => {
             keys[e.key.toLowerCase()] = true;
-            if (e.key === ' ' && activeInteractiveObject) {
-                openKwatiaModal();
-            }
+            if (e.key === ' ' && activeInteractiveObject) openKwatiaModal();
         });
         window.addEventListener('keyup', e => keys[e.key.toLowerCase()] = false);
 
@@ -357,7 +300,6 @@
         setupTouch('btn-left', -1, 0);
         setupTouch('btn-right', 1, 0);
 
-        // Loop de Animação 3D
         const clock = new THREE.Clock();
         function animate() {
             requestAnimationFrame(animate);
@@ -378,37 +320,30 @@
             if (moveX !== 0 || moveZ !== 0) {
                 playerGroup.rotation.y = Math.atan2(moveX, moveZ);
                 let nextZ = playerGroup.position.z + moveZ * speed;
-
-                // Bloqueio de barreira se a Fase 1 não foi concluída
-                if (currentPhase === 1 && nextZ < -7.5) {
-                    nextZ = -7.5;
-                }
+                if (currentPhase === 1 && nextZ < -7.5) nextZ = -7.5;
 
                 playerGroup.position.x += moveX * speed;
                 playerGroup.position.z = nextZ;
             }
 
-            // Câmara 3ª Pessoa
             camera.position.x = playerGroup.position.x;
             camera.position.y = playerGroup.position.y + 7;
             camera.position.z = playerGroup.position.z + 10;
             camera.lookAt(playerGroup.position);
 
-            // Verificação de Proximidade com Elementos da Kwatiá
             const distAwati = playerGroup.position.distanceTo(awatiGroup.position);
             const distJaguar = playerGroup.position.distanceTo(jaguarGroup.position);
-
             const interactBtn = document.getElementById('btn-interact');
             const interactLabel = document.getElementById('interact-label');
 
             if (currentPhase === 1 && distAwati < 4) {
                 activeInteractiveObject = 'phase1';
                 interactBtn.classList.remove('hidden');
-                interactLabel.innerText = "Ler Kwatiá (A - AWATI)";
+                interactLabel.innerText = "Ler Kwatiá (A)";
             } else if (currentPhase === 2 && distJaguar < 4) {
                 activeInteractiveObject = 'phase2';
                 interactBtn.classList.remove('hidden');
-                interactLabel.innerText = "Ler Kwatiá (DJ - DJAGWARETE)";
+                interactLabel.innerText = "Ler Kwatiá (DJ)";
             } else {
                 activeInteractiveObject = null;
                 interactBtn.classList.add('hidden');
@@ -419,12 +354,7 @@
 
         animate();
 
-        // --- SISTEMA DE MODAIS E INTERAÇÃO DIDÁTICA ---
-        function checkCurrentProximity() {
-            if (activeInteractiveObject) {
-                openKwatiaModal();
-            }
-        }
+        function checkCurrentProximity() { if (activeInteractiveObject) openKwatiaModal(); }
 
         function openKwatiaModal() {
             const data = gameData[activeInteractiveObject];
@@ -440,43 +370,39 @@
                 p.innerText = line;
                 listContainer.appendChild(p);
             });
-
             openModal('read-modal');
         }
 
         function openQuestionModal() {
             closeModal('read-modal');
             const data = gameData[activeInteractiveObject];
-
             document.getElementById('question-prompt').innerText = data.question;
 
             const optionsBox = document.getElementById('options-container');
             optionsBox.innerHTML = '';
-
             data.options.forEach(opt => {
                 const btn = document.createElement('button');
-                btn.className = "w-full py-3 px-4 bg-emerald-900/80 hover:bg-emerald-700 border border-emerald-500/40 text-emerald-100 text-xs rounded-xl font-semibold transition text-left flex justify-between items-center";
+                btn.className = "w-full py-3 px-4 bg-emerald-900/85 hover:bg-emerald-700 border border-emerald-500/40 text-emerald-100 text-xs rounded-xl font-semibold transition text-left flex justify-between items-center";
                 btn.innerHTML = `<span>${opt.text}</span> <i class="fas fa-chevron-right text-emerald-400/50"></i>`;
                 btn.onclick = () => answerQuestion(opt.correct);
                 optionsBox.appendChild(btn);
             });
-
             openModal('question-modal');
         }
 
         function answerQuestion(isCorrect) {
             if (isCorrect) {
                 if (currentPhase === 1) {
-                    alert("✨ AGUYJEVETE! Resposta Correta!\n\nVocê aprendeu as variedades de AWATI (Milho) e desbloqueou a passagem para a floresta profunda!");
+                    alert("✨ AGUYJEVETE! Resposta Correta!\n\nPassagem desbloqueada no Tape Marangatu!");
                     currentPhase = 2;
-                    barrier.visible = false; // Remove a barreira 3D
-                    document.getElementById('phase-indicator').innerText = "Fase 2: O Desafio do DJAGWARETE (Onça)";
+                    barrier.visible = false;
+                    document.getElementById('phase-indicator').innerText = "Fase 2: O Desafio do DJAGWARETE";
                 } else if (currentPhase === 2) {
-                    alert("🎉 PARABÉNS! Você completou a leitura e os enigmas do DJAGWARETE!\n\nO conhecimento Nhandewa vive através de ti!");
+                    alert("🎉 PARABÉNS! Concluíste o Tape Marangatu com sucesso!");
                 }
                 closeModal('question-modal');
             } else {
-                alert("Nhananderõ! Resposta incorreta. Releia o texto do caderno com atenção e tenta novamente.");
+                alert("Nhananderõ! Tenta novamente.");
             }
         }
 
