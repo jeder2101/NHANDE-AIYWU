@@ -28,6 +28,7 @@ let selectedCharacter = null;
         let isGameOver = false;
         let currentPhase = 1;
         let activeInteractiveObject = null;
+        let gameCompleted = false;
 
         // PEDAGOGICAL QUIZ BANK
         const quizBank = {
@@ -100,6 +101,61 @@ let selectedCharacter = null;
                 ]
             }
         };
+
+        // FASES 3 A 20 — sequência de grafias fornecida para o projeto.
+        // Os termos são mantidos como nomes de fase, sem acrescentar significados não informados.
+        const additionalPhases = [
+            { prefix: "e", title: "E´I" },
+            { prefix: "gw", title: "GWYRA" },
+            { prefix: "i", title: "ITÁ" },
+            { prefix: "k", title: "KARU" },
+            { prefix: "m", title: "MITANGWÉ" },
+            { prefix: "mb", title: "MBORAI" },
+            { prefix: "n", title: "NAMBI" },
+            { prefix: "nd", title: "NDERU" },
+            { prefix: "nh", title: "NHÂKYRÂ" },
+            { prefix: "o", title: "OKÉ" },
+            { prefix: "p", title: "PIRA" },
+            { prefix: "r", title: "RERY" },
+            { prefix: "t", title: "TAY" },
+            { prefix: "ts", title: "TSUGWAI" },
+            { prefix: "tx", title: "TXEPY" },
+            { prefix: "u", title: "URU" },
+            { prefix: "w", title: "WERA" },
+            { prefix: "y", title: "YWY" }
+        ];
+
+        const totalPhases = 2 + additionalPhases.length;
+        additionalPhases.forEach((phase, index) => {
+            const phaseNumber = index + 3;
+            const key = `phase${phaseNumber}`;
+            const prefixUpper = phase.prefix.toLocaleUpperCase('pt-BR');
+            gameData[key] = {
+                letter: `${prefixUpper} ${phase.prefix.toLocaleLowerCase('pt-BR')}  →  ${phase.title}`,
+                title: phase.title,
+                icon: "📜",
+                lines: [
+                    `${prefixUpper} ${phase.prefix.toLocaleLowerCase('pt-BR')}  →  ${phase.title}`,
+                    phase.title,
+                    `Fase ${phaseNumber} de ${totalPhases}`
+                ]
+            };
+
+            // Quiz curto para validar a leitura da grafia desta fase.
+            // As alternativas são outras grafias já presentes na sequência.
+            const distractors = additionalPhases
+                .filter((other, otherIndex) => otherIndex !== index)
+                .slice((index * 3) % (additionalPhases.length - 3))
+                .slice(0, 3)
+                .map(other => ({ text: other.title, correct: false }));
+            quizBank[key] = [{
+                question: `Qual grafia corresponde à fase ${phaseNumber}?`,
+                options: [
+                    { text: phase.title, correct: true },
+                    ...distractors
+                ]
+            }];
+        });
 
         // --- THREE.JS DAYTIME & INFINITE HORIZON SETUP ---
         const container = document.getElementById('canvas-container');
@@ -724,7 +780,8 @@ let selectedCharacter = null;
             isGameOver = true;
             const overlay = document.getElementById('game-over-overlay');
             const phaseText = document.getElementById('game-over-phase');
-            const phaseName = currentPhase === 1 ? 'Fase 1 — AWATI (milho)' : 'Fase ' + currentPhase + ' — desafio do DJAGWARETE (onça)';
+            const phaseData = gameData['phase' + currentPhase];
+            const phaseName = phaseData ? `Fase ${currentPhase} — ${phaseData.title}` : `Fase ${currentPhase}`;
             if (phaseText) phaseText.textContent = 'Você perdeu na ' + phaseName + '. Reinicie para tentar novamente nesta mesma fase.';
             if (overlay) { overlay.classList.remove('hidden'); overlay.classList.add('flex'); }
         }
@@ -1027,12 +1084,16 @@ let selectedCharacter = null;
             }
         }
 
-        // Versão PC: não bloqueia computadores sem tela de toque.
-        // Os controles de teclado já existentes continuam ativos e o CSS oculta os controles táteis.
+        // O jogo foi planejado para celular/tablet com toque; evita mostrar a interface de toque
+        // em computador convencional sem impedir tablets grandes com tela sensível ao toque.
         function detectTouchDevice() {
-            document.body.classList.remove('desktop-no-touch');
+            const hasTouch = (navigator.maxTouchPoints || 0) > 0 || ('ontouchstart' in window) || window.matchMedia('(pointer: coarse)').matches;
+            const wideDesktop = window.innerWidth >= 1024 && !hasTouch;
+            document.body.classList.toggle('desktop-no-touch', wideDesktop);
         }
         detectTouchDevice();
+        window.addEventListener('resize', detectTouchDevice, { passive: true });
+        window.addEventListener('orientationchange', () => setTimeout(detectTouchDevice, 120), { passive: true });
 
         function selectCharacter(char) {
             selectedCharacter = char;
@@ -1314,14 +1375,14 @@ let selectedCharacter = null;
             const interactBtn = document.getElementById('btn-interact');
             const interactLabel = document.getElementById('interact-label');
 
-            if (currentPhase === 1 && distAwati < 4.8) {
+            if (!gameCompleted && currentPhase === 1 && distAwati < 4.8) {
                 activeInteractiveObject = 'phase1';
                 interactBtn.classList.remove('hidden');
-                interactLabel.innerText = "Ler Kwatiá (A - AWATI)";
-            } else if (currentPhase === 2 && distJaguar < 4.8) {
-                activeInteractiveObject = 'phase2';
+                interactLabel.innerText = `Ler Kwatiá (A - ${gameData.phase1.title})`;
+            } else if (!gameCompleted && currentPhase >= 2 && currentPhase <= totalPhases && distJaguar < 4.8) {
+                activeInteractiveObject = 'phase' + currentPhase;
                 interactBtn.classList.remove('hidden');
-                interactLabel.innerText = "Ler Kwatiá (DJ - DJAGWARETE)";
+                interactLabel.innerText = `Ler Kwatiá (${gameData[activeInteractiveObject].title})`;
             } else {
                 activeInteractiveObject = null;
                 interactBtn.classList.add('hidden');
@@ -1390,19 +1451,30 @@ let selectedCharacter = null;
 
         function answerQuestion(isCorrect) {
             if (isCorrect) {
-                if (currentPhase === 1) {
-                    alert("✨ AGUYJEVETE! Resposta Correta!\n\nA passagem pela trilha sinuosa foi liberada!");
-                    currentPhase = 2;
+                if (currentPhase < totalPhases) {
+                    const completedPhase = currentPhase;
+                    currentPhase += 1;
                     doubleDangerAnimalsForPhase();
-                    phaseTimeLeft = 90;
-                    updateSurvivalHUD();
-                    document.getElementById('phase-indicator').innerText = "Fase 2: O Desafio do DJAGWARETE";
-                    showGameFeedback('Fase 2 liberada! O tempo foi reiniciado. Fique atento aos animais.');
-                } else if (currentPhase === 2) {
-                    alert("🎉 PARABÉNS! Concluíste a caminhada sagrada no Tape Marangatu!");
                     phaseTimeLeft = 90;
                     playerHealth = 100;
                     updateSurvivalHUD();
+                    const nextData = gameData['phase' + currentPhase];
+                    const indicator = document.getElementById('phase-indicator');
+                    if (indicator) indicator.innerText = `Fase ${currentPhase}: ${nextData.title}`;
+                    const message = currentPhase === 2
+                        ? 'Fase 2 liberada! O tempo foi reiniciado. Fique atento aos animais.'
+                        : `Fase ${currentPhase} liberada: ${nextData.title}. Continue até a fase final!`;
+                    alert(`✨ AGUYJEVETE! Resposta correta!\n\nFase ${completedPhase} concluída.`);
+                    showGameFeedback(message);
+                } else {
+                    gameCompleted = true;
+                    activeInteractiveObject = null;
+                    const indicator = document.getElementById('phase-indicator');
+                    if (indicator) indicator.innerText = `Jornada concluída: ${totalPhases}/${totalPhases}`;
+                    const interactBtn = document.getElementById('btn-interact');
+                    if (interactBtn) interactBtn.classList.add('hidden');
+                    alert(`🎉 AGUYJEVETE! Você concluiu as ${totalPhases} fases do Tape Marangatu!`);
+                    showGameFeedback('Jornada concluída! Você chegou à fase final: YWY.');
                 }
                 closeModal('question-modal');
             } else {
@@ -1435,17 +1507,34 @@ let selectedCharacter = null;
             });
         }
 
-        // Redimensionamento robusto: usa a caixa real do canvas, não apenas innerWidth/innerHeight.
-        // Em celulares, a barra do navegador e a rotação podem atualizar essas medidas em momentos diferentes.
+        // Sincroniza a interface e o canvas com o viewport REAL após girar o aparelho.
+        // visualViewport ajuda em navegadores móveis que atualizam innerWidth/innerHeight com atraso.
         let resizeFramePending = false;
+        function syncMobileViewport() {
+            const vv = window.visualViewport;
+            const width = Math.max(1, Math.round((vv && vv.width) || document.documentElement.clientWidth || window.innerWidth));
+            const height = Math.max(1, Math.round((vv && vv.height) || document.documentElement.clientHeight || window.innerHeight));
+            const root = document.documentElement;
+            root.style.setProperty('--app-width', width + 'px');
+            root.style.setProperty('--app-height', height + 'px');
+            document.body.classList.toggle('is-landscape', width > height);
+            document.body.classList.toggle('is-portrait', height >= width);
+
+            // Não deixa o joystick preso se a rotação ocorrer durante um toque.
+            if (typeof resetJoystick === 'function') resetJoystick();
+            return { width, height };
+        }
         function resizeGameViewport() {
             if (resizeFramePending) return;
             resizeFramePending = true;
             requestAnimationFrame(() => {
                 resizeFramePending = false;
+                const viewport = syncMobileViewport();
                 const rect = container.getBoundingClientRect();
-                const width = Math.max(1, Math.round(rect.width || document.documentElement.clientWidth || window.innerWidth));
-                const height = Math.max(1, Math.round(rect.height || document.documentElement.clientHeight || window.innerHeight));
+                // O contêiner pode reportar dimensões antigas por um frame durante a rotação.
+                const rectUsable = rect.width > 2 && rect.height > 2;
+                const width = Math.max(1, Math.round(rectUsable ? rect.width : viewport.width));
+                const height = Math.max(1, Math.round(rectUsable ? rect.height : viewport.height));
                 camera.aspect = width / height;
                 camera.updateProjectionMatrix();
                 renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, width < 700 ? 1.5 : 2));
@@ -1455,13 +1544,16 @@ let selectedCharacter = null;
             });
         }
         function settleOrientationResize() {
-            // Alguns navegadores reportam o novo tamanho após a animação de rotação.
-            [0, 120, 300, 550].forEach(delay => setTimeout(resizeGameViewport, delay));
+            // Recalcula várias vezes porque Safari/Chrome podem terminar a rotação em etapas.
+            [0, 80, 180, 350, 650].forEach(delay => setTimeout(resizeGameViewport, delay));
         }
         window.addEventListener('resize', resizeGameViewport, { passive: true });
         window.addEventListener('orientationchange', settleOrientationResize, { passive: true });
         window.addEventListener('pageshow', settleOrientationResize, { passive: true });
-        if (window.visualViewport) window.visualViewport.addEventListener('resize', resizeGameViewport, { passive: true });
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener('resize', settleOrientationResize, { passive: true });
+            window.visualViewport.addEventListener('scroll', resizeGameViewport, { passive: true });
+        }
         if (screen.orientation && screen.orientation.addEventListener) {
             screen.orientation.addEventListener('change', settleOrientationResize);
         }
