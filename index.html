@@ -417,58 +417,25 @@
             return pathSpline.getPointAt(u).x;
         }
 
-        // --- FLORESTA PROCEDURAL: ÁRVORES, GALHOS, FOLHAS E ARBUSTOS ---
+        // --- DENSE TREES AND BUSHES FOR CAMOUFLAGE ---
         function createTree(x, z, scale = 1) {
             const treeGroup = new THREE.Group();
-            const barkMat = new THREE.MeshStandardMaterial({ color: 0x68452f, roughness: 1 });
-            const barkLight = new THREE.MeshStandardMaterial({ color: 0x8b6040, roughness: 1 });
-            const trunk = new THREE.Mesh(
-                new THREE.CylinderGeometry(0.42 * scale, 0.72 * scale, 8.5 * scale, 10, 3),
-                barkMat
-            );
-            trunk.position.y = 4.25 * scale;
+            
+            const trunkGeo = new THREE.CylinderGeometry(0.4 * scale, 0.7 * scale, 9 * scale, 8);
+            const trunkMat = new THREE.MeshLambertMaterial({ color: 0x4e342e });
+            const trunk = new THREE.Mesh(trunkGeo, trunkMat);
+            trunk.position.y = (4.5) * scale;
             trunk.castShadow = true;
-            trunk.receiveShadow = true;
             treeGroup.add(trunk);
 
-            // Veios discretos do tronco
-            for (let i = 0; i < 5; i++) {
-                const groove = new THREE.Mesh(
-                    new THREE.CylinderGeometry(0.018 * scale, 0.035 * scale, (3 + Math.random() * 3) * scale, 5),
-                    barkLight
-                );
-                const angle = i * Math.PI * 2 / 5;
-                groove.position.set(Math.cos(angle) * 0.43 * scale, (2.4 + Math.random() * 3) * scale, Math.sin(angle) * 0.43 * scale);
-                groove.rotation.z = (Math.random() - 0.5) * 0.12;
-                treeGroup.add(groove);
-            }
-
-            // Galhos que aparecem sob a copa
-            for (let i = 0; i < 4; i++) {
-                const branch = new THREE.Mesh(
-                    new THREE.CylinderGeometry(0.12 * scale, 0.22 * scale, 2.8 * scale, 7),
-                    barkMat
-                );
-                branch.position.set((i % 2 ? 1 : -1) * 1.05 * scale, (5.5 + i * 0.45) * scale, (i % 3 - 1) * 0.55 * scale);
-                branch.rotation.z = (i % 2 ? -1 : 1) * 0.72;
-                branch.rotation.x = (i - 1.5) * 0.12;
-                branch.castShadow = true;
-                treeGroup.add(branch);
-            }
-
-            const leafColors = [0x14532d, 0x166534, 0x228b45, 0x2f9e54, 0x3b8d42];
-            // Copa em camadas irregulares, com volumes sobrepostos
-            for (let i = 0; i < 12; i++) {
-                const radius = (2.2 + Math.random() * 1.7) * scale;
-                const leaf = new THREE.Mesh(
-                    new THREE.IcosahedronGeometry(radius, 1),
-                    new THREE.MeshStandardMaterial({ color: leafColors[i % leafColors.length], roughness: 0.92, flatShading: true })
-                );
-                leaf.position.set((Math.random() - 0.5) * 4.2 * scale, (7.4 + Math.random() * 4.3) * scale, (Math.random() - 0.5) * 3.8 * scale);
-                leaf.scale.y = 0.75 + Math.random() * 0.45;
-                leaf.rotation.set(Math.random() * 0.4, Math.random() * Math.PI, Math.random() * 0.4);
-                leaf.castShadow = true;
-                treeGroup.add(leaf);
+            const leafColors = [0x1b5e20, 0x2e7d32, 0x388e3c];
+            for(let i = 0; i < 3; i++) {
+                const leavesGeo = new THREE.DodecahedronGeometry((3.6 - i * 0.6) * scale);
+                const leavesMat = new THREE.MeshLambertMaterial({ color: leafColors[i], flatShading: true });
+                const leaves = new THREE.Mesh(leavesGeo, leavesMat);
+                leaves.position.y = (7 + i * 2.2) * scale;
+                leaves.castShadow = true;
+                treeGroup.add(leaves);
             }
 
             treeGroup.position.set(x, 0, z);
@@ -478,25 +445,12 @@
 
         function createBush(x, z, scale = 1) {
             const bushGroup = new THREE.Group();
-            const greens = [0x1b5e20, 0x2e7d32, 0x388e3c, 0x4d9b45, 0x246b35];
-            for (let i = 0; i < 9; i++) {
-                const leaf = new THREE.Mesh(
-                    new THREE.IcosahedronGeometry((0.45 + Math.random() * 0.48) * scale, 1),
-                    new THREE.MeshStandardMaterial({ color: greens[i % greens.length], roughness: 0.95, flatShading: true })
-                );
-                leaf.position.set((Math.random() - 0.5) * 1.8 * scale, (0.35 + Math.random() * 0.9) * scale, (Math.random() - 0.5) * 1.7 * scale);
-                leaf.scale.set(1.1, 0.8 + Math.random() * 0.4, 1);
-                leaf.castShadow = true;
-                bushGroup.add(leaf);
-            }
-            // Pequenas flores silvestres
-            for (let i = 0; i < 3; i++) {
-                const flower = new THREE.Mesh(
-                    new THREE.SphereGeometry(0.09 * scale, 8, 8),
-                    new THREE.MeshStandardMaterial({ color: [0xfef08a, 0xf9a8d4, 0xffffff][i] })
-                );
-                flower.position.set((Math.random() - 0.5) * scale, 0.55 * scale, (Math.random() - 0.5) * scale);
-                bushGroup.add(flower);
+            const bushMat = new THREE.MeshLambertMaterial({ color: 0x2e7d32, flatShading: true });
+            for (let i = 0; i < 4; i++) {
+                const sphere = new THREE.Mesh(new THREE.DodecahedronGeometry((0.8 + Math.random() * 0.4) * scale), bushMat);
+                sphere.position.set((Math.random() - 0.5) * scale, (0.5 + Math.random() * 0.3) * scale, (Math.random() - 0.5) * scale);
+                sphere.castShadow = true;
+                bushGroup.add(sphere);
             }
             bushGroup.position.set(x, 0, z);
             scene.add(bushGroup);
@@ -514,154 +468,90 @@
             createBush(trailX + 4.5 + Math.random() * 2, z, 1.2);
         }
 
-        // --- PERSONAGENS 3D: KONOMI E KUNHATAĨ ---
+        // --- PROCEDURAL CHARACTER MODEL & ORIGINAL ANIMATION (KONOMI & KUNHATAĨ) ---
         function buildCharacterModel(isKunhatai = false) {
             const group = new THREE.Group();
-            const skinMat = new THREE.MeshStandardMaterial({ color: 0x9b6246, roughness: 0.88 });
-            const skinLight = new THREE.MeshStandardMaterial({ color: 0xb97855, roughness: 0.85 });
-            const clothesColor = isKunhatai ? 0x087f5b : 0xc87519;
-            const clothesMat = new THREE.MeshStandardMaterial({ color: clothesColor, roughness: 0.9 });
-            const trimMat = new THREE.MeshStandardMaterial({ color: 0xf2c14e, roughness: 0.7 });
-            const hairMat = new THREE.MeshStandardMaterial({ color: 0x17120f, roughness: 1 });
-            const darkMat = new THREE.MeshStandardMaterial({ color: 0x241812, roughness: 0.7 });
-            const eyeWhite = new THREE.MeshStandardMaterial({ color: 0xfff8e7 });
-            const irisMat = new THREE.MeshStandardMaterial({ color: 0x24160f });
-            const mouthMat = new THREE.MeshStandardMaterial({ color: 0x63372b });
 
-            // Tronco arredondado e túnica com faixa decorativa
-            const torso = new THREE.Mesh(new THREE.CapsuleGeometry(0.36, 0.62, 5, 10), clothesMat);
-            torso.position.y = 1.12;
+            // Colors
+            const skinColor = 0xb87352;
+            const clothesColor = isKunhatai ? 0x059669 : 0xd97706; // Emerald vs Amber
+            const hairColor = 0x1c1917;
+
+            // Torso
+            const torsoGeo = new THREE.CylinderGeometry(0.38, 0.32, 1.1, 8);
+            const torsoMat = new THREE.MeshLambertMaterial({ color: clothesColor });
+            const torso = new THREE.Mesh(torsoGeo, torsoMat);
+            torso.position.y = 1.0;
             torso.castShadow = true;
             group.add(torso);
-            const belt = new THREE.Mesh(new THREE.CylinderGeometry(0.365, 0.365, 0.11, 12), trimMat);
-            belt.position.y = 0.92;
-            group.add(belt);
-            for (let i = 0; i < 5; i++) {
-                const motif = new THREE.Mesh(new THREE.SphereGeometry(0.045, 8, 8), trimMat);
-                motif.position.set(-0.23 + i * 0.115, 1.42, 0.315);
-                motif.scale.set(1, 1.35, 0.45);
-                group.add(motif);
-            }
 
-            // Pescoço e cabeça
-            const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.15, 0.22, 10), skinMat);
-            neck.position.y = 1.62;
-            group.add(neck);
-            const head = new THREE.Mesh(new THREE.SphereGeometry(0.36, 24, 18), skinLight);
-            head.scale.set(0.94, 1.08, 0.9);
-            head.position.set(0, 1.91, 0.035);
+            // Head
+            const headGeo = new THREE.SphereGeometry(0.38, 16, 16);
+            const skinMat = new THREE.MeshLambertMaterial({ color: skinColor });
+            const head = new THREE.Mesh(headGeo, skinMat);
+            head.position.y = 1.8;
             head.castShadow = true;
             group.add(head);
 
-            // Cabelo em volumes sobrepostos, com franja
-            const cap = new THREE.Mesh(new THREE.SphereGeometry(0.375, 18, 12, 0, Math.PI * 2, 0, Math.PI * 0.58), hairMat);
-            cap.position.set(0, 2.02, -0.025);
-            cap.scale.set(1.02, 1.0, 0.98);
-            group.add(cap);
-            const fringe = new THREE.Mesh(new THREE.SphereGeometry(0.22, 12, 8), hairMat);
-            fringe.scale.set(1.35, 0.48, 0.55);
-            fringe.position.set(0, 2.12, 0.27);
-            group.add(fringe);
-            if (isKunhatai) {
-                [-1, 1].forEach(side => {
-                    const bun = new THREE.Mesh(new THREE.SphereGeometry(0.15, 12, 10), hairMat);
-                    bun.position.set(side * 0.31, 2.05, -0.02);
-                    group.add(bun);
-                    const tie = new THREE.Mesh(new THREE.SphereGeometry(0.055, 8, 8), trimMat);
-                    tie.position.set(side * 0.34, 2.06, 0.09);
-                    group.add(tie);
-                });
-            }
+            // Hair
+            const hairGeo = isKunhatai 
+                ? new THREE.ConeGeometry(0.48, 0.9, 12) 
+                : new THREE.SphereGeometry(0.4, 12, 12);
+            const hairMat = new THREE.MeshLambertMaterial({ color: hairColor });
+            const hair = new THREE.Mesh(hairGeo, hairMat);
+            hair.position.set(0, 1.95, isKunhatai ? -0.1 : -0.05);
+            if (isKunhatai) hair.rotation.x = -0.3;
+            group.add(hair);
 
-            // Olhos, sobrancelhas, nariz e sorriso
-            [-1, 1].forEach(side => {
-                const eye = new THREE.Mesh(new THREE.SphereGeometry(0.067, 12, 10), eyeWhite);
-                eye.position.set(side * 0.13, 1.96, 0.337);
-                eye.scale.z = 0.35;
-                group.add(eye);
-                const iris = new THREE.Mesh(new THREE.SphereGeometry(0.034, 10, 8), irisMat);
-                iris.position.set(side * 0.13, 1.955, 0.362);
-                group.add(iris);
-                const brow = new THREE.Mesh(new THREE.BoxGeometry(0.13, 0.025, 0.035), hairMat);
-                brow.position.set(side * 0.13, 2.055, 0.33);
-                brow.rotation.z = side * -0.08;
-                group.add(brow);
-            });
-            const nose = new THREE.Mesh(new THREE.SphereGeometry(0.065, 10, 8), skinMat);
-            nose.scale.set(0.7, 0.8, 0.8);
-            nose.position.set(0, 1.88, 0.38);
-            group.add(nose);
-            const mouth = new THREE.Mesh(new THREE.TorusGeometry(0.075, 0.012, 6, 14, Math.PI), mouthMat);
-            mouth.position.set(0, 1.79, 0.34);
-            mouth.rotation.z = Math.PI;
-            group.add(mouth);
-
-            // Faixa de cabeça e pena estilizada
-            const headband = new THREE.Mesh(new THREE.TorusGeometry(0.31, 0.035, 6, 24), trimMat);
-            headband.position.set(0, 2.08, 0.015);
-            headband.rotation.x = Math.PI / 2.4;
-            group.add(headband);
-            const feather = new THREE.Mesh(
-                new THREE.ConeGeometry(0.09, 0.48, 7),
-                new THREE.MeshStandardMaterial({ color: isKunhatai ? 0xe85d75 : 0xd94835, roughness: 0.8 })
-            );
-            feather.position.set(isKunhatai ? 0.22 : 0.08, 2.37, 0.02);
-            feather.rotation.z = isKunhatai ? -0.35 : 0.18;
+            // Red Feather / Cocar Detail
+            const featherGeo = new THREE.ConeGeometry(0.08, 0.55, 4);
+            const featherMat = new THREE.MeshBasicMaterial({ color: 0xef4444 });
+            const feather = new THREE.Mesh(featherGeo, featherMat);
+            feather.position.set(isKunhatai ? 0.2 : 0, 2.2, -0.1);
+            feather.rotation.z = isKunhatai ? -0.3 : 0;
             group.add(feather);
-            const featherTip = new THREE.Mesh(new THREE.SphereGeometry(0.055, 8, 8), trimMat);
-            featherTip.position.set(isKunhatai ? 0.31 : 0.11, 2.58, 0.02);
-            group.add(featherTip);
 
-            // Braços articulados, mãos e pulseiras
-            const armGeo = new THREE.CapsuleGeometry(0.105, 0.42, 4, 8);
+            // Arms (Pivoted for procedural swiveling animation)
+            const armGeo = new THREE.CylinderGeometry(0.1, 0.08, 0.7);
+
             const leftArmPivot = new THREE.Group();
-            leftArmPivot.position.set(-0.43, 1.42, 0);
-            const leftArm = new THREE.Mesh(armGeo, skinLight);
-            leftArm.position.y = -0.29;
-            leftArm.rotation.z = -0.08;
-            leftArm.castShadow = true;
+            leftArmPivot.position.set(-0.48, 1.45, 0);
+            const leftArm = new THREE.Mesh(armGeo, skinMat);
+            leftArm.position.y = -0.35;
             leftArmPivot.add(leftArm);
-            const leftHand = new THREE.Mesh(new THREE.SphereGeometry(0.11, 10, 8), skinLight);
-            leftHand.position.set(0, -0.59, 0.025);
-            leftArmPivot.add(leftHand);
-            const rightArmPivot = new THREE.Group();
-            rightArmPivot.position.set(0.43, 1.42, 0);
-            const rightArm = new THREE.Mesh(armGeo, skinLight);
-            rightArm.position.y = -0.29;
-            rightArm.rotation.z = 0.08;
-            rightArm.castShadow = true;
-            rightArmPivot.add(rightArm);
-            const rightHand = new THREE.Mesh(new THREE.SphereGeometry(0.11, 10, 8), skinLight);
-            rightHand.position.set(0, -0.59, 0.025);
-            rightArmPivot.add(rightHand);
-            group.add(leftArmPivot, rightArmPivot);
+            group.add(leftArmPivot);
 
-            // Pernas, joelhos e pés
-            const legGeo = new THREE.CapsuleGeometry(0.12, 0.36, 4, 8);
+            const rightArmPivot = new THREE.Group();
+            rightArmPivot.position.set(0.48, 1.45, 0);
+            const rightArm = new THREE.Mesh(armGeo, skinMat);
+            rightArm.position.y = -0.35;
+            rightArmPivot.add(rightArm);
+            group.add(rightArmPivot);
+
+            // Legs (Pivoted for walking animation)
+            const legGeo = new THREE.CylinderGeometry(0.12, 0.09, 0.75);
+
             const leftLegPivot = new THREE.Group();
-            leftLegPivot.position.set(-0.19, 0.67, 0);
+            leftLegPivot.position.set(-0.2, 0.7, 0);
             const leftLeg = new THREE.Mesh(legGeo, skinMat);
-            leftLeg.position.y = -0.22;
-            leftLeg.castShadow = true;
+            leftLeg.position.y = -0.375;
             leftLegPivot.add(leftLeg);
-            const leftFoot = new THREE.Mesh(new THREE.SphereGeometry(0.15, 10, 8), darkMat);
-            leftFoot.scale.set(0.8, 0.55, 1.35);
-            leftFoot.position.set(0, -0.47, 0.09);
-            leftLegPivot.add(leftFoot);
+            group.add(leftLegPivot);
+
             const rightLegPivot = new THREE.Group();
-            rightLegPivot.position.set(0.19, 0.67, 0);
+            rightLegPivot.position.set(0.2, 0.7, 0);
             const rightLeg = new THREE.Mesh(legGeo, skinMat);
-            rightLeg.position.y = -0.22;
-            rightLeg.castShadow = true;
+            rightLeg.position.y = -0.375;
             rightLegPivot.add(rightLeg);
-            const rightFoot = new THREE.Mesh(new THREE.SphereGeometry(0.15, 10, 8), darkMat);
-            rightFoot.scale.set(0.8, 0.55, 1.35);
-            rightFoot.position.set(0, -0.47, 0.09);
-            rightLegPivot.add(rightFoot);
-            group.add(leftLegPivot, rightLegPivot);
+            group.add(rightLegPivot);
 
             group.position.set(0, 0, 35);
-            return { mesh: group, head, torso, leftArmPivot, rightArmPivot, leftLegPivot, rightLegPivot };
+            return {
+                mesh: group,
+                head, torso,
+                leftArmPivot, rightArmPivot,
+                leftLegPivot, rightLegPivot
+            };
         }
 
         let player = buildCharacterModel(false);
@@ -669,51 +559,24 @@
 
         // --- LANDMARKS / OBJECTIVES ---
 
-        // 1. AWATI — milho com folhas curvas, palha e grãos visíveis
+        // 1. AWATI (Corn Stalk - Phase 1 Landmark)
         const awatiGroup = new THREE.Group();
-        const stalkMat = new THREE.MeshStandardMaterial({ color: 0x438b2a, roughness: 0.9 });
-        const leafMats = [0x2f7d32, 0x4b9b3d, 0x69a844].map(color => new THREE.MeshStandardMaterial({ color, side: THREE.DoubleSide, roughness: 0.9 }));
-        const stalk = new THREE.Mesh(new THREE.CylinderGeometry(0.095, 0.15, 4.1, 10), stalkMat);
-        stalk.position.y = 2.05;
-        stalk.castShadow = true;
+        const stalkMat = new THREE.MeshLambertMaterial({ color: 0x65a30d });
+        const stalk = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.2, 4.2, 8), stalkMat);
+        stalk.position.y = 2.1;
         awatiGroup.add(stalk);
-
-        // Folhas compridas e pontiagudas em alturas alternadas
-        for (let i = 0; i < 7; i++) {
-            const side = i % 2 === 0 ? 1 : -1;
-            const leaf = new THREE.Mesh(new THREE.ConeGeometry(0.32, 2.2 + (i % 3) * 0.25, 8), leafMats[i % leafMats.length]);
-            leaf.position.set(side * (0.35 + (i % 3) * 0.08), 0.9 + i * 0.43, (i % 2) * 0.12);
-            leaf.rotation.z = side * (0.9 + (i % 3) * 0.12);
-            leaf.rotation.x = side * 0.18;
-            leaf.scale.set(0.55, 1.15, 0.45);
-            leaf.castShadow = true;
+        for (let i = 0; i < 5; i++) {
+            const leaf = new THREE.Mesh(new THREE.ConeGeometry(0.4, 2.5, 5), stalkMat);
+            leaf.position.set(0, 1 + i * 0.6, 0);
+            leaf.rotation.z = (i % 2 === 0 ? 1 : -1) * 0.7;
             awatiGroup.add(leaf);
         }
+        const corn = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.2, 1.4, 8), new THREE.MeshLambertMaterial({ color: 0xeab308 }));
+        corn.position.set(0.35, 2.3, 0);
+        corn.rotation.z = -0.4;
+        awatiGroup.add(corn);
 
-        // Espiga envolvida por palha
-        const huskMat = new THREE.MeshStandardMaterial({ color: 0x8dbb45, roughness: 0.95 });
-        const husk = new THREE.Mesh(new THREE.CapsuleGeometry(0.27, 0.88, 5, 10), huskMat);
-        husk.position.set(0.28, 2.45, 0.08);
-        husk.rotation.z = -0.42;
-        awatiGroup.add(husk);
-        const cob = new THREE.Mesh(
-            new THREE.CylinderGeometry(0.19, 0.2, 0.92, 12),
-            new THREE.MeshStandardMaterial({ color: 0xf3c623, roughness: 0.75 })
-        );
-        cob.position.set(0.43, 2.43, 0.16);
-        cob.rotation.z = -0.42;
-        awatiGroup.add(cob);
-        const kernelMat = new THREE.MeshStandardMaterial({ color: 0xffdf55, roughness: 0.65 });
-        for (let row = 0; row < 5; row++) {
-            for (let col = 0; col < 4; col++) {
-                const kernel = new THREE.Mesh(new THREE.SphereGeometry(0.055, 8, 8), kernelMat);
-                const angle = col * Math.PI * 2 / 4;
-                kernel.position.set(0.43 + Math.cos(angle) * 0.185, 2.12 + row * 0.15, 0.16 + Math.sin(angle) * 0.16);
-                kernel.castShadow = true;
-                awatiGroup.add(kernel);
-            }
-        }
-        const ring1 = new THREE.Mesh(new THREE.RingGeometry(1.4, 1.9, 32), new THREE.MeshBasicMaterial({ color: 0xfacc15, side: THREE.DoubleSide }));
+        const ring1 = new THREE.Mesh(new THREE.RingGeometry(1.4, 1.9, 24), new THREE.MeshBasicMaterial({ color: 0xfacc15, side: THREE.DoubleSide }));
         ring1.rotation.x = -Math.PI / 2;
         ring1.position.y = 0.05;
         awatiGroup.add(ring1);
@@ -722,95 +585,27 @@
         awatiGroup.position.set(awatiX, 0, 15);
         scene.add(awatiGroup);
 
-        // 2. DJAGWARETE — onça-pintada com anatomia arredondada e rosetas
+        // 2. DJAGWARETE (Jaguar 3D Model - Phase 2 Landmark)
         const jaguarGroup = new THREE.Group();
-        const jagMat = new THREE.MeshStandardMaterial({ color: 0xd99a35, roughness: 0.88 });
-        const creamMat = new THREE.MeshStandardMaterial({ color: 0xf2dfb6, roughness: 0.9 });
-        const blackMat = new THREE.MeshStandardMaterial({ color: 0x2a1a10, roughness: 0.85 });
-        const eyeMat = new THREE.MeshStandardMaterial({ color: 0xc7a33b, roughness: 0.35 });
-        const body = new THREE.Mesh(new THREE.SphereGeometry(0.82, 20, 16), jagMat);
-        body.scale.set(0.92, 0.83, 1.55);
-        body.position.set(0, 1.15, 0);
-        body.castShadow = true;
-        jaguarGroup.add(body);
-        const belly = new THREE.Mesh(new THREE.SphereGeometry(0.57, 16, 12), creamMat);
-        belly.scale.set(0.9, 0.55, 1.35);
-        belly.position.set(0, 0.72, 0.08);
-        jaguarGroup.add(belly);
+        const jagMat = new THREE.MeshLambertMaterial({ color: 0xd97706 });
+        const jagBody = new THREE.Mesh(new THREE.BoxGeometry(1.4, 1.1, 2.8), jagMat);
+        jagBody.position.y = 1.1;
+        jagBody.castShadow = true;
+        jaguarGroup.add(jagBody);
 
-        const head = new THREE.Mesh(new THREE.SphereGeometry(0.55, 18, 14), jagMat);
-        head.scale.set(0.94, 0.9, 0.95);
-        head.position.set(0, 1.65, 1.18);
-        head.castShadow = true;
-        jaguarGroup.add(head);
-        const muzzle = new THREE.Mesh(new THREE.SphereGeometry(0.29, 14, 10), creamMat);
-        muzzle.scale.set(1.15, 0.72, 0.85);
-        muzzle.position.set(0, 1.43, 1.62);
-        jaguarGroup.add(muzzle);
-        const nose = new THREE.Mesh(new THREE.SphereGeometry(0.105, 10, 8), blackMat);
-        nose.position.set(0, 1.52, 1.86);
-        jaguarGroup.add(nose);
-        [-1, 1].forEach(side => {
-            const ear = new THREE.Mesh(new THREE.SphereGeometry(0.19, 12, 10), jagMat);
-            ear.scale.set(0.9, 1, 0.55);
-            ear.position.set(side * 0.39, 2.08, 1.03);
-            jaguarGroup.add(ear);
-            const innerEar = new THREE.Mesh(new THREE.SphereGeometry(0.09, 10, 8), blackMat);
-            innerEar.position.set(side * 0.4, 2.1, 1.12);
-            jaguarGroup.add(innerEar);
-            const eye = new THREE.Mesh(new THREE.SphereGeometry(0.09, 12, 8), eyeMat);
-            eye.position.set(side * 0.25, 1.78, 1.61);
-            jaguarGroup.add(eye);
-            const pupil = new THREE.Mesh(new THREE.SphereGeometry(0.035, 8, 8), blackMat);
-            pupil.position.set(side * 0.25, 1.78, 1.69);
-            jaguarGroup.add(pupil);
-        });
+        const jagHead = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.9, 1.1), jagMat);
+        jagHead.position.set(0, 1.7, 1.6);
+        jagHead.castShadow = true;
+        jaguarGroup.add(jagHead);
 
-        // Quatro patas com articulações para animação leve
-        const jagLegPivots = [];
-        for (const side of [-1, 1]) {
-            for (const front of [false, true]) {
-                const legPivot = new THREE.Group();
-                legPivot.position.set(side * 0.52, 0.9, front ? 0.85 : -0.9);
-                const upper = new THREE.Mesh(new THREE.CapsuleGeometry(0.19, 0.48, 4, 8), jagMat);
-                upper.position.y = -0.28;
-                upper.castShadow = true;
-                legPivot.add(upper);
-                const paw = new THREE.Mesh(new THREE.SphereGeometry(0.22, 12, 8), creamMat);
-                paw.scale.set(1.05, 0.65, 1.15);
-                paw.position.set(0, -0.57, 0.06);
-                legPivot.add(paw);
-                jaguarGroup.add(legPivot);
-                jagLegPivots.push(legPivot);
-            }
+        const spotMat = new THREE.MeshBasicMaterial({ color: 0x451a03 });
+        for(let s = 0; s < 8; s++) {
+            const spot = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.3, 0.05), spotMat);
+            spot.position.set((s % 2 === 0 ? 0.71 : -0.71), 1.1 + (s % 3) * 0.2, -0.8 + s * 0.3);
+            jaguarGroup.add(spot);
         }
-        // Cauda curva construída com segmentos
-        const tailSegments = [];
-        for (let i = 0; i < 7; i++) {
-            const tail = new THREE.Mesh(new THREE.SphereGeometry(0.12 - i * 0.009, 10, 8), i > 4 ? blackMat : jagMat);
-            tail.position.set(0, 1.22 + Math.sin(i * 0.36) * 0.12, -1.25 - i * 0.23);
-            tail.castShadow = true;
-            jaguarGroup.add(tail);
-            tailSegments.push(tail);
-        }
-        // Manchas e rosetas distribuídas no dorso e nas laterais
-        const spotMat = new THREE.MeshStandardMaterial({ color: 0x3b2413, roughness: 1 });
-        for (let i = 0; i < 34; i++) {
-            const side = i % 2 === 0 ? 1 : -1;
-            const z = -1.05 + Math.random() * 2.05;
-            const y = 1.05 + Math.random() * 0.62;
-            const x = side * (0.68 + Math.random() * 0.06);
-            const rosette = new THREE.Group();
-            const outer = new THREE.Mesh(new THREE.TorusGeometry(0.105 + Math.random() * 0.035, 0.025, 5, 9), spotMat);
-            outer.rotation.y = side * 0.5;
-            rosette.add(outer);
-            const center = new THREE.Mesh(new THREE.SphereGeometry(0.035, 7, 6), spotMat);
-            center.position.z = 0.012;
-            rosette.add(center);
-            rosette.position.set(x, y, z);
-            jaguarGroup.add(rosette);
-        }
-        const ring2 = new THREE.Mesh(new THREE.RingGeometry(1.6, 2.2, 32), new THREE.MeshBasicMaterial({ color: 0xf59e0b, side: THREE.DoubleSide }));
+
+        const ring2 = new THREE.Mesh(new THREE.RingGeometry(1.6, 2.2, 24), new THREE.MeshBasicMaterial({ color: 0xf59e0b, side: THREE.DoubleSide }));
         ring2.rotation.x = -Math.PI / 2;
         ring2.position.y = 0.05;
         jaguarGroup.add(ring2);
@@ -821,79 +616,37 @@
 
         // --- CAMOUFLAGED ANIMALS WITH NATURAL PROCEDURAL BEHAVIOR ---
 
-        // 1. MBO'I — cobra com corpo segmentado, cabeça, olhos e chocalho
+        // 1. MBO'I (Cobra Cascavel 🐍) - Undulating S-curve movement on ground leaves
         const mboiGroup = new THREE.Group();
         const mboiSegments = [];
-        const snakeMat = new THREE.MeshStandardMaterial({ color: 0x54752b, roughness: 0.8 });
-        const snakeBellyMat = new THREE.MeshStandardMaterial({ color: 0xc7b879, roughness: 0.9 });
-        for (let b = 0; b < 15; b++) {
-            const radius = 0.19 * (1 - b / 22);
-            const seg = new THREE.Mesh(new THREE.SphereGeometry(radius, 12, 10), b % 3 === 0 ? snakeBellyMat : snakeMat);
-            seg.scale.set(1.0, 0.8, 1.45);
+        const snakeMat = new THREE.MeshLambertMaterial({ color: 0x3f6212 });
+        for (let b = 0; b < 9; b++) {
+            const seg = new THREE.Mesh(new THREE.SphereGeometry(0.25 - b * 0.018, 8, 8), snakeMat);
             seg.castShadow = true;
             mboiSegments.push(seg);
             mboiGroup.add(seg);
         }
-        const snakeHead = new THREE.Mesh(new THREE.SphereGeometry(0.24, 14, 10), snakeMat);
-        snakeHead.scale.set(1.15, 0.78, 1.25);
-        snakeHead.position.z = -0.15;
-        mboiGroup.add(snakeHead);
-        [-1, 1].forEach(side => {
-            const eye = new THREE.Mesh(new THREE.SphereGeometry(0.055, 10, 8), new THREE.MeshStandardMaterial({ color: 0xf5d547 }));
-            eye.position.set(side * 0.16, 0.12, -0.22);
-            mboiGroup.add(eye);
-            const pupil = new THREE.Mesh(new THREE.SphereGeometry(0.025, 8, 8), new THREE.MeshStandardMaterial({ color: 0x111111 }));
-            pupil.position.set(side * 0.17, 0.12, -0.26);
-            mboiGroup.add(pupil);
-        });
-        // Chocalho estilizado na ponta da cauda
-        const rattle = new THREE.Group();
-        for (let i = 0; i < 4; i++) {
-            const bead = new THREE.Mesh(new THREE.SphereGeometry(0.09 - i * 0.012, 8, 8), new THREE.MeshStandardMaterial({ color: i % 2 ? 0xc9a66b : 0x80613d }));
-            bead.position.z = i * 0.13;
-            rattle.add(bead);
-        }
-        mboiGroup.add(rattle);
-
         // Hiding bush patch for cobra
         const cobraBushX = getTrailXAtZ(5) + 3.2;
         createBush(cobraBushX, 5, 1.5);
         mboiGroup.position.set(cobraBushX - 0.5, 0.1, 5);
         scene.add(mboiGroup);
 
-        // 2. NHANDU — aranha com cefalotórax, abdômen e oito patas
+        // 2. NHANDU (Aranha Gigante 🕷️) - Camouflaged on silk web between trees
         const nhanduGroup = new THREE.Group();
-        const spiderMat = new THREE.MeshStandardMaterial({ color: 0x28231e, roughness: 0.82 });
-        const spiderHairMat = new THREE.MeshStandardMaterial({ color: 0x594333, roughness: 1 });
-        const spiderBody = new THREE.Mesh(new THREE.SphereGeometry(0.43, 16, 12), spiderMat);
-        spiderBody.scale.set(1.05, 0.8, 1.35);
-        spiderBody.position.z = -0.18;
-        spiderBody.castShadow = true;
+        const spiderMat = new THREE.MeshLambertMaterial({ color: 0x18181b });
+        const spiderBody = new THREE.Mesh(new THREE.SphereGeometry(0.45, 10, 10), spiderMat);
+        spiderBody.scale.set(1, 0.7, 1.3);
         nhanduGroup.add(spiderBody);
-        const spiderHead = new THREE.Mesh(new THREE.SphereGeometry(0.27, 14, 10), spiderMat);
-        spiderHead.position.z = 0.38;
-        nhanduGroup.add(spiderHead);
-        const spiderEyes = [];
-        for (let i = 0; i < 6; i++) {
-            const eye = new THREE.Mesh(new THREE.SphereGeometry(0.035, 8, 8), new THREE.MeshStandardMaterial({ color: 0xe8c76a }));
-            eye.position.set((i - 2.5) * 0.075, 0.08 + (i % 2) * 0.025, 0.6);
-            nhanduGroup.add(eye);
-            spiderEyes.push(eye);
-        }
+
         const spiderLegs = [];
         for (let l = 0; l < 8; l++) {
-            const side = l < 4 ? -1 : 1;
-            const row = l % 4;
             const legPivot = new THREE.Group();
-            legPivot.position.set(side * 0.22, -0.06, 0.3 - row * 0.22);
-            const upperLeg = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.06, 0.52, 7), spiderHairMat);
-            upperLeg.position.set(side * 0.24, -0.02, 0);
-            upperLeg.rotation.z = side * -0.8;
-            legPivot.add(upperLeg);
-            const lowerLeg = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.04, 0.48, 7), spiderMat);
-            lowerLeg.position.set(side * 0.52, -0.25, 0);
-            lowerLeg.rotation.z = side * 0.52;
-            legPivot.add(lowerLeg);
+            const legMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.03, 0.9), spiderMat);
+            legMesh.position.set(l < 4 ? 0.45 : -0.45, -0.2, 0);
+            legMesh.rotation.z = l < 4 ? -0.8 : 0.8;
+            legPivot.add(legMesh);
+            legPivot.position.set(0, 0, (l % 4) * 0.22 - 0.33);
             spiderLegs.push(legPivot);
             nhanduGroup.add(legPivot);
         }
@@ -909,54 +662,19 @@
         nhanduGroup.position.set(nhanduTreeX, 4.5, -12); // Elevated in canopy/web
         scene.add(nhanduGroup);
 
-        // 3. ANGUDJÁ — pequeno roedor com focinho, orelhas, patas e cauda
+        // 3. ANGUDJÁ (Rato/Preá 🐀) - Quick random dash between bushes
         const angudjaGroup = new THREE.Group();
-        const ratMat = new THREE.MeshStandardMaterial({ color: 0x817466, roughness: 0.92 });
-        const ratLightMat = new THREE.MeshStandardMaterial({ color: 0xc8b9a6, roughness: 0.9 });
-        const ratDarkMat = new THREE.MeshStandardMaterial({ color: 0x30251e, roughness: 0.8 });
-        const ratBody = new THREE.Mesh(new THREE.SphereGeometry(0.34, 16, 12), ratMat);
-        ratBody.scale.set(0.85, 0.78, 1.35);
-        ratBody.position.y = 0.28;
+        const ratMat = new THREE.MeshLambertMaterial({ color: 0x57534e });
+        const ratBody = new THREE.Mesh(new THREE.SphereGeometry(0.3, 8, 8), ratMat);
+        ratBody.scale.set(0.8, 0.7, 1.4);
+        ratBody.position.y = 0.2;
         ratBody.castShadow = true;
         angudjaGroup.add(ratBody);
-        const ratHead = new THREE.Mesh(new THREE.SphereGeometry(0.23, 14, 10), ratMat);
-        ratHead.position.set(0, 0.34, 0.42);
-        angudjaGroup.add(ratHead);
-        const ratSnout = new THREE.Mesh(new THREE.ConeGeometry(0.13, 0.28, 10), ratLightMat);
-        ratSnout.rotation.x = Math.PI / 2;
-        ratSnout.position.set(0, 0.27, 0.64);
+
+        const ratSnout = new THREE.Mesh(new THREE.ConeGeometry(0.15, 0.3, 8), ratMat);
+        ratSnout.rotation.x = -Math.PI / 2;
+        ratSnout.position.set(0, 0.2, 0.5);
         angudjaGroup.add(ratSnout);
-        const ratNose = new THREE.Mesh(new THREE.SphereGeometry(0.055, 10, 8), new THREE.MeshStandardMaterial({ color: 0x4b2928 }));
-        ratNose.position.set(0, 0.31, 0.78);
-        angudjaGroup.add(ratNose);
-        [-1, 1].forEach(side => {
-            const ear = new THREE.Mesh(new THREE.SphereGeometry(0.13, 12, 10), ratMat);
-            ear.scale.set(0.85, 1.1, 0.45);
-            ear.position.set(side * 0.17, 0.52, 0.34);
-            angudjaGroup.add(ear);
-            const inner = new THREE.Mesh(new THREE.SphereGeometry(0.075, 10, 8), new THREE.MeshStandardMaterial({ color: 0xc77e83 }));
-            inner.position.set(side * 0.18, 0.53, 0.38);
-            angudjaGroup.add(inner);
-            const eye = new THREE.Mesh(new THREE.SphereGeometry(0.045, 10, 8), ratDarkMat);
-            eye.position.set(side * 0.16, 0.4, 0.56);
-            angudjaGroup.add(eye);
-        });
-        // Quatro patas pequenas
-        for (const side of [-1, 1]) {
-            for (const front of [false, true]) {
-                const leg = new THREE.Mesh(new THREE.CapsuleGeometry(0.055, 0.12, 3, 6), ratMat);
-                leg.position.set(side * 0.2, 0.1, front ? 0.32 : -0.28);
-                leg.rotation.x = -0.2;
-                angudjaGroup.add(leg);
-                const paw = new THREE.Mesh(new THREE.SphereGeometry(0.065, 8, 8), ratLightMat);
-                paw.position.set(side * 0.2, 0.055, front ? 0.38 : -0.34);
-                angudjaGroup.add(paw);
-            }
-        }
-        const ratTail = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.055, 0.9, 8), new THREE.MeshStandardMaterial({ color: 0x9d8271 }));
-        ratTail.position.set(0, 0.2, -0.68);
-        ratTail.rotation.x = Math.PI / 2.7;
-        angudjaGroup.add(ratTail);
 
         const ratX = getTrailXAtZ(25) + 3.8;
         createBush(ratX, 25, 1.3);
@@ -1142,19 +860,6 @@
             for (let i = 0; i < mboiSegments.length; i++) {
                 const wave = Math.sin(time * 4 - i * 0.4) * 0.35;
                 mboiSegments[i].position.set(wave, 0, i * 0.32);
-            }
-
-            // A onça respira, movimenta as patas e balança a cauda suavemente
-            if (typeof jagLegPivots !== 'undefined') {
-                jagLegPivots.forEach((leg, idx) => {
-                    leg.rotation.x = Math.sin(time * 2.2 + idx * Math.PI) * 0.045;
-                });
-            }
-            if (typeof tailSegments !== 'undefined') {
-                tailSegments.forEach((segment, idx) => {
-                    segment.position.y = 1.22 + Math.sin(time * 2.1 - idx * 0.35) * (0.08 + idx * 0.012);
-                    segment.position.x = Math.sin(time * 1.8 - idx * 0.28) * (idx * 0.025);
-                });
             }
 
             // 2. Nhandu (Aranha) - Descending/Ascending thread movement & leg twitches
