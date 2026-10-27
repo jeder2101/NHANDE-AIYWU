@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
     <title>Tape Marangatu 3D - Guardiões da Memória Nhandewa</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -61,6 +61,177 @@
             transform: scale(0.92);
         }
 
+        /* Controles de toque inspirados no layout de jogos Roblox */
+        .mobile-controls {
+            display: flex;
+            touch-action: none;
+            -webkit-user-select: none;
+            user-select: none;
+            position: fixed; inset: auto 0 max(18px, env(safe-area-inset-bottom)) 0;
+            height: 174px; z-index: 40; pointer-events: none;
+            align-items: flex-end; justify-content: space-between;
+            padding: 0 22px; box-sizing: border-box;
+        }
+        .mobile-joystick {
+            width: 142px; height: 142px; border-radius: 50%; position: relative;
+            pointer-events: auto; touch-action: none; overflow: hidden;
+            background: radial-gradient(circle at 35% 28%, rgba(110,231,183,.24), rgba(4,30,22,.82) 70%);
+            border: 3px solid rgba(167,243,208,.75);
+            box-shadow: 0 6px 0 rgba(0,0,0,.3), inset 0 0 0 5px rgba(255,255,255,.06), 0 0 20px rgba(16,185,129,.22);
+        }
+        .joystick-cross { position:absolute; background:rgba(167,243,208,.13); border-radius:8px; }
+        .joystick-cross.horizontal { width:78%; height:18%; left:11%; top:41%; }
+        .joystick-cross.vertical { height:78%; width:18%; top:11%; left:41%; }
+        .joystick-center-ring { position:absolute; inset:28%; border:2px solid rgba(167,243,208,.28); border-radius:50%; }
+        .joystick-knob {
+            width:54px; height:54px; border-radius:50%; position:absolute; left:50%; top:50%;
+            transform:translate(-50%,-50%); display:flex; align-items:center; justify-content:center;
+            background:linear-gradient(145deg,#34d399,#047857); border:3px solid #d1fae5;
+            box-shadow:0 4px 0 #064e3b, 0 4px 12px rgba(0,0,0,.4); color:#ecfdf5;
+            pointer-events:none;
+        }
+        .mobile-actions { display:flex; flex-direction:column; align-items:center; gap:12px; pointer-events:auto; }
+        .mobile-action {
+            width:76px; height:66px; border-radius:22px; display:flex; flex-direction:column;
+            align-items:center; justify-content:center; gap:3px; color:#fff; font-weight:800;
+            font-size:10px; letter-spacing:.03em; border:3px solid rgba(255,255,255,.75);
+            box-shadow:0 5px 0 rgba(0,0,0,.35), inset 0 2px 5px rgba(255,255,255,.25);
+            text-shadow:0 1px 2px rgba(0,0,0,.4); touch-action:none; user-select:none;
+        }
+        .mobile-action i { font-size:21px; }
+        .jump-action { background:linear-gradient(145deg,#fbbf24,#d97706); border-color:#fef3c7; }
+        .crouch-action { background:linear-gradient(145deg,#60a5fa,#1d4ed8); border-color:#dbeafe; }
+        .mobile-action.pressed { transform:translateY(4px) scale(.96); box-shadow:0 1px 0 rgba(0,0,0,.35); filter:brightness(1.15); }
+        @media (max-width: 420px) {
+            .mobile-controls { padding-left:14px; padding-right:14px; height:158px; }
+            .mobile-joystick { width:126px; height:126px; }
+            .joystick-knob { width:48px; height:48px; }
+            .mobile-action { width:68px; height:60px; }
+        }
+
+        /* Em celulares na horizontal, a largura pode ultrapassar 768px. Não esconder os controles por causa do breakpoint de desktop. */
+        @media (pointer: coarse) and (max-width: 1100px) {
+            #touch-controls:not(.hidden) { display: flex !important; }
+        }
+
+        /* Reposiciona os controles automaticamente quando o celular muda de orientação. */
+        @media screen and (orientation: landscape) and (max-height: 600px) {
+            .mobile-controls {
+                inset: 0;
+                height: auto;
+                padding: max(10px, env(safe-area-inset-top)) max(14px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left));
+                align-items: flex-end;
+                justify-content: space-between;
+            }
+            .mobile-joystick { width: clamp(88px, 22vh, 126px); height: clamp(88px, 22vh, 126px); }
+            .joystick-knob { width: clamp(36px, 8vh, 48px); height: clamp(36px, 8vh, 48px); }
+            .mobile-actions { flex-direction: row; align-items: flex-end; gap: clamp(8px, 2vw, 16px); }
+            .mobile-action { width: clamp(62px, 15vh, 78px); height: clamp(54px, 14vh, 68px); }
+            #rotate-screen-button { top: max(8px, env(safe-area-inset-top)); right: max(8px, env(safe-area-inset-right)); transform-origin: top right; }
+        }
+        @media screen and (orientation: portrait) and (max-width: 767px) {
+            .mobile-controls {
+                inset: auto 0 max(14px, env(safe-area-inset-bottom)) 0;
+                height: 158px;
+                padding-left: max(14px, env(safe-area-inset-left));
+                padding-right: max(14px, env(safe-area-inset-right));
+                align-items: flex-end;
+                justify-content: space-between;
+            }
+            .mobile-actions { flex-direction: column; }
+        }
+
+
+
+        /* Na horizontal, desloca o desafio para a esquerda e reserva espaço à direita
+           para que o cartão da pergunta não cubra os botões PULAR e AGACHAR. */
+        @media screen and (orientation: landscape) and (max-height: 600px) {
+            #question-modal {
+                justify-content: flex-start !important;
+                padding: max(8px, env(safe-area-inset-top)) 190px max(8px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left)) !important;
+            }
+            #question-modal > .glass-card {
+                width: min(500px, 62vw) !important;
+                max-width: 62vw !important;
+                max-height: calc(100dvh - 16px) !important;
+                overflow-y: auto;
+                padding: 14px !important;
+                margin: 0 !important;
+            }
+            #question-modal #options-container { margin-bottom: 8px !important; }
+            #question-modal #question-prompt { margin-bottom: 10px !important; }
+        }
+        @media screen and (orientation: landscape) and (max-height: 420px) {
+            #question-modal { padding-right: 165px !important; }
+            #question-modal > .glass-card { width: min(440px, 60vw) !important; max-width: 60vw !important; }
+        }
+
+        /* Botão de interação flutua acima do jogador quando ele chega perto do objeto da fase. */
+        /* Alerta de perigo animal: maior, destacado e legível no celular. */
+        #game-feedback.danger-alert {
+            display: block;
+            width: fit-content;
+            max-width: min(94vw, 560px);
+            margin: 10px auto 0;
+            padding: 12px 18px;
+            border: 3px solid #fff1a8;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #991b1b 0%, #dc2626 55%, #7f1d1d 100%);
+            color: #fffde7 !important;
+            font-size: clamp(17px, 4.5vw, 25px) !important;
+            line-height: 1.2;
+            font-weight: 900 !important;
+            letter-spacing: .035em;
+            text-shadow: 0 2px 3px rgba(0,0,0,.9);
+            box-shadow: 0 0 0 4px rgba(220,38,38,.3), 0 8px 22px rgba(0,0,0,.65);
+            animation: txakeke-alert-pulse .65s ease-in-out infinite alternate;
+        }
+        @keyframes txakeke-alert-pulse {
+            from { transform: scale(1); }
+            to { transform: scale(1.035); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            #game-feedback.danger-alert { animation: none; }
+        }
+
+        #btn-interact {
+            position: fixed !important;
+            z-index: 45 !important;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -125%);
+            max-width: min(82vw, 360px);
+            white-space: nowrap;
+            pointer-events: auto;
+            /* Balão de interação claro e bem visível sobre o cenário. */
+            background: linear-gradient(135deg, #fff3a6 0%, #fbbf24 58%, #f59e0b 100%) !important;
+            color: #422006 !important;
+            border: 2px solid #fff7cc !important;
+            box-shadow: 0 0 0 3px rgba(251, 191, 36, .28), 0 8px 24px rgba(0, 0, 0, .42) !important;
+            text-shadow: none !important;
+            opacity: 1 !important;
+            backdrop-filter: none !important;
+        }
+        #btn-interact:hover {
+            background: linear-gradient(135deg, #fff8c9 0%, #fcd34d 58%, #fbbf24 100%) !important;
+            color: #422006 !important;
+        }
+        #btn-interact i { color: #78350f !important; }
+        #btn-interact #interact-label { color: #422006 !important; }
+
+        /* Botão para solicitar rotação horizontal em celulares compatíveis */
+        #rotate-screen-button {
+            position: fixed; top: max(12px, env(safe-area-inset-top)); right: max(12px, env(safe-area-inset-right));
+            z-index: 90; display: flex; align-items: center; gap: 8px;
+            padding: 10px 13px; border-radius: 14px; color: #ecfdf5; font-weight: 800;
+            font-size: 11px; letter-spacing: .04em; background: rgba(6, 38, 28, .88);
+            border: 2px solid rgba(167, 243, 208, .8); box-shadow: 0 4px 14px rgba(0,0,0,.35);
+            touch-action: manipulation;
+        }
+        #rotate-screen-button:active { transform: scale(.96); background: rgba(5, 150, 105, .95); }
+        #rotate-screen-button i { font-size: 17px; }
+        @media (min-width: 768px) { #rotate-screen-button { display: none; } }
+
         @keyframes pulseGlow {
             0%, 100% { box-shadow: 0 0 15px rgba(245, 158, 11, 0.6); transform: scale(1); }
             50% { box-shadow: 0 0 30px rgba(245, 158, 11, 0.9); transform: scale(1.03); }
@@ -99,16 +270,156 @@
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #050e08; }
         ::-webkit-scrollbar-thumb { background: #059669; border-radius: 4px; }
+
+
+        /* =====================================================
+           EXPERIÊNCIA MOBILE/TABLET — TAPE MARANGATU
+           Layout fluido para telas pequenas, tablets e rotação.
+        ===================================================== */
+        :root { --safe-top: env(safe-area-inset-top, 0px); --safe-right: env(safe-area-inset-right, 0px); --safe-bottom: env(safe-area-inset-bottom, 0px); --safe-left: env(safe-area-inset-left, 0px); }
+        html, body { width:100%; height:100%; height:100dvh; margin:0; overscroll-behavior:none; }
+        body { min-height:100%; overflow:hidden; -webkit-tap-highlight-color:transparent; }
+        #canvas-container { position:fixed; inset:0; width:100%; height:100%; height:100dvh; overflow:hidden; }
+        #canvas-container canvas { display:block; width:100%; height:100%; touch-action:none; }
+        #character-select-screen, #start-screen, #device-warning { padding: max(12px, var(--safe-top)) max(12px, var(--safe-right)) max(12px, var(--safe-bottom)) max(12px, var(--safe-left)); overflow-y:auto; overscroll-behavior:contain; }
+        .start-shell { width:min(100%, 720px); max-height:calc(100dvh - 24px); overflow-y:auto; border-radius:clamp(20px, 5vw, 34px); }
+        .start-title { font-size:clamp(2.1rem, 9vw, 5.25rem); line-height:.96; letter-spacing:-.045em; }
+        .start-subtitle { font-size:clamp(.9rem, 2.8vw, 1.15rem); line-height:1.45; }
+        .start-cta { min-height:54px; font-size:clamp(1rem, 3.5vw, 1.2rem); touch-action:manipulation; }
+        .start-emblem { width:clamp(74px, 19vw, 112px); height:clamp(74px, 19vw, 112px); }
+        .character-panel { width:min(100%, 760px); max-height:calc(100dvh - 24px); overflow-y:auto; }
+        .character-card { min-height:clamp(130px, 22dvh, 210px); justify-content:center; }
+        button { -webkit-tap-highlight-color:transparent; }
+        #game-header { padding-top:max(8px, var(--safe-top)); padding-left:max(8px, var(--safe-left)); padding-right:max(8px, var(--safe-right)); gap:6px; }
+        #game-header > div:first-child { min-width:0; max-width:48vw; padding:6px 8px; gap:7px; }
+        #game-header > div:last-child { min-width:0; gap:6px; }
+        #game-header #phase-indicator { display:block; max-width:36vw; font-size:clamp(9px, 2.4vw, 12px); line-height:1.15; }
+        #game-header .compass-ring { width:clamp(38px, 10vw, 56px); height:clamp(38px, 10vw, 56px); flex-shrink:0; }
+        #game-header .compass-needle { transform-origin:center; height:30px; }
+        #survival-hud { top:calc(max(58px, 8dvh) + var(--safe-top)); width:min(94vw, 620px); }
+        #survival-hud > div { padding:7px 9px; gap:8px; }
+        #survival-hud .min-w-\[145px\] { min-width:min(34vw, 145px); }
+        #btn-interact { top:48%; max-width:76vw; white-space:normal; min-height:46px; padding:10px 14px; font-size:clamp(12px, 3.2vw, 15px); }
+        .mobile-controls { padding-left:max(10px, var(--safe-left)); padding-right:max(10px, var(--safe-right)); bottom:max(8px, var(--safe-bottom)); height:clamp(112px, 23dvh, 174px); }
+        .mobile-joystick { width:clamp(94px, 19vw, 142px); height:clamp(94px, 19vw, 142px); flex-shrink:0; }
+        .joystick-knob { width:clamp(38px, 7.3vw, 54px); height:clamp(38px, 7.3vw, 54px); }
+        .mobile-actions { gap:clamp(7px, 1.5vh, 12px); }
+        .mobile-action { width:clamp(60px, 10vw, 76px); height:clamp(52px, 9vh, 66px); border-radius:clamp(15px, 3vw, 22px); }
+        #read-modal, #question-modal { padding:max(8px, var(--safe-top)) max(8px, var(--safe-right)) max(8px, var(--safe-bottom)) max(8px, var(--safe-left)); overflow-y:auto; }
+        #read-modal > .kwatia-paper, #question-modal > .glass-card { max-height:calc(100dvh - 16px); overflow-y:auto; }
+        #rotate-screen-button { top:max(8px, var(--safe-top)); right:max(8px, var(--safe-right)); }
+        #game-over-overlay { padding:max(12px, var(--safe-top)) max(12px, var(--safe-right)) max(12px, var(--safe-bottom)) max(12px, var(--safe-left)); }
+
+        /* Celulares compactos e telas estreitas */
+        @media (max-width:380px) {
+            .start-shell { padding:18px !important; }
+            .start-title { font-size:clamp(2rem, 10vw, 2.7rem); }
+            #game-header .glass-card { border-radius:10px; }
+            #game-header #player-avatar-icon { width:32px; height:32px; font-size:17px; }
+            #game-header .compass-ring { display:none; }
+            #game-header #phase-indicator { max-width:42vw; }
+            #survival-hud { top:calc(54px + var(--safe-top)); }
+            #survival-hud .text-\[9px\] { font-size:8px; }
+            #survival-hud #phase-timer { font-size:16px; }
+            .mobile-controls { height:122px; }
+            .mobile-joystick { width:96px; height:96px; }
+            .mobile-action { width:58px; height:50px; font-size:9px; }
+            .mobile-action i { font-size:18px; }
+        }
+        /* Tablets: cartões lado a lado e controles maiores sem estourar a tela */
+        @media (min-width:600px) and (pointer:coarse) {
+            .start-shell { width:min(92vw, 820px); padding:clamp(24px, 4vw, 42px); }
+            .character-panel { width:min(92vw, 820px); }
+            .mobile-controls { padding-left:max(24px, var(--safe-left)); padding-right:max(24px, var(--safe-right)); }
+            .mobile-joystick { width:clamp(120px, 16vw, 156px); height:clamp(120px, 16vw, 156px); }
+            .mobile-action { width:clamp(72px, 9vw, 86px); height:clamp(64px, 8vh, 76px); }
+        }
+        /* Paisagem com pouca altura: tudo fica compacto e respeita as áreas seguras. */
+        @media (orientation:landscape) and (max-height:500px) {
+            .start-shell { display:grid; grid-template-columns:minmax(0,1fr) minmax(180px,.8fr); align-items:center; gap:16px; padding:16px !important; }
+            .start-copy { text-align:left; }
+            .start-copy .start-emblem { margin-left:0; margin-bottom:8px; }
+            .start-title { font-size:clamp(2rem, 7vh, 3.6rem); }
+            .start-subtitle { font-size:clamp(.75rem, 2.6vh, 1rem); }
+            .start-cta { min-height:44px; }
+            .start-details { margin-top:8px !important; }
+            .character-panel { padding:14px !important; }
+            .character-panel .character-heading { margin-bottom:10px !important; }
+            .character-panel .character-card { min-height:100px; padding:10px !important; }
+            .character-panel .character-avatar { width:52px !important; height:52px !important; font-size:28px !important; margin-bottom:4px !important; }
+            .mobile-controls { height:auto; inset:0; align-items:flex-end; padding-top:max(8px,var(--safe-top)); padding-bottom:max(8px,var(--safe-bottom)); }
+            .mobile-joystick { width:clamp(84px, 22vh, 120px); height:clamp(84px, 22vh, 120px); }
+            .joystick-knob { width:clamp(34px, 8vh, 46px); height:clamp(34px, 8vh, 46px); }
+            .mobile-actions { flex-direction:row; gap:8px; }
+            .mobile-action { width:clamp(58px, 14vh, 72px); height:clamp(48px, 13vh, 62px); }
+            #survival-hud { top:calc(48px + var(--safe-top)); width:min(55vw, 500px); }
+            #survival-hud > div { padding:5px 8px; }
+            #game-header > div:first-child { max-width:38vw; }
+            #game-header #phase-indicator { max-width:28vw; }
+        }
+
+        #landscape-hint { display:none; }
+        @media (pointer:coarse) and (orientation:portrait) and (max-width:900px) {
+            #landscape-hint { display:block; }
+        }
+        @media (pointer:coarse) and (orientation:landscape) { #landscape-hint { display:none !important; } }
+        @media (pointer:coarse) and (min-width:768px) { #rotate-screen-button { display:flex !important; } }
+
+        /* Em desktop sem toque, mostrar aviso em vez de oferecer uma experiência não planejada. */
+        #device-warning { display:none; }
+        body.desktop-no-touch #device-warning { display:flex; }
+        body.desktop-no-touch #start-screen,
+        body.desktop-no-touch #character-select-screen,
+        body.desktop-no-touch #game-header,
+        body.desktop-no-touch #survival-hud,
+        body.desktop-no-touch #touch-controls,
+        body.desktop-no-touch #rotate-screen-button { display:none !important; }
+
     </style>
 </head>
 <body class="h-screen w-screen relative">
 
+    <!-- TELA INICIAL: abertura do jogo -->
+    <section id="start-screen" class="fixed inset-0 z-[120] flex items-center justify-center bg-[#03140d] text-center">
+        <div class="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+            <div class="absolute inset-0" style="background:radial-gradient(ellipse at 50% 20%,rgba(22,163,74,.34),transparent 55%),linear-gradient(145deg,#03140d 0%,#0b2b1b 52%,#07170f 100%);"></div>
+            <div class="absolute -top-20 -left-20 w-72 h-72 rounded-full blur-3xl" style="background:rgba(34,197,94,.18)"></div>
+            <div class="absolute -bottom-24 -right-16 w-80 h-80 rounded-full blur-3xl" style="background:rgba(245,158,11,.18)"></div>
+            <div class="absolute inset-0 opacity-10" style="background-image:radial-gradient(#d9f99d 1px,transparent 1px);background-size:24px 24px"></div>
+        </div>
+        <div class="start-shell glass-card-amber relative z-10 p-6 sm:p-9 border-2 border-amber-300/60 shadow-2xl">
+            <div class="start-copy flex flex-col items-center">
+                <div class="start-emblem rounded-full flex items-center justify-center text-5xl sm:text-6xl border-4 border-amber-200 shadow-xl mb-4" style="background:radial-gradient(circle at 35% 25%,#fef3c7,#d97706 48%,#78350f);box-shadow:0 0 0 8px rgba(251,191,36,.12),0 0 42px rgba(251,191,36,.25)">🐢</div>
+                <div class="text-[10px] sm:text-xs uppercase tracking-[.25em] text-emerald-200 font-bold font-tribal">Uma jornada de memória e saber</div>
+                <h1 class="start-title font-game font-bold mt-3 bg-gradient-to-r from-amber-200 via-lime-200 to-emerald-300 bg-clip-text text-transparent">TAPE<br class="sm:hidden"> MARANGATU <span class="text-amber-300">3D</span></h1>
+                <div class="mt-3 inline-flex items-center gap-2 rounded-full border border-emerald-300/30 bg-emerald-950/60 px-4 py-2 text-[10px] sm:text-xs font-bold tracking-widest text-amber-100"><span>✦</span> GUARDIÕES DA MEMÓRIA NHANDEWA <span>✦</span></div>
+                <p class="start-subtitle text-emerald-50/90 max-w-xl mt-5">Entre na floresta, siga a trilha sagrada, conheça os saberes da <strong class="text-amber-200">Kwatiá</strong> e supere os desafios de <strong class="text-amber-200">Awati</strong> e <strong class="text-amber-200">Djagwarete</strong>.</p>
+            </div>
+            <div class="start-details grid grid-cols-3 gap-2 sm:gap-3 mt-6 mb-6">
+                <div class="rounded-xl border border-emerald-300/20 bg-black/20 p-3"><div class="text-2xl">🌿</div><div class="text-[10px] sm:text-xs font-bold text-emerald-100 mt-1">Explore</div></div>
+                <div class="rounded-xl border border-amber-300/25 bg-black/20 p-3"><div class="text-2xl">📜</div><div class="text-[10px] sm:text-xs font-bold text-amber-100 mt-1">Aprenda</div></div>
+                <div class="rounded-xl border border-sky-300/20 bg-black/20 p-3"><div class="text-2xl">🐆</div><div class="text-[10px] sm:text-xs font-bold text-sky-100 mt-1">Supere desafios</div></div>
+            </div>
+            <button id="start-game-button" type="button" onclick="beginCharacterSelection()" class="start-cta w-full rounded-2xl border-2 border-amber-100 px-6 py-4 font-game font-bold text-emerald-950 shadow-xl transition active:scale-[.98]" style="background:linear-gradient(135deg,#fef3c7,#fbbf24 52%,#d97706);box-shadow:0 6px 0 #78350f,0 0 28px rgba(251,191,36,.2)">COMEÇAR A JORNADA <span class="ml-2">➜</span></button>
+            <p class="mt-4 text-[10px] sm:text-xs text-emerald-200/70">Desenvolvido para celulares e tablets • Melhor experiência com a tela na horizontal</p>
+        </div>
+    </section>
+
+    <!-- Aviso para computadores sem tela de toque -->
+    <section id="device-warning" class="fixed inset-0 z-[200] items-center justify-center bg-[#03140d] p-6 text-center text-emerald-50">
+        <div class="glass-card-amber w-full max-w-lg rounded-3xl p-8 border-2 border-amber-300/60">
+            <div class="text-6xl mb-4">📱</div>
+            <h2 class="font-game text-3xl text-amber-200 font-bold mb-3">Jogo para celular e tablet</h2>
+            <p class="text-emerald-100 leading-relaxed">Tape Marangatu 3D foi preparado para controles por toque. Abra este jogo em um celular ou tablet para explorar a floresta com o joystick e os botões de ação.</p>
+        </div>
+    </section>
+
     <!-- CHARACTER SELECTION SCREEN -->
-    <div id="character-select-screen" class="absolute inset-0 z-50 bg-gradient-to-br from-[#02130b] via-[#0b2b18] to-[#041208] flex items-center justify-center p-4">
-        <div class="glass-card-amber max-w-xl w-full rounded-3xl p-6 md:p-8 border-2 border-amber-500/50 text-center shadow-2xl relative overflow-hidden">
+    <div id="character-select-screen" class="hidden absolute inset-0 z-50 bg-gradient-to-br from-[#02130b] via-[#0b2b18] to-[#041208] flex items-center justify-center p-4">
+        <div class="character-panel glass-card-amber max-w-xl w-full rounded-3xl p-6 md:p-8 border-2 border-amber-500/50 text-center shadow-2xl relative overflow-hidden">
             <div class="absolute -top-12 -right-12 w-40 h-40 bg-amber-500/15 rounded-full blur-3xl pointer-events-none"></div>
             
-            <div class="mb-6">
+            <div class="character-heading mb-6">
                 <span class="text-xs uppercase tracking-widest text-amber-400 font-semibold font-tribal">Jornada da Memória Nhandewa</span>
                 <h1 class="font-game text-3xl md:text-5xl font-bold bg-gradient-to-r from-amber-300 via-emerald-300 to-amber-100 bg-clip-text text-transparent mt-1">
                     Tape Marangatu
@@ -121,7 +432,7 @@
             <!-- Character Cards -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                 <div onclick="selectCharacter('konomi')" class="character-card glass-card p-5 rounded-2xl border-2 border-emerald-500/30 flex flex-col items-center">
-                    <div class="w-20 h-20 rounded-full bg-amber-600/40 border-2 border-amber-400 flex items-center justify-center text-4xl mb-3 shadow-inner">
+                    <div class="character-avatar w-20 h-20 rounded-full bg-amber-600/40 border-2 border-amber-400 flex items-center justify-center text-4xl mb-3 shadow-inner">
                         👦🏽
                     </div>
                     <h3 class="font-game text-xl text-amber-300">Konomi</h3>
@@ -129,7 +440,7 @@
                 </div>
 
                 <div onclick="selectCharacter('kunhatai')" class="character-card glass-card p-5 rounded-2xl border-2 border-emerald-500/30 flex flex-col items-center">
-                    <div class="w-20 h-20 rounded-full bg-emerald-600/40 border-2 border-amber-400 flex items-center justify-center text-4xl mb-3 shadow-inner">
+                    <div class="character-avatar w-20 h-20 rounded-full bg-emerald-600/40 border-2 border-amber-400 flex items-center justify-center text-4xl mb-3 shadow-inner">
                         👧🏽
                     </div>
                     <h3 class="font-game text-xl text-amber-300">Kunhataĩ</h3>
@@ -174,6 +485,43 @@
         </div>
     </header>
 
+    <!-- HUD de sobrevivência: vida, tempo da fase e power-ups -->
+    <div id="survival-hud" class="hidden absolute top-[5.2rem] left-1/2 -translate-x-1/2 z-20 w-[min(94vw,620px)] pointer-events-none">
+        <div class="glass-card rounded-2xl px-3 py-2 flex items-center justify-between gap-3 flex-wrap">
+            <div class="min-w-[145px] flex-1">
+                <div class="flex items-center justify-between text-[10px] font-bold text-emerald-100 mb-1">
+                    <span><i class="fas fa-heart text-rose-400 mr-1"></i> VIDA</span>
+                    <span id="health-label">100 / 100</span>
+                </div>
+                <div class="h-3 rounded-full bg-black/50 border border-white/20 overflow-hidden">
+                    <div id="health-fill" class="h-full rounded-full bg-gradient-to-r from-rose-600 to-lime-400 transition-all duration-200" style="width:100%"></div>
+                </div>
+            </div>
+            <div class="text-center px-2">
+                <div class="text-[9px] uppercase tracking-wider text-amber-200">Tempo da fase</div>
+                <div id="phase-timer" class="font-game text-xl font-bold text-amber-300 tabular-nums">01:30</div>
+            </div>
+            <div class="text-center px-2">
+                <div class="text-[9px] uppercase tracking-wider text-emerald-200">Power-ups</div>
+                <div id="powerup-count" class="font-game text-lg font-bold text-cyan-300">✦ 0</div>
+            </div>
+        </div>
+        <div id="game-feedback" class="text-center mt-1 text-xs font-bold text-white drop-shadow-lg min-h-[16px]"></div>
+    </div>
+
+    <!-- Aviso de morte: permite recomeçar a fase atual, sem voltar à fase 1 -->
+    <div id="game-over-overlay" class="hidden fixed inset-0 z-[100] items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div class="glass-card w-full max-w-md rounded-3xl border-2 border-rose-500/70 p-7 text-center shadow-2xl">
+            <div class="text-6xl mb-3">💀</div>
+            <h2 class="font-game text-4xl font-bold text-rose-400 mb-2">Manó</h2>
+            <p class="text-lg font-bold text-white mb-2">Você morreu!</p>
+            <p id="game-over-phase" class="text-sm text-amber-200 mb-6">Você pode tentar novamente nesta fase.</p>
+            <button id="restart-phase-button" onclick="restartCurrentPhase()" class="w-full rounded-xl border-2 border-amber-200 bg-amber-400 px-5 py-3 font-bold text-emerald-950 hover:bg-amber-300 transition">
+                ↻ Reiniciar esta fase
+            </button>
+        </div>
+    </div>
+
     <!-- Canvas 3D -->
     <div id="canvas-container" class="w-full h-full cursor-grab active:cursor-grabbing"></div>
 
@@ -185,18 +533,27 @@
         </button>
     </div>
 
-    <!-- Mobile Touch Controls -->
-    <div id="touch-controls" class="absolute bottom-6 left-6 grid grid-cols-3 gap-2 w-36 h-36 md:hidden z-20 pointer-events-auto hidden">
-        <div></div>
-        <button id="btn-up" class="btn-touch rounded-t-xl text-emerald-300 text-xl font-bold flex items-center justify-center">▲</button>
-        <div></div>
-        <button id="btn-left" class="btn-touch rounded-l-xl text-emerald-300 text-xl font-bold flex items-center justify-center">◄</button>
-        <button id="btn-jump" onclick="triggerJump()" class="btn-touch rounded-lg text-amber-300 text-xs font-bold flex items-center justify-center">PULAR</button>
-        <button id="btn-right" class="btn-touch rounded-r-xl text-emerald-300 text-xl font-bold flex items-center justify-center">►</button>
-        <div></div>
-        <button id="btn-down" class="btn-touch rounded-b-xl text-emerald-300 text-xl font-bold flex items-center justify-center">▼</button>
-        <div></div>
+    <!-- Controles móveis estilo Roblox: joystick à esquerda e ações à direita -->
+    <div id="touch-controls" class="mobile-controls hidden">
+        <div id="mobile-joystick" class="mobile-joystick" aria-label="Joystick de movimento">
+            <div class="joystick-cross horizontal"></div>
+            <div class="joystick-cross vertical"></div>
+            <div class="joystick-center-ring"></div>
+            <div id="joystick-knob" class="joystick-knob"><i class="fas fa-circle text-emerald-100/80 text-xs"></i></div>
+        </div>
+        <div class="mobile-actions">
+            <button id="btn-crouch" class="mobile-action crouch-action" aria-label="Agachar"><i class="fas fa-arrow-down"></i><span>AGACHAR</span></button>
+            <button id="btn-jump" onclick="triggerJump()" class="mobile-action jump-action" aria-label="Pular"><i class="fas fa-arrow-up"></i><span>PULAR</span></button>
+        </div>
     </div>
+
+    <!-- Botão para girar a orientação do celular para horizontal -->
+    <button id="rotate-screen-button" type="button" aria-label="Rotacionar tela do celular">
+        <i class="fas fa-mobile-screen-button"></i><span>GIRAR TELA</span><i class="fas fa-rotate"></i>
+    </button>
+
+
+    <div id="landscape-hint" class="fixed top-14 left-1/2 -translate-x-1/2 z-30 rounded-full border border-amber-200/70 bg-emerald-950/90 px-3 py-2 text-center text-[10px] font-bold text-amber-100 shadow-lg pointer-events-none">↻ Para ver melhor, gire o aparelho na horizontal</div>
 
     <!-- Controls Tip Overlay -->
     <div id="keyboard-tip" class="hidden md:flex absolute bottom-4 left-4 glass-card px-4 py-2 rounded-xl text-[11px] text-emerald-300/90 items-center space-x-3 z-20">
@@ -253,6 +610,7 @@
     <script>
         let selectedCharacter = null;
         let gameStarted = false;
+        let isGameOver = false;
         let currentPhase = 1;
         let activeInteractiveObject = null;
 
@@ -338,7 +696,7 @@
         const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, window.innerWidth < 700 ? 1.5 : 2));
         renderer.shadowMap.enabled = true;
         renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         container.appendChild(renderer.domElement);
@@ -365,8 +723,33 @@
             new THREE.SphereGeometry(5, 16, 16),
             new THREE.MeshBasicMaterial({ color: 0xfff066 })
         );
-        sunMesh.position.set(90, 150, 50);
+        // Sol colocado no campo de visão, com halo suave para ficar visível durante a exploração.
+        sunMesh.position.set(-24, 30, -28);
+        sunMesh.scale.setScalar(1.15);
         scene.add(sunMesh);
+        const sunHalo = new THREE.Mesh(new THREE.SphereGeometry(7.2, 16, 16), new THREE.MeshBasicMaterial({ color: 0xffe58a, transparent: true, opacity: 0.16, depthWrite: false }));
+        sunHalo.position.copy(sunMesh.position);
+        scene.add(sunHalo);
+
+        // Nuvens cúbicas leves, no estilo sandbox, sem imagens externas.
+        const clouds = [];
+        function createCloud(x, y, z, scale = 1) {
+            const cloud = new THREE.Group();
+            const cloudMat = new THREE.MeshLambertMaterial({ color: 0xffffff, flatShading: true });
+            [[0,0,0,2.6,0.8,1.25],[-1.45,-0.12,0.08,1.65,0.85,1.1],[1.35,-0.08,-0.05,1.8,0.95,1.15],[-0.35,0.45,0,1.55,0.85,1.05]].forEach(a => {
+                const puff = new THREE.Mesh(new THREE.BoxGeometry(a[3]*scale,a[4]*scale,a[5]*scale), cloudMat);
+                puff.position.set(a[0]*scale,a[1]*scale,a[2]*scale);
+                cloud.add(puff);
+            });
+            cloud.position.set(x,y,z);
+            scene.add(cloud);
+            clouds.push({ mesh: cloud, baseX: x, phase: Math.random()*Math.PI*2 });
+        }
+        createCloud(-18, 22, 4, 1.5);
+        createCloud(5, 26, -18, 1.2);
+        createCloud(24, 23, -40, 1.65);
+        createCloud(-30, 25, -55, 1.1);
+        createCloud(15, 29, 25, 1.0);
 
         // --- LARGE TERRAIN ---
         const terrainGeo = new THREE.PlaneGeometry(350, 350, 32, 32);
@@ -417,43 +800,62 @@
             return pathSpline.getPointAt(u).x;
         }
 
+        // Lista de colisões: precisa ser criada antes de árvores e arbustos.
+        const worldObstacles = [];
+
         // --- DENSE TREES AND BUSHES FOR CAMOUFLAGE ---
         function createTree(x, z, scale = 1) {
             const treeGroup = new THREE.Group();
             
-            const trunkGeo = new THREE.CylinderGeometry(0.4 * scale, 0.7 * scale, 9 * scale, 8);
+            const trunkGeo = new THREE.BoxGeometry(1.05 * scale, 9 * scale, 1.05 * scale);
             const trunkMat = new THREE.MeshLambertMaterial({ color: 0x4e342e });
             const trunk = new THREE.Mesh(trunkGeo, trunkMat);
             trunk.position.y = (4.5) * scale;
             trunk.castShadow = true;
             treeGroup.add(trunk);
+            // Marcas de casca em blocos dão textura sem imagens externas.
+            const barkMat = new THREE.MeshLambertMaterial({ color: 0x76513b });
+            for (let b = 0; b < 3; b++) {
+                const bark = new THREE.Mesh(new THREE.BoxGeometry(0.12 * scale, (1.1 + b * 0.25) * scale, 0.035 * scale), barkMat);
+                bark.position.set((b - 1) * 0.23 * scale, (2.0 + b * 1.8) * scale, 0.54 * scale);
+                treeGroup.add(bark);
+            }
 
-            const leafColors = [0x1b5e20, 0x2e7d32, 0x388e3c];
-            for(let i = 0; i < 3; i++) {
-                const leavesGeo = new THREE.DodecahedronGeometry((3.6 - i * 0.6) * scale);
-                const leavesMat = new THREE.MeshLambertMaterial({ color: leafColors[i], flatShading: true });
-                const leaves = new THREE.Mesh(leavesGeo, leavesMat);
-                leaves.position.y = (7 + i * 2.2) * scale;
+            const leafColors = [0x1b5e20, 0x2e7d32, 0x43a047, 0x65a30d];
+            // Copas em blocos empilhados: visual de jogo sandbox, sem modelos externos.
+            for(let i = 0; i < 4; i++) {
+                const side = (5.2 - i * 0.8) * scale;
+                const leaves = new THREE.Mesh(
+                    new THREE.BoxGeometry(side, 2.7 * scale, side),
+                    new THREE.MeshLambertMaterial({ color: leafColors[i], flatShading: true })
+                );
+                leaves.position.set((i % 2 ? 0.25 : -0.15) * scale, (6.8 + i * 1.65) * scale, (i % 2 ? -0.15 : 0.15) * scale);
                 leaves.castShadow = true;
                 treeGroup.add(leaves);
             }
 
             treeGroup.position.set(x, 0, z);
             scene.add(treeGroup);
+            worldObstacles.push({ x, z, radius: 0.78 * scale, type: 'tree' });
             return treeGroup;
         }
 
         function createBush(x, z, scale = 1) {
             const bushGroup = new THREE.Group();
-            const bushMat = new THREE.MeshLambertMaterial({ color: 0x2e7d32, flatShading: true });
-            for (let i = 0; i < 4; i++) {
-                const sphere = new THREE.Mesh(new THREE.DodecahedronGeometry((0.8 + Math.random() * 0.4) * scale), bushMat);
-                sphere.position.set((Math.random() - 0.5) * scale, (0.5 + Math.random() * 0.3) * scale, (Math.random() - 0.5) * scale);
-                sphere.castShadow = true;
-                bushGroup.add(sphere);
+            const bushColors = [0x2e7d32, 0x388e3c, 0x4d7c0f];
+            for (let i = 0; i < 5; i++) {
+                const size = (0.65 + Math.random() * 0.35) * scale;
+                const block = new THREE.Mesh(
+                    new THREE.BoxGeometry(size, size * (0.8 + Math.random() * 0.4), size),
+                    new THREE.MeshLambertMaterial({ color: bushColors[i % bushColors.length], flatShading: true })
+                );
+                block.position.set((Math.random() - 0.5) * 1.3 * scale, (0.35 + Math.random() * 0.45) * scale, (Math.random() - 0.5) * 1.3 * scale);
+                block.castShadow = true;
+                bushGroup.add(block);
             }
             bushGroup.position.set(x, 0, z);
             scene.add(bushGroup);
+            worldObstacles.push({ x, z, radius: 0.48 * scale, type: 'bush' });
             return bushGroup;
         }
 
@@ -478,7 +880,7 @@
             const hairColor = 0x1c1917;
 
             // Torso
-            const torsoGeo = new THREE.CylinderGeometry(0.38, 0.32, 1.1, 8);
+            const torsoGeo = new THREE.BoxGeometry(0.78, 1.05, 0.48);
             const torsoMat = new THREE.MeshLambertMaterial({ color: clothesColor });
             const torso = new THREE.Mesh(torsoGeo, torsoMat);
             torso.position.y = 1.0;
@@ -486,7 +888,7 @@
             group.add(torso);
 
             // Head
-            const headGeo = new THREE.SphereGeometry(0.38, 16, 16);
+            const headGeo = new THREE.BoxGeometry(0.76, 0.76, 0.72);
             const skinMat = new THREE.MeshLambertMaterial({ color: skinColor });
             const head = new THREE.Mesh(headGeo, skinMat);
             head.position.y = 1.8;
@@ -494,17 +896,32 @@
             group.add(head);
 
             // Hair
-            const hairGeo = isKunhatai 
-                ? new THREE.ConeGeometry(0.48, 0.9, 12) 
-                : new THREE.SphereGeometry(0.4, 12, 12);
+            const hairGeo = isKunhatai
+                ? new THREE.BoxGeometry(0.82, 0.34, 0.78)
+                : new THREE.BoxGeometry(0.82, 0.28, 0.78);
             const hairMat = new THREE.MeshLambertMaterial({ color: hairColor });
             const hair = new THREE.Mesh(hairGeo, hairMat);
             hair.position.set(0, 1.95, isKunhatai ? -0.1 : -0.05);
-            if (isKunhatai) hair.rotation.x = -0.3;
+            if (isKunhatai) hair.rotation.x = -0.08;
             group.add(hair);
 
-            // Red Feather / Cocar Detail
-            const featherGeo = new THREE.ConeGeometry(0.08, 0.55, 4);
+            // Olhos quadrados expressivos, estilo personagem de jogo.
+            const eyeWhite = new THREE.MeshLambertMaterial({ color: 0xffffff });
+            const eyeDark = new THREE.MeshLambertMaterial({ color: 0x171717 });
+            [-1, 1].forEach(function(side) {
+                const eye = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.16, 0.055), eyeWhite);
+                eye.position.set(side * 0.17, 1.83, 0.375);
+                group.add(eye);
+                const pupil = new THREE.Mesh(new THREE.BoxGeometry(0.065, 0.085, 0.035), eyeDark);
+                pupil.position.set(side * 0.17, 1.82, 0.415);
+                group.add(pupil);
+            });
+            const smile = new THREE.Mesh(new THREE.BoxGeometry(0.19, 0.035, 0.035), eyeDark);
+            smile.position.set(0, 1.63, 0.39);
+            group.add(smile);
+
+            // Pena/cocar em bloco colorido.
+            const featherGeo = new THREE.BoxGeometry(0.12, 0.48, 0.12);
             const featherMat = new THREE.MeshBasicMaterial({ color: 0xef4444 });
             const feather = new THREE.Mesh(featherGeo, featherMat);
             feather.position.set(isKunhatai ? 0.2 : 0, 2.2, -0.1);
@@ -512,7 +929,7 @@
             group.add(feather);
 
             // Arms (Pivoted for procedural swiveling animation)
-            const armGeo = new THREE.CylinderGeometry(0.1, 0.08, 0.7);
+            const armGeo = new THREE.BoxGeometry(0.24, 0.72, 0.28);
 
             const leftArmPivot = new THREE.Group();
             leftArmPivot.position.set(-0.48, 1.45, 0);
@@ -529,7 +946,7 @@
             group.add(rightArmPivot);
 
             // Legs (Pivoted for walking animation)
-            const legGeo = new THREE.CylinderGeometry(0.12, 0.09, 0.75);
+            const legGeo = new THREE.BoxGeometry(0.29, 0.75, 0.34);
 
             const leftLegPivot = new THREE.Group();
             leftLegPivot.position.set(-0.2, 0.7, 0);
@@ -562,16 +979,17 @@
         // 1. AWATI (Corn Stalk - Phase 1 Landmark)
         const awatiGroup = new THREE.Group();
         const stalkMat = new THREE.MeshLambertMaterial({ color: 0x65a30d });
-        const stalk = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.2, 4.2, 8), stalkMat);
+        const stalk = new THREE.Mesh(new THREE.BoxGeometry(0.28, 4.2, 0.28), stalkMat);
         stalk.position.y = 2.1;
         awatiGroup.add(stalk);
         for (let i = 0; i < 5; i++) {
-            const leaf = new THREE.Mesh(new THREE.ConeGeometry(0.4, 2.5, 5), stalkMat);
+            const leaf = new THREE.Mesh(new THREE.BoxGeometry(0.22, 2.5, 0.72), stalkMat);
             leaf.position.set(0, 1 + i * 0.6, 0);
             leaf.rotation.z = (i % 2 === 0 ? 1 : -1) * 0.7;
+            leaf.rotation.y = (i % 2 === 0 ? 1 : -1) * 0.25;
             awatiGroup.add(leaf);
         }
-        const corn = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.2, 1.4, 8), new THREE.MeshLambertMaterial({ color: 0xeab308 }));
+        const corn = new THREE.Mesh(new THREE.BoxGeometry(0.42, 1.4, 0.52), new THREE.MeshLambertMaterial({ color: 0xeab308 }));
         corn.position.set(0.35, 2.3, 0);
         corn.rotation.z = -0.4;
         awatiGroup.add(corn);
@@ -587,22 +1005,79 @@
 
         // 2. DJAGWARETE (Jaguar 3D Model - Phase 2 Landmark)
         const jaguarGroup = new THREE.Group();
+        // Peças provisórias: permanecem visíveis caso o arquivo GLB não carregue.
+        const jaguarFallbackParts = [];
         const jagMat = new THREE.MeshLambertMaterial({ color: 0xd97706 });
         const jagBody = new THREE.Mesh(new THREE.BoxGeometry(1.4, 1.1, 2.8), jagMat);
         jagBody.position.y = 1.1;
         jagBody.castShadow = true;
         jaguarGroup.add(jagBody);
+        jaguarFallbackParts.push(jagBody);
 
         const jagHead = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.9, 1.1), jagMat);
         jagHead.position.set(0, 1.7, 1.6);
         jagHead.castShadow = true;
         jaguarGroup.add(jagHead);
+        jaguarFallbackParts.push(jagHead);
 
         const spotMat = new THREE.MeshBasicMaterial({ color: 0x451a03 });
         for(let s = 0; s < 8; s++) {
             const spot = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.3, 0.05), spotMat);
             spot.position.set((s % 2 === 0 ? 0.71 : -0.71), 1.1 + (s % 3) * 0.2, -0.8 + s * 0.3);
             jaguarGroup.add(spot);
+            jaguarFallbackParts.push(spot);
+        }
+
+        // Patas, orelhas, olhos e cauda em blocos para dar silhueta de onça.
+        const jagLegMat = new THREE.MeshLambertMaterial({ color: 0xc47a12 });
+        for (const xSide of [-0.48, 0.48]) {
+            for (const zSide of [-0.85, 0.85]) {
+                const leg = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.72, 0.38), jagLegMat);
+                leg.position.set(xSide, 0.38, zSide);
+                leg.castShadow = true;
+                jaguarGroup.add(leg);
+                jaguarFallbackParts.push(leg);
+            }
+            const ear = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.24, 0.2), jagMat);
+            ear.position.set(xSide * 0.75, 2.18, 1.72);
+            jaguarGroup.add(ear);
+            jaguarFallbackParts.push(ear);
+            const eye = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.12, 0.06), new THREE.MeshLambertMaterial({ color: 0x171717 }));
+            eye.position.set(xSide * 0.62, 1.83, 2.16);
+            jaguarGroup.add(eye);
+            jaguarFallbackParts.push(eye);
+        }
+        const jagTail = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.22, 1.25), jagLegMat);
+        jagTail.position.set(0, 0.95, -1.95);
+        jagTail.rotation.x = -0.2;
+        jaguarGroup.add(jagTail);
+        jaguarFallbackParts.push(jagTail);
+        const tailTip = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.24, 0.28), spotMat);
+        tailTip.position.set(0, 0.82, -2.58);
+        jaguarGroup.add(tailTip);
+        jaguarFallbackParts.push(tailTip);
+
+        // Detalhes de pelagem: focinho claro, nariz, manchas no dorso e orelhas internas.
+        const jagCream = new THREE.MeshLambertMaterial({ color: 0xf6d58a });
+        const jagNoseMat = new THREE.MeshLambertMaterial({ color: 0x24140d });
+        const muzzle = new THREE.Mesh(new THREE.BoxGeometry(0.52, 0.28, 0.28), jagCream);
+        muzzle.position.set(0, 1.48, 2.19);
+        jaguarGroup.add(muzzle); jaguarFallbackParts.push(muzzle);
+        const nose = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.12, 0.10), jagNoseMat);
+        nose.position.set(0, 1.57, 2.36);
+        jaguarGroup.add(nose); jaguarFallbackParts.push(nose);
+        const earInnerMat = new THREE.MeshLambertMaterial({ color: 0x5b2b18 });
+        for (const side of [-1, 1]) {
+            const inner = new THREE.Mesh(new THREE.BoxGeometry(0.10, 0.10, 0.045), earInnerMat);
+            inner.position.set(side * 0.36, 2.19, 1.84);
+            jaguarGroup.add(inner); jaguarFallbackParts.push(inner);
+        }
+        for (const z of [-0.78, -0.2, 0.42, 0.92]) {
+            for (const side of [-1, 1]) {
+                const spotTop = new THREE.Mesh(new THREE.BoxGeometry(0.19, 0.055, 0.19), spotMat);
+                spotTop.position.set(side * (0.25 + (z > 0.5 ? 0.04 : 0)), 1.67, z);
+                jaguarGroup.add(spotTop); jaguarFallbackParts.push(spotTop);
+            }
         }
 
         const ring2 = new THREE.Mesh(new THREE.RingGeometry(1.6, 2.2, 24), new THREE.MeshBasicMaterial({ color: 0xf59e0b, side: THREE.DoubleSide }));
@@ -614,35 +1089,76 @@
         jaguarGroup.position.set(jagX, 0, -35);
         scene.add(jaguarGroup);
 
+        // A onça usa o modelo procedural em blocos; não precisa baixar arquivos GLB.
+        // Grupo, posição, anel e distância de interação permanecem iguais.
+
         // --- CAMOUFLAGED ANIMALS WITH NATURAL PROCEDURAL BEHAVIOR ---
 
         // 1. MBO'I (Cobra Cascavel 🐍) - Undulating S-curve movement on ground leaves
         const mboiGroup = new THREE.Group();
         const mboiSegments = [];
-        const snakeMat = new THREE.MeshLambertMaterial({ color: 0x3f6212 });
+        const snakeMats = [0x4d7c0f, 0x658b22, 0x365314];
+        const snakeBellyMat = new THREE.MeshLambertMaterial({ color: 0xd6c58a });
         for (let b = 0; b < 9; b++) {
-            const seg = new THREE.Mesh(new THREE.SphereGeometry(0.25 - b * 0.018, 8, 8), snakeMat);
+            const size = 0.42 - b * 0.025;
+            const seg = new THREE.Mesh(new THREE.BoxGeometry(size, 0.30 - b * 0.012, size), new THREE.MeshLambertMaterial({ color: snakeMats[b % snakeMats.length], flatShading: true }));
             seg.castShadow = true;
+            const belly = new THREE.Mesh(new THREE.BoxGeometry(size * 0.68, 0.055, size * 0.82), snakeBellyMat);
+            belly.position.set(0, -0.13, 0);
+            seg.add(belly);
             mboiSegments.push(seg);
             mboiGroup.add(seg);
         }
+        const snakeHead = new THREE.Mesh(new THREE.BoxGeometry(0.43, 0.30, 0.42), new THREE.MeshLambertMaterial({ color: 0x6b8e23, flatShading: true }));
+        snakeHead.position.set(0, 0.06, -0.27);
+        mboiGroup.add(snakeHead);
+        const snakeEyeMat = new THREE.MeshLambertMaterial({ color: 0xffd54f });
+        const snakePupilMat = new THREE.MeshLambertMaterial({ color: 0x171717 });
+        [-1,1].forEach(side => {
+            const eye = new THREE.Mesh(new THREE.BoxGeometry(0.10,0.10,0.06), snakeEyeMat);
+            eye.position.set(side*0.15,0.17,-0.38); mboiGroup.add(eye);
+            const pupil = new THREE.Mesh(new THREE.BoxGeometry(0.035,0.065,0.025), snakePupilMat);
+            pupil.position.set(side*0.15,0.17,-0.415); mboiGroup.add(pupil);
+        });
+        const rattle = new THREE.Mesh(new THREE.BoxGeometry(0.18,0.18,0.20), new THREE.MeshLambertMaterial({ color: 0xc8a85a }));
+        rattle.position.set(0,0.06,2.82); mboiGroup.add(rattle);
         // Hiding bush patch for cobra
         const cobraBushX = getTrailXAtZ(5) + 3.2;
         createBush(cobraBushX, 5, 1.5);
         mboiGroup.position.set(cobraBushX - 0.5, 0.1, 5);
         scene.add(mboiGroup);
+        const mboiHomeX = mboiGroup.position.x;
+        const mboiHomeZ = mboiGroup.position.z;
+        let mboiRoamPhase = Math.random() * Math.PI * 2;
 
         // 2. NHANDU (Aranha Gigante 🕷️) - Camouflaged on silk web between trees
         const nhanduGroup = new THREE.Group();
-        const spiderMat = new THREE.MeshLambertMaterial({ color: 0x18181b });
-        const spiderBody = new THREE.Mesh(new THREE.SphereGeometry(0.45, 10, 10), spiderMat);
+        const spiderMat = new THREE.MeshLambertMaterial({ color: 0x21152e, emissive: 0x16091f });
+        const spiderBody = new THREE.Mesh(new THREE.BoxGeometry(0.82, 0.56, 1.0), spiderMat);
         spiderBody.scale.set(1, 0.7, 1.3);
         nhanduGroup.add(spiderBody);
 
+        const spiderAbdomen = new THREE.Mesh(new THREE.BoxGeometry(0.62,0.46,0.72), new THREE.MeshLambertMaterial({ color: 0x292524, flatShading: true }));
+        spiderAbdomen.position.set(0,0.02,-0.62); nhanduGroup.add(spiderAbdomen);
+        const spiderMarkMat = new THREE.MeshLambertMaterial({ color: 0xffd400, emissive: 0x5c4200 });
+        for (let m = 0; m < 3; m++) {
+            const mark = new THREE.Mesh(new THREE.BoxGeometry(0.12,0.045,0.15), spiderMarkMat);
+            mark.position.set((m-1)*0.17,0.25,-0.68); nhanduGroup.add(mark);
+        }
+        const spiderEyeMat = new THREE.MeshBasicMaterial({ color: 0xff2020 });
+        [-1,1].forEach(side => {
+            const eye = new THREE.Mesh(new THREE.BoxGeometry(0.12,0.12,0.07), spiderEyeMat);
+            eye.position.set(side*0.2,0.12,0.54); nhanduGroup.add(eye);
+        });
+        const fangMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+        [-1,1].forEach(side => {
+            const fang = new THREE.Mesh(new THREE.BoxGeometry(0.09,0.20,0.10), fangMat);
+            fang.position.set(side*0.14,-0.17,0.55); nhanduGroup.add(fang);
+        });
         const spiderLegs = [];
         for (let l = 0; l < 8; l++) {
             const legPivot = new THREE.Group();
-            const legMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.03, 0.9), spiderMat);
+            const legMesh = new THREE.Mesh(new THREE.BoxGeometry(0.13, 0.95, 0.16), spiderMat);
             legMesh.position.set(l < 4 ? 0.45 : -0.45, -0.2, 0);
             legMesh.rotation.z = l < 4 ? -0.8 : 0.8;
             legPivot.add(legMesh);
@@ -651,66 +1167,349 @@
             nhanduGroup.add(legPivot);
         }
 
-        // Web thread line
-        const threadGeo = new THREE.CylinderGeometry(0.01, 0.01, 8);
-        const threadMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.6 });
+        // Fio curto de seda: fica abaixo da aranha, entre as folhas da copa.
+        const threadGeo = new THREE.CylinderGeometry(0.018, 0.018, 1, 6);
+        const threadMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.68 });
         const webThread = new THREE.Mesh(threadGeo, threadMat);
-        webThread.position.y = 4;
-        nhanduGroup.add(webThread);
+        // A teia fica independente do corpo da aranha para continuar visível
+        // enquanto ela desce e sobe, ligando a copa ao solo.
+        webThread.material.opacity = 0.95;
+        scene.add(webThread);
 
         const nhanduTreeX = getTrailXAtZ(-12) - 3.8;
-        nhanduGroup.position.set(nhanduTreeX, 4.5, -12); // Elevated in canopy/web
+        // Árvore dedicada. A aranha fica na borda frontal da copa, sem ficar escondida dentro das folhas.
+        createTree(nhanduTreeX, -12, 1.35);
+        nhanduGroup.position.set(nhanduTreeX + 2.35, 12.0, -10.0); // Borda frontal da copa, visível e alinhada com a árvore
+        nhanduGroup.scale.setScalar(1.2); // Aumenta a silhueta para ficar fácil de enxergar
         scene.add(nhanduGroup);
 
         // 3. ANGUDJÁ (Rato/Preá 🐀) - Quick random dash between bushes
         const angudjaGroup = new THREE.Group();
         const ratMat = new THREE.MeshLambertMaterial({ color: 0x57534e });
-        const ratBody = new THREE.Mesh(new THREE.SphereGeometry(0.3, 8, 8), ratMat);
+        const ratBody = new THREE.Mesh(new THREE.BoxGeometry(0.48, 0.34, 0.68), ratMat);
         ratBody.scale.set(0.8, 0.7, 1.4);
         ratBody.position.y = 0.2;
         ratBody.castShadow = true;
         angudjaGroup.add(ratBody);
 
-        const ratSnout = new THREE.Mesh(new THREE.ConeGeometry(0.15, 0.3, 8), ratMat);
+        const ratSnout = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.18, 0.28), ratMat);
         ratSnout.rotation.x = -Math.PI / 2;
         ratSnout.position.set(0, 0.2, 0.5);
         angudjaGroup.add(ratSnout);
+        const ratEarMat = new THREE.MeshLambertMaterial({ color: 0x9f8b7b });
+        const ratPinkMat = new THREE.MeshLambertMaterial({ color: 0xf0a6a6 });
+        const ratNose = new THREE.Mesh(new THREE.BoxGeometry(0.11,0.09,0.10), ratPinkMat);
+        ratNose.position.set(0,0.22,0.66); angudjaGroup.add(ratNose);
+        const whiskerMat = new THREE.MeshLambertMaterial({ color: 0xd6d3d1 });
+        [-1,1].forEach(side => {
+            for (let w=0; w<2; w++) {
+                const whisker = new THREE.Mesh(new THREE.BoxGeometry(0.36,0.025,0.025), whiskerMat);
+                whisker.position.set(side*0.25,0.22+w*0.05,0.55);
+                whisker.rotation.z = side * (w===0 ? 0.12 : -0.12);
+                angudjaGroup.add(whisker);
+            }
+        });
+        const ratFurPatch = new THREE.Mesh(new THREE.BoxGeometry(0.26,0.055,0.36), new THREE.MeshLambertMaterial({ color: 0x8b8178 }));
+        ratFurPatch.position.set(0,0.36,-0.05); angudjaGroup.add(ratFurPatch);
+        [-1, 1].forEach(function(side) {
+            const ear = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.16, 0.12), ratEarMat);
+            ear.position.set(side * 0.18, 0.42, -0.12);
+            angudjaGroup.add(ear);
+            const eye = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.07, 0.04), new THREE.MeshLambertMaterial({ color: 0x111111 }));
+            eye.position.set(side * 0.19, 0.31, 0.2);
+            angudjaGroup.add(eye);
+        });
+        const ratTail = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.08, 0.7), new THREE.MeshLambertMaterial({ color: 0x78716c }));
+        ratTail.position.set(0, 0.13, -0.58);
+        angudjaGroup.add(ratTail);
 
         const ratX = getTrailXAtZ(25) + 3.8;
-        createBush(ratX, 25, 1.3);
-        createBush(ratX - 6, 25, 1.3);
-        angudjaGroup.position.set(ratX, 0, 25);
+        // Três arbustos de referência: o rato percorre o trajeto entre eles.
+        const ratBushStops = [
+            { x: ratX, z: 25 },
+            { x: ratX - 6, z: 25 },
+            { x: ratX - 10, z: 29 }
+        ];
+        ratBushStops.forEach(stop => createBush(stop.x, stop.z, 1.3));
+        angudjaGroup.position.set(ratBushStops[0].x, 0, ratBushStops[0].z);
         scene.add(angudjaGroup);
 
-        // --- CAMERA SYSTEM (360 ORBIT WITH MOUSE) ---
+        // --- POWER-UPS: CURA, VELOCIDADE E ESCUDO ---
+        const powerUps = [];
+        let collectedPowerUps = 0;
+        let playerHealth = 100;
+        let phaseTimeLeft = 90;
+        let damageCooldown = 0;
+        let speedBoostTimer = 0;
+        let shieldTimer = 0;
+        let feedbackTimer = 0;
+        function showGameFeedback(message) {
+            const el = document.getElementById('game-feedback');
+            if (el) {
+                const isDangerAlert = /Txakeke\s+(Nhandu|Angudja|Mboi|Djagwarete)/i.test(message);
+                el.classList.toggle('danger-alert', isDangerAlert);
+                el.textContent = isDangerAlert ? '⚠️ TXAKEKE! ' + message.replace(/^Txakeke\s*/i, '') : message;
+                feedbackTimer = isDangerAlert ? 3.6 : 2.2;
+            }
+        }
+        function updateSurvivalHUD() {
+            const healthFill = document.getElementById('health-fill');
+            const healthLabel = document.getElementById('health-label');
+            const timerEl = document.getElementById('phase-timer');
+            const powerEl = document.getElementById('powerup-count');
+            if (healthFill) {
+                healthFill.style.width = playerHealth + '%';
+                healthFill.className = 'h-full rounded-full transition-all duration-200 ' + (playerHealth <= 30 ? 'bg-rose-600' : playerHealth <= 60 ? 'bg-amber-400' : 'bg-gradient-to-r from-rose-600 to-lime-400');
+            }
+            if (healthLabel) healthLabel.textContent = Math.ceil(playerHealth) + ' / 100';
+            if (timerEl) {
+                const seconds = Math.max(0, Math.ceil(phaseTimeLeft));
+                timerEl.textContent = String(Math.floor(seconds/60)).padStart(2,'0') + ':' + String(seconds%60).padStart(2,'0');
+                timerEl.classList.toggle('text-rose-400', seconds <= 15);
+                timerEl.classList.toggle('text-amber-300', seconds > 15);
+            }
+            if (powerEl) powerEl.textContent = '✦ ' + collectedPowerUps;
+        }
+        function createPowerUp(z, type, color) {
+            const group = new THREE.Group();
+            const crystal = new THREE.Mesh(new THREE.BoxGeometry(0.62,0.62,0.62), new THREE.MeshLambertMaterial({ color, emissive: color, emissiveIntensity: 0.24, flatShading: true }));
+            crystal.rotation.set(0.25, Math.PI/4, 0.25); crystal.castShadow = true; group.add(crystal);
+            const halo = new THREE.Mesh(new THREE.TorusGeometry(0.62,0.055,6,18), new THREE.MeshBasicMaterial({ color: 0xfff4a3 }));
+            halo.rotation.x = Math.PI/2; halo.position.y = -0.18; group.add(halo);
+            group.position.set(getTrailXAtZ(z),0.8,z);
+            scene.add(group);
+            powerUps.push({ mesh: group, type, baseY: 0.8, taken: false });
+        }
+        createPowerUp(27, 'cura', 0x4ade80);
+        createPowerUp(-5, 'velocidade', 0xa78bfa);
+        createPowerUp(-30, 'escudo', 0x38bdf8);
+
+        function distanceXZ(x1,z1,x2,z2) {
+            const dx=x1-x2, dz=z1-z2;
+            return Math.sqrt(dx*dx+dz*dz);
+        }
+        function isBlockedAt(x,z) {
+            // No ar, o guardião pode saltar por cima de árvores, arbustos e animais.
+            if (player && player.mesh && (isJumping || player.mesh.position.y > 0.45)) return false;
+            // No chão, mantém as colisões já existentes.
+            if (worldObstacles.some(o => distanceXZ(x,z,o.x,o.z) < o.radius + 0.36)) return true;
+            if (typeof mboiSegments !== 'undefined' && mboiSegments.some(seg => {
+                const worldPos = new THREE.Vector3();
+                seg.getWorldPosition(worldPos);
+                return distanceXZ(x,z,worldPos.x,worldPos.z) < 0.72;
+            })) return true;
+            if (typeof nhanduGroup !== 'undefined' && distanceXZ(x,z,nhanduGroup.position.x,nhanduGroup.position.z) < 0.86) return true;
+            if (typeof angudjaGroup !== 'undefined' && distanceXZ(x,z,angudjaGroup.position.x,angudjaGroup.position.z) < 0.72) return true;
+            if (typeof jaguarGroup !== 'undefined' && distanceXZ(x,z,jaguarGroup.position.x,jaguarGroup.position.z) < 1.18) return true;
+            if (typeof extraDangerAnimals !== 'undefined' && extraDangerAnimals.some(a => distanceXZ(x,z,a.mesh.position.x,a.mesh.position.z) < a.blockRadius)) return true;
+            return false;
+        }
+        function respawnAfterKnockout() {
+            if (isGameOver) return;
+            isGameOver = true;
+            const overlay = document.getElementById('game-over-overlay');
+            const phaseText = document.getElementById('game-over-phase');
+            const phaseName = currentPhase === 1 ? 'Fase 1 — AWATI (milho)' : 'Fase ' + currentPhase + ' — desafio do DJAGWARETE (onça)';
+            if (phaseText) phaseText.textContent = 'Você perdeu na ' + phaseName + '. Reinicie para tentar novamente nesta mesma fase.';
+            if (overlay) { overlay.classList.remove('hidden'); overlay.classList.add('flex'); }
+        }
+
+        function restartCurrentPhase() {
+            // Mantém currentPhase: a morte não faz o jogador voltar à fase 1.
+            isGameOver = false;
+            playerHealth = 100;
+            phaseTimeLeft = 90;
+            damageCooldown = 1.5;
+            speedBoostTimer = 0;
+            shieldTimer = 0;
+            player.mesh.position.set(0, 0, 35);
+            player.mesh.rotation.y = 0;
+            const overlay = document.getElementById('game-over-overlay');
+            if (overlay) { overlay.classList.add('hidden'); overlay.classList.remove('flex'); }
+            updateSurvivalHUD();
+            showGameFeedback('Você voltou! Continue na fase ' + currentPhase + '.');
+        }
+        window.restartCurrentPhase = restartCurrentPhase;
+        // Animais perigosos adicionais: a cada nova fase, a quantidade dobra.
+        // As cópias ficam em pontos diferentes da trilha e também causam dano.
+        const extraDangerAnimals = [];
+        let hazardsDoubledForPhase = 1;
+        function doubleDangerAnimalsForPhase() {
+            if (currentPhase <= hazardsDoubledForPhase) return;
+            const templates = [
+                { mesh: mboiGroup, name: 'Mbo’i', radius: 1.35, blockRadius: 0.72 },
+                { mesh: nhanduGroup, name: 'Nhandu', radius: 1.55, blockRadius: 0.86 },
+                { mesh: angudjaGroup, name: 'Angudjá', radius: 1.1, blockRadius: 0.72 }
+            ];
+            // Acrescenta uma cópia de cada ameaça base, dobrando 3 para 6 na fase 2.
+            const positions = [
+                { x: getTrailXAtZ(16) - 4.5, z: 16 },
+                { x: getTrailXAtZ(-22) + 4.5, z: -22 },
+                { x: getTrailXAtZ(-42) - 4.0, z: -42 }
+            ];
+            templates.forEach((template, i) => {
+                const clone = template.mesh.clone(true);
+                clone.position.set(positions[i].x, template.name === 'Nhandu' ? 12.0 : template.mesh.position.y, positions[i].z);
+                scene.add(clone);
+                const animal = {
+                    mesh: clone, name: template.name, radius: template.radius, blockRadius: template.blockRadius,
+                    homeX: positions[i].x, homeZ: positions[i].z,
+                    roamPhase: Math.random() * Math.PI * 2,
+                    baseY: template.name === 'Nhandu' ? 12.0 : template.mesh.position.y,
+                    // Cada cópia mantém as mesmas peças animadas do animal original.
+                    segments: template.name === 'Mbo’i' ? clone.children.slice(0, 9) : [],
+                    legs: template.name === 'Nhandu' ? clone.children.filter(child => child.type === 'Group' && child.children && child.children.some(part => part.isMesh)) : [],
+                    web: null,
+                    targetIndex: 0,
+                    targetTimer: 0
+                };
+                if (template.name === 'Nhandu') {
+                    // Cada aranha tem sua própria teia, como a Nhandu da primeira fase.
+                    animal.web = new THREE.Mesh(threadGeo, threadMat.clone());
+                    animal.web.material.opacity = 0.95;
+                    scene.add(animal.web);
+                }
+                if (template.name === 'Angudjá') {
+                    // Patrulha curta entre três pontos, igual ao rato original.
+                    animal.ratStops = [
+                        { x: animal.homeX, z: animal.homeZ },
+                        { x: animal.homeX - 3.2, z: animal.homeZ + 1.5 },
+                        { x: animal.homeX + 2.2, z: animal.homeZ + 3.0 }
+                    ];
+                    animal.targetIndex = 1;
+                    animal.targetTimer = 0;
+                }
+                extraDangerAnimals.push(animal);
+            });
+            hazardsDoubledForPhase = currentPhase;
+            showGameFeedback('A mata ficou mais perigosa: os animais dobraram!');
+        }
+
+        function applyAnimalDamage() {
+            if (damageCooldown > 0 || shieldTimer > 0) return;
+            const px=player.mesh.position.x, pz=player.mesh.position.z;
+            const threats = [
+                {name:'Mbo’i', x:mboiGroup.position.x, z:mboiGroup.position.z, radius:1.35},
+                {name:'Nhandu', x:nhanduGroup.position.x, z:nhanduGroup.position.z, radius:1.55},
+                {name:'Angudjá', x:angudjaGroup.position.x, z:angudjaGroup.position.z, radius:1.1}
+            ];
+            if (currentPhase >= 2) threats.push({name:'Djagwarete', x:jaguarGroup.position.x, z:jaguarGroup.position.z, radius:1.8});
+            extraDangerAnimals.forEach(a => threats.push({ name: a.name, x: a.mesh.position.x, z: a.mesh.position.z, radius: a.radius }));
+            // Agachado, o personagem fica baixo o suficiente para evitar o ataque da aranha.
+            // Também vale para cópias da Nhandu criadas nas fases mais perigosas.
+            const danger = threats.find(a => !(isCrouching && String(a.name).toLowerCase().includes('nhandu')) && distanceXZ(px,pz,a.x,a.z) < a.radius);
+            if (danger) {
+                playerHealth = Math.max(0, playerHealth - 15);
+                damageCooldown = 1.35;
+                const dangerCallout = ({'Angudjá':'Angudja', 'Mbo’i':'Mboi', 'Mboi':'Mboi', 'Nhandu':'Nhandu', 'Djagwarete':'Djagwarete'})[danger.name] || danger.name;
+                showGameFeedback('Txakeke ' + dangerCallout + '! -15 de vida');
+                if (playerHealth <= 0) respawnAfterKnockout();
+            }
+        }
+        function collectPowerUps(time) {
+            powerUps.forEach(item => {
+                if (item.taken) return;
+                item.mesh.rotation.y += 0.025;
+                item.mesh.position.y = item.baseY + Math.sin(time*3 + item.mesh.position.z)*0.13;
+                if (distanceXZ(player.mesh.position.x,player.mesh.position.z,item.mesh.position.x,item.mesh.position.z) < 1.35) {
+                    item.taken = true; scene.remove(item.mesh); collectedPowerUps++;
+                    if (item.type === 'cura') {
+                        playerHealth = Math.min(100, playerHealth + 35);
+                        showGameFeedback('Folha de cura! +35 de vida');
+                    } else if (item.type === 'velocidade') {
+                        speedBoostTimer = 7;
+                        showGameFeedback('Energia da mata! Velocidade aumentada por 7 segundos');
+                    } else {
+                        shieldTimer = 7;
+                        showGameFeedback('Escudo protetor! Sem dano por 7 segundos');
+                    }
+                }
+            });
+        }
+
+        // --- CAMERA LIVRE REAL: ARRASTAR PELO CENÁRIO COM O MOUSE ---
+        // Usa eventos no documento em fase de captura porque HUDs e controles podem
+        // interceptar eventos do canvas. Os controles e diálogos ficam excluídos.
         let isMouseDown = false;
         let previousMousePosition = { x: 0, y: 0 };
         let cameraAngleYaw = 0;
-        let cameraAnglePitch = 0.35;
+        // Mantém a câmera acima do solo: evita enxergar por baixo do terreno e revelar o céu azul abaixo da terra.
+        let cameraAnglePitch = 0.45;
         let cameraDistance = 12;
+        const cameraCanvas = renderer.domElement;
+        cameraCanvas.style.cursor = 'grab';
+        cameraCanvas.style.touchAction = 'none';
+        cameraCanvas.style.userSelect = 'none';
+        container.style.cursor = 'grab';
 
-        container.addEventListener('mousedown', (e) => {
+        function isCameraUiTarget(target) {
+            return !!(target && target.closest && target.closest(
+                'button, a, input, textarea, select, label, [role="button"], #touch-controls, .mobile-controls, #question-modal, #read-modal, #game-over-modal, #character-select, #rotate-screen-button, #btn-interact, .hud, .controls, .joystick'
+            ));
+        }
+        function isGameSceneTarget(target) {
+            return !!(target && (target === cameraCanvas || container.contains(target))) && !isCameraUiTarget(target);
+        }
+        function startCameraDrag(e) {
+            if (e.button !== 0 || !isGameSceneTarget(e.target)) return;
             isMouseDown = true;
             previousMousePosition = { x: e.clientX, y: e.clientY };
-        });
-
-        container.addEventListener('mousemove', (e) => {
+            cameraCanvas.style.cursor = 'grabbing';
+            container.style.cursor = 'grabbing';
+        }
+        function moveFreeCamera(e) {
             if (!isMouseDown) return;
             const deltaX = e.clientX - previousMousePosition.x;
             const deltaY = e.clientY - previousMousePosition.y;
-
-            cameraAngleYaw -= deltaX * 0.007;
-            cameraAnglePitch = Math.max(0.1, Math.min(1.2, cameraAnglePitch + deltaY * 0.007));
-
+            cameraAngleYaw -= deltaX * 0.009;
+            cameraAnglePitch = Math.max(0.28, Math.min(1.25, cameraAnglePitch + deltaY * 0.008));
             previousMousePosition = { x: e.clientX, y: e.clientY };
-        });
+        }
+        function stopCameraDrag() {
+            isMouseDown = false;
+            cameraCanvas.style.cursor = 'grab';
+            container.style.cursor = 'grab';
+        }
+        // Mouse: arraste com o botão esquerdo para girar a câmera.
+        document.addEventListener('mousedown', startCameraDrag, true);
+        document.addEventListener('mousemove', moveFreeCamera, true);
+        document.addEventListener('mouseup', stopCameraDrag, true);
 
-        window.addEventListener('mouseup', () => isMouseDown = false);
-        container.addEventListener('contextmenu', e => e.preventDefault());
-
+        // Celular/tablet: arraste um dedo diretamente sobre o cenário 3D.
+        // O joystick, os botões de pular/agachar e as janelas ficam excluídos.
+        let touchCameraPointerId = null;
+        function startTouchCamera(e) {
+            if (e.pointerType !== 'touch' || !isGameSceneTarget(e.target)) return;
+            touchCameraPointerId = e.pointerId;
+            isMouseDown = true;
+            previousMousePosition = { x: e.clientX, y: e.clientY };
+            cameraCanvas.style.cursor = 'grabbing';
+        }
+        function moveTouchCamera(e) {
+            if (e.pointerType !== 'touch' || !isMouseDown || e.pointerId !== touchCameraPointerId) return;
+            const deltaX = e.clientX - previousMousePosition.x;
+            const deltaY = e.clientY - previousMousePosition.y;
+            cameraAngleYaw -= deltaX * 0.009;
+            cameraAnglePitch = Math.max(0.28, Math.min(1.25, cameraAnglePitch + deltaY * 0.008));
+            previousMousePosition = { x: e.clientX, y: e.clientY };
+            if (e.cancelable) e.preventDefault();
+        }
+        function stopTouchCamera(e) {
+            if (e && e.pointerType === 'touch' && e.pointerId !== touchCameraPointerId) return;
+            touchCameraPointerId = null;
+            stopCameraDrag();
+        }
+        document.addEventListener('pointerdown', startTouchCamera, { capture: true, passive: false });
+        document.addEventListener('pointermove', moveTouchCamera, { capture: true, passive: false });
+        document.addEventListener('pointerup', stopTouchCamera, true);
+        document.addEventListener('pointercancel', stopTouchCamera, true);
+        window.addEventListener('blur', stopCameraDrag);
+        cameraCanvas.addEventListener('contextmenu', e => e.preventDefault());
         container.addEventListener('wheel', (e) => {
-            cameraDistance = Math.max(6, Math.min(26, cameraDistance + e.deltaY * 0.015));
-        });
+            if (isCameraUiTarget(e.target)) return;
+            cameraDistance = Math.max(5, Math.min(28, cameraDistance + e.deltaY * 0.018));
+            e.preventDefault();
+        }, { passive: false });
 
         // --- CONTROLS & JUMP SYSTEM ---
         let playerVelocityY = 0;
@@ -726,9 +1525,13 @@
 
         const keys = {};
         let touchDir = { x: 0, z: 0 };
+        let isTouchCrouching = false;
+        let isCrouching = false;
 
         window.addEventListener('keydown', e => {
             keys[e.key.toLowerCase()] = true;
+            // A seta para baixo é reservada para agachar e se proteger da Nhandu.
+            if (e.key === 'ArrowDown') e.preventDefault();
             if (e.key === ' ' || e.code === 'Space') {
                 if (activeInteractiveObject) {
                     openKwatiaModal();
@@ -739,16 +1542,86 @@
         });
         window.addEventListener('keyup', e => keys[e.key.toLowerCase()] = false);
 
-        const setupTouch = (id, x, z) => {
-            const btn = document.getElementById(id);
-            if (!btn) return;
-            btn.addEventListener('touchstart', (e) => { e.preventDefault(); touchDir.x = x; touchDir.z = z; });
-            btn.addEventListener('touchend', (e) => { e.preventDefault(); touchDir.x = 0; touchDir.z = 0; });
-        };
-        setupTouch('btn-up', 0, -1);
-        setupTouch('btn-down', 0, 1);
-        setupTouch('btn-left', -1, 0);
-        setupTouch('btn-right', 1, 0);
+        // Joystick virtual: o personagem se move na direção em que o controle é arrastado.
+        const mobileJoystick = document.getElementById('mobile-joystick');
+        const joystickKnob = document.getElementById('joystick-knob');
+        let joystickPointerId = null;
+        function updateJoystick(e) {
+            if (!mobileJoystick) return;
+            const rect = mobileJoystick.getBoundingClientRect();
+            const cx = rect.left + rect.width / 2;
+            const cy = rect.top + rect.height / 2;
+            const maxRadius = rect.width * 0.31;
+            let dx = e.clientX - cx, dy = e.clientY - cy;
+            const length = Math.hypot(dx, dy);
+            if (length > maxRadius) { dx = dx / length * maxRadius; dy = dy / length * maxRadius; }
+            joystickKnob.style.left = `calc(50% + ${dx}px)`;
+            joystickKnob.style.top = `calc(50% + ${dy}px)`;
+            touchDir.x = Math.max(-1, Math.min(1, dx / maxRadius));
+            touchDir.z = Math.max(-1, Math.min(1, dy / maxRadius));
+        }
+        function resetJoystick() {
+            joystickPointerId = null;
+            touchDir.x = 0; touchDir.z = 0;
+            if (joystickKnob) { joystickKnob.style.left = '50%'; joystickKnob.style.top = '50%'; }
+        }
+        if (mobileJoystick) {
+            mobileJoystick.addEventListener('pointerdown', e => {
+                e.preventDefault();
+                joystickPointerId = e.pointerId;
+                if (mobileJoystick.setPointerCapture) mobileJoystick.setPointerCapture(e.pointerId);
+                updateJoystick(e);
+            });
+            mobileJoystick.addEventListener('pointermove', e => {
+                if (e.pointerId === joystickPointerId) { e.preventDefault(); updateJoystick(e); }
+            });
+            ['pointerup','pointercancel','lostpointercapture'].forEach(evt => mobileJoystick.addEventListener(evt, resetJoystick));
+        }
+        const crouchButton = document.getElementById('btn-crouch');
+        if (crouchButton) {
+            const startCrouch = e => {
+                e.preventDefault();
+                isTouchCrouching = true;
+                if (crouchButton.setPointerCapture && e.pointerId !== undefined) crouchButton.setPointerCapture(e.pointerId);
+                crouchButton.classList.add('pressed');
+            };
+            const endCrouch = e => { if (e) e.preventDefault(); isTouchCrouching = false; crouchButton.classList.remove('pressed'); };
+            crouchButton.addEventListener('pointerdown', startCrouch);
+            ['pointerup','pointercancel','lostpointercapture'].forEach(evt => crouchButton.addEventListener(evt, endCrouch));
+        }
+        const jumpButton = document.getElementById('btn-jump');
+        if (jumpButton) {
+            jumpButton.addEventListener('pointerdown', e => {
+                e.preventDefault();
+                if (jumpButton.setPointerCapture && e.pointerId !== undefined) jumpButton.setPointerCapture(e.pointerId);
+                jumpButton.classList.add('pressed');
+                triggerJump();
+            });
+            ['pointerup','pointercancel','lostpointercapture'].forEach(evt => jumpButton.addEventListener(evt, () => jumpButton.classList.remove('pressed')));
+        }
+
+        // Primeira tela -> escolha de personagem -> início da partida.
+        function beginCharacterSelection() {
+            const start = document.getElementById('start-screen');
+            const selection = document.getElementById('character-select-screen');
+            if (start) start.classList.add('hidden');
+            if (selection) selection.classList.remove('hidden');
+            // A tela cheia é solicitada após o toque do jogador, quando permitido pelo navegador.
+            if (document.documentElement.requestFullscreen && window.matchMedia('(pointer: coarse)').matches) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            }
+        }
+
+        // O jogo foi planejado para celular/tablet com toque; evita mostrar a interface de toque
+        // em computador convencional sem impedir tablets grandes com tela sensível ao toque.
+        function detectTouchDevice() {
+            const hasTouch = (navigator.maxTouchPoints || 0) > 0 || ('ontouchstart' in window) || window.matchMedia('(pointer: coarse)').matches;
+            const wideDesktop = window.innerWidth >= 1024 && !hasTouch;
+            document.body.classList.toggle('desktop-no-touch', wideDesktop);
+        }
+        detectTouchDevice();
+        window.addEventListener('resize', detectTouchDevice, { passive: true });
+        window.addEventListener('orientationchange', () => setTimeout(detectTouchDevice, 120), { passive: true });
 
         function selectCharacter(char) {
             selectedCharacter = char;
@@ -764,6 +1637,11 @@
             document.getElementById('character-select-screen').classList.add('hidden');
             document.getElementById('game-header').classList.remove('hidden');
             document.getElementById('touch-controls').classList.remove('hidden');
+            document.getElementById('survival-hud').classList.remove('hidden');
+            phaseTimeLeft = 90;
+            playerHealth = 100;
+            collectedPowerUps = 0;
+            updateSurvivalHUD();
 
             if (char === 'konomi') {
                 document.getElementById('player-avatar-icon').innerText = "👦🏽";
@@ -778,24 +1656,64 @@
         const clock = new THREE.Clock();
 
         // Variables for animal behavioral AI
-        let ratTargetX = ratX;
+        let ratTargetIndex = 1;
+        let ratTargetX = ratBushStops[ratTargetIndex].x;
+        let ratTargetZ = ratBushStops[ratTargetIndex].z;
         let ratTimer = 0;
 
         function animate() {
             requestAnimationFrame(animate);
 
-            if (!gameStarted) {
+            if (!gameStarted || isGameOver) {
+                renderer.render(scene, camera);
+                return;
+            }
+
+            // Enquanto a caixa de leitura ou de pergunta estiver aberta, pausa o jogo:
+            // animais, cronômetro e dano ficam suspensos até o jogador fechar a caixa.
+            const interactionModalOpen = ['read-modal', 'question-modal'].some(id => {
+                const modal = document.getElementById(id);
+                return modal && !modal.classList.contains('hidden');
+            });
+            if (interactionModalOpen) {
+                // Atualiza o relógio mesmo durante a pausa para evitar um salto de tempo ao voltar.
+                clock.getDelta();
                 renderer.render(scene, camera);
                 return;
             }
 
             const delta = clock.getDelta();
             const time = clock.getElapsedTime();
-            const speed = 9 * delta;
+            if (damageCooldown > 0) damageCooldown = Math.max(0, damageCooldown - delta);
+            if (speedBoostTimer > 0) speedBoostTimer = Math.max(0, speedBoostTimer - delta);
+            if (shieldTimer > 0) shieldTimer = Math.max(0, shieldTimer - delta);
+            if (feedbackTimer > 0) {
+                feedbackTimer -= delta;
+                if (feedbackTimer <= 0) { const feedbackEl = document.getElementById('game-feedback'); feedbackEl.textContent = ''; feedbackEl.classList.remove('danger-alert'); }
+            }
+            phaseTimeLeft -= delta;
+            if (phaseTimeLeft <= 0) {
+                // Tempo esgotado usa o mesmo aviso Manó e reinício da fase que a vida zerada.
+                phaseTimeLeft = 0;
+                updateSurvivalHUD();
+                respawnAfterKnockout();
+                renderer.render(scene, camera);
+                return;
+            }
+            updateSurvivalHUD();
+            const speed = 9 * delta * (speedBoostTimer > 0 ? 1.55 : 1);
             let moveX = 0, moveZ = 0;
 
+            // Segure a seta para baixo para agachar; use S para andar para trás.
+            const wantsCrouch = !!keys['arrowdown'] || isTouchCrouching;
+            if (wantsCrouch !== isCrouching) {
+                isCrouching = wantsCrouch;
+                player.mesh.scale.y = isCrouching ? 0.52 : 1;
+                if (isCrouching) showGameFeedback('Agachado! A Nhandu não consegue te atingir enquanto você se abaixa.');
+            }
+
             if (keys['w'] || keys['arrowup']) moveZ -= 1;
-            if (keys['s'] || keys['arrowdown']) moveZ += 1;
+            if (keys['s']) moveZ += 1;
             if (keys['a'] || keys['arrowleft']) moveX -= 1;
             if (keys['d'] || keys['arrowright']) moveX += 1;
 
@@ -819,8 +1737,11 @@
                     nextZ = -8;
                 }
 
-                player.mesh.position.x = Math.max(-18, Math.min(18, nextX));
-                player.mesh.position.z = Math.max(-55, Math.min(48, nextZ));
+                const boundedX = Math.max(-18, Math.min(18, nextX));
+                const boundedZ = Math.max(-55, Math.min(48, nextZ));
+                // Colisão sólida: o jogador não atravessa troncos nem arbustos; pode deslizar pela lateral.
+                if (!isBlockedAt(boundedX, player.mesh.position.z)) player.mesh.position.x = boundedX;
+                if (!isBlockedAt(player.mesh.position.x, boundedZ)) player.mesh.position.z = boundedZ;
 
                 // Natural Procedural Walking Animation
                 const walkCycle = time * 11;
@@ -856,29 +1777,112 @@
 
             // --- BEHAVIORAL ANIMAL ANIMATIONS ---
 
-            // 1. Mbo'i (Cobra) - Sinusoidal Slithering Motion
+            // 1. Mbo'i (Cobra) - rasteja livremente pelo cenário, mantendo-se dentro da mata.
+            mboiRoamPhase += delta * 0.48;
+            mboiGroup.position.x = Math.max(-16, Math.min(16, mboiHomeX + Math.sin(mboiRoamPhase) * 5.5));
+            mboiGroup.position.z = Math.max(-49, Math.min(43, mboiHomeZ + Math.cos(mboiRoamPhase * 0.63) * 18));
+            // A cabeça aponta para -Z no modelo; alinhe essa frente com a direção real do movimento.
+            const mboiVelocityX = Math.cos(mboiRoamPhase) * 5.5;
+            const mboiVelocityZ = -Math.sin(mboiRoamPhase * 0.63) * 0.63 * 18;
+            mboiGroup.rotation.y = Math.atan2(-mboiVelocityX, -mboiVelocityZ);
             for (let i = 0; i < mboiSegments.length; i++) {
                 const wave = Math.sin(time * 4 - i * 0.4) * 0.35;
                 mboiSegments[i].position.set(wave, 0, i * 0.32);
             }
 
-            // 2. Nhandu (Aranha) - Descending/Ascending thread movement & leg twitches
-            const spiderY = 2.5 + Math.sin(time * 1.5) * 1.8;
+            // 2. Nhandu: sai da copa, desce pela teia até perto do chão e retorna.
+            const spiderTopY = 12.0;
+            const spiderBottomY = 0.95;
+            const spiderCycle = (Math.sin(time * 0.48) + 1) / 2;
+            const spiderY = spiderBottomY + spiderCycle * (spiderTopY - spiderBottomY);
             nhanduGroup.position.y = spiderY;
-            webThread.scale.set(1, (6 - spiderY) / 4, 1);
-            webThread.position.y = (6 - spiderY) / 2;
+            webThread.position.set(nhanduGroup.position.x, spiderY / 2, nhanduGroup.position.z);
+            webThread.scale.y = Math.max(0.1, spiderY);
             spiderLegs.forEach((leg, idx) => {
                 leg.rotation.z = Math.sin(time * 6 + idx) * 0.2;
             });
 
-            // 3. Angudjá (Rato) - Sudden erratic bursts between bushes
+            // 3. Angudjá (Rato) - corre de um arbusto ao próximo e muda de rota.
             ratTimer += delta;
-            if (ratTimer > 2.5) {
+            const ratDx = ratTargetX - angudjaGroup.position.x;
+            const ratDz = ratTargetZ - angudjaGroup.position.z;
+            if (ratTimer > 2.0 && Math.hypot(ratDx, ratDz) < 1.0) {
                 ratTimer = 0;
-                ratTargetX = (ratTargetX === ratX) ? (ratX - 6) : ratX;
+                ratTargetIndex = (ratTargetIndex + 1) % ratBushStops.length;
+                ratTargetX = ratBushStops[ratTargetIndex].x;
+                ratTargetZ = ratBushStops[ratTargetIndex].z;
             }
-            angudjaGroup.position.x += (ratTargetX - angudjaGroup.position.x) * delta * 5;
-            angudjaGroup.rotation.y = (ratTargetX > angudjaGroup.position.x) ? Math.PI / 2 : -Math.PI / 2;
+            const ratStep = Math.min(1, delta * 2.8);
+            angudjaGroup.position.x += ratDx * ratStep;
+            angudjaGroup.position.z += ratDz * ratStep;
+            angudjaGroup.rotation.y = Math.atan2(ratDx, ratDz);
+
+            // REGRA PARA TODAS AS FASES: toda cópia deve usar a mesma lógica de movimento e animação
+            // do animal original. Não criar uma IA alternativa por fase.
+            // Cópias das fases seguintes usam a MESMA lógica de movimento e animação
+            // dos animais originais da fase 1, incluindo patas, corpo, orientação e teia.
+            extraDangerAnimals.forEach((animal, index) => {
+                if (animal.name !== 'Nhandu') animal.roamPhase += delta * 0.48;
+                const oldX = animal.mesh.position.x;
+                const oldZ = animal.mesh.position.z;
+
+                if (animal.name === 'Mbo’i') {
+                    // Mesmo rastejar sinuoso da cobra original, com centro próprio.
+                    animal.mesh.position.x = Math.max(-16, Math.min(16, animal.homeX + Math.sin(animal.roamPhase) * 5.5));
+                    animal.mesh.position.z = Math.max(-49, Math.min(43, animal.homeZ + Math.cos(animal.roamPhase * 0.63) * 18));
+                    animal.mesh.position.y = animal.baseY;
+                    for (let j = 0; j < animal.segments.length; j++) {
+                        animal.segments[j].position.set(Math.sin(time * 4 - j * 0.4) * 0.35, 0, j * 0.32);
+                    }
+                } else if (animal.name === 'Nhandu') {
+                    // Mesma descida/subida da aranha original; a teia acompanha o corpo.
+                    // Ciclo estável: cada cópia também desce da copa até quase o chão.
+                    if (animal.spiderPhaseOffset === undefined) animal.spiderPhaseOffset = index * 1.7 + 0.8;
+                    const spiderTopY = 12.0;
+                    const spiderBottomY = 0.95;
+                    const spiderCycle = (Math.sin(time * 0.48 + animal.spiderPhaseOffset) + 1) / 2;
+                    const spiderY = spiderBottomY + spiderCycle * (spiderTopY - spiderBottomY);
+                    animal.mesh.position.x = animal.homeX + Math.sin(time * 0.32 + animal.spiderPhaseOffset) * 0.8;
+                    animal.mesh.position.z = animal.homeZ;
+                    animal.mesh.position.y = spiderY;
+                    if (animal.web) {
+                        animal.web.position.set(animal.mesh.position.x, spiderY / 2, animal.mesh.position.z);
+                        animal.web.scale.y = Math.max(0.1, spiderY);
+                    }
+                    animal.legs.forEach((leg, j) => { leg.rotation.z = Math.sin(time * 6 + j) * 0.2; });
+                } else if (animal.name === 'Angudjá') {
+                    // Mesmo deslocamento entre pontos do rato original, sem movimento errático.
+                    animal.targetTimer += delta;
+                    const stops = animal.ratStops;
+                    let target = stops[animal.targetIndex];
+                    let dx = target.x - animal.mesh.position.x;
+                    let dz = target.z - animal.mesh.position.z;
+                    if (animal.targetTimer > 2.0 && Math.hypot(dx, dz) < 1.0) {
+                        animal.targetTimer = 0;
+                        animal.targetIndex = (animal.targetIndex + 1) % stops.length;
+                        target = stops[animal.targetIndex];
+                        dx = target.x - animal.mesh.position.x;
+                        dz = target.z - animal.mesh.position.z;
+                    }
+                    const step = Math.min(1, delta * 2.8);
+                    animal.mesh.position.x += dx * step;
+                    animal.mesh.position.z += dz * step;
+                    animal.mesh.position.y = animal.baseY;
+                    animal.mesh.rotation.y = Math.atan2(dx, dz);
+                }
+
+                // A cobra também vira para onde realmente está se deslocando.
+                if (animal.name === 'Mbo’i') {
+                    const vx = Math.cos(animal.roamPhase) * 5.5;
+                    const vz = -Math.sin(animal.roamPhase * 0.63) * 0.63 * 18;
+                    animal.mesh.rotation.y = Math.atan2(-vx, -vz);
+                }
+            });
+
+            // Power-ups flutuam e são coletados ao se aproximar; animais perigosos causam dano com intervalo.
+            collectPowerUps(time);
+            applyAnimalDamage();
+            clouds.forEach(c => { c.mesh.position.x = c.baseX + Math.sin(time*0.035 + c.phase) * 1.4; });
 
             // Camera Tracking 360 Orbit
             camera.position.x = player.mesh.position.x + Math.sin(cameraAngleYaw) * cameraDistance * Math.cos(cameraAnglePitch);
@@ -910,6 +1914,20 @@
             } else {
                 activeInteractiveObject = null;
                 interactBtn.classList.add('hidden');
+            }
+
+            // Mostra a ação sobre o jogador, e não no canto inferior direito onde ficam
+            // os botões PULAR e AGACHAR. A posição acompanha a câmera e o personagem.
+            if (activeInteractiveObject && !interactBtn.classList.contains('hidden')) {
+                const marker = player.mesh.position.clone();
+                marker.y += 2.7;
+                marker.project(camera);
+                const screenX = (marker.x * 0.5 + 0.5) * window.innerWidth;
+                const screenY = (-marker.y * 0.5 + 0.5) * window.innerHeight;
+                const safeX = Math.max(115, Math.min(window.innerWidth - 115, screenX));
+                const safeY = Math.max(54, Math.min(window.innerHeight - 70, screenY));
+                interactBtn.style.left = `${safeX}px`;
+                interactBtn.style.top = `${safeY}px`;
             }
 
             renderer.render(scene, camera);
@@ -964,9 +1982,16 @@
                 if (currentPhase === 1) {
                     alert("✨ AGUYJEVETE! Resposta Correta!\n\nA passagem pela trilha sinuosa foi liberada!");
                     currentPhase = 2;
+                    doubleDangerAnimalsForPhase();
+                    phaseTimeLeft = 90;
+                    updateSurvivalHUD();
                     document.getElementById('phase-indicator').innerText = "Fase 2: O Desafio do DJAGWARETE";
+                    showGameFeedback('Fase 2 liberada! O tempo foi reiniciado. Fique atento aos animais.');
                 } else if (currentPhase === 2) {
                     alert("🎉 PARABÉNS! Concluíste a caminhada sagrada no Tape Marangatu!");
+                    phaseTimeLeft = 90;
+                    playerHealth = 100;
+                    updateSurvivalHUD();
                 }
                 closeModal('question-modal');
             } else {
@@ -977,11 +2002,39 @@
         function openModal(id) { document.getElementById(id).classList.add('flex'); document.getElementById(id).classList.remove('hidden'); }
         function closeModal(id) { document.getElementById(id).classList.remove('flex'); document.getElementById(id).classList.add('hidden'); }
 
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
+
+        // Solicita tela cheia e orientação horizontal em navegadores móveis compatíveis.
+        // A orientação é controlada pelo navegador; se não houver suporte, orienta o usuário a girar o aparelho.
+        const rotateScreenButton = document.getElementById('rotate-screen-button');
+        if (rotateScreenButton) {
+            rotateScreenButton.addEventListener('click', async () => {
+                try {
+                    if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+                        await document.documentElement.requestFullscreen();
+                    }
+                    if (screen.orientation && screen.orientation.lock) {
+                        await screen.orientation.lock('landscape');
+                        rotateScreenButton.innerHTML = '<i class="fas fa-mobile-screen-button"></i><span>TELA HORIZONTAL</span><i class="fas fa-check"></i>';
+                    } else {
+                        alert('Para jogar na horizontal, gire o celular de lado e ative a rotação automática nas configurações do aparelho.');
+                    }
+                } catch (err) {
+                    alert('Este navegador não permite girar a tela automaticamente. Ative a rotação automática do celular e vire o aparelho de lado.');
+                }
+            });
+        }
+
+        function resizeGameViewport() {
+            const width = Math.max(1, window.innerWidth);
+            const height = Math.max(1, window.innerHeight);
+            camera.aspect = width / height;
             camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, width < 700 ? 1.5 : 2));
+            renderer.setSize(width, height, false);
+        }
+        window.addEventListener('resize', resizeGameViewport, { passive: true });
+        window.addEventListener('orientationchange', () => setTimeout(resizeGameViewport, 150), { passive: true });
+        if (window.visualViewport) window.visualViewport.addEventListener('resize', resizeGameViewport, { passive: true });
     </script>
 </body>
 </html>
