@@ -6,14 +6,14 @@
     <title>Tape Marangatu 3D - Guardiões da Memória Nhandewa</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <!-- Motor Three.js 3D -->
+    <!-- Three.js 3D Engine -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Outfit:wght@300;400;600;800&display=swap');
         
         body {
             font-family: 'Outfit', sans-serif;
-            background-color: #08140c;
+            background-color: #05130a;
             color: #f0fdf4;
             user-select: none;
             touch-action: manipulation;
@@ -25,28 +25,29 @@
         }
 
         .glass-card {
-            background: rgba(18, 43, 27, 0.90);
-            backdrop-filter: blur(12px);
+            background: rgba(14, 38, 23, 0.92);
+            backdrop-filter: blur(14px);
             border: 1px solid rgba(74, 222, 128, 0.25);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.45);
+            box-shadow: 0 12px 36px 0 rgba(0, 0, 0, 0.55);
         }
 
         .kwatia-paper {
             background: #fef3c7;
             color: #451a03;
-            border: 4px solid #b45309;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+            border: 5px solid #b45309;
+            box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.65);
         }
 
         .character-card {
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
         }
 
         .character-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-6px) scale(1.02);
             border-color: #facc15;
-            background: rgba(20, 60, 35, 0.95);
+            background: rgba(22, 65, 38, 0.95);
+            box-shadow: 0 12px 25px rgba(250, 204, 21, 0.2);
         }
 
         .btn-touch {
@@ -68,17 +69,17 @@
 <body class="h-screen w-screen relative">
 
     <!-- TELA INICIAL: ESCOLHA DE PERSONAGEM -->
-    <div id="character-select-screen" class="absolute inset-0 z-50 bg-gradient-to-br from-[#08140c] via-[#11301e] to-[#040c06] flex items-center justify-center p-4">
+    <div id="character-select-screen" class="absolute inset-0 z-50 bg-gradient-to-br from-[#040c06] via-[#0f2e1d] to-[#020703] flex items-center justify-center p-4">
         <div class="glass-card max-w-xl w-full rounded-3xl p-6 md:p-8 border-2 border-amber-500/40 text-center shadow-2xl relative overflow-hidden">
-            <div class="absolute -top-10 -right-10 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl"></div>
+            <div class="absolute -top-12 -right-12 w-40 h-40 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
             
             <div class="mb-6">
-                <span class="text-xs uppercase tracking-widest text-amber-400 font-semibold">Jornada Ancestral</span>
-                <h1 class="font-game text-3xl md:text-4xl font-bold bg-gradient-to-r from-amber-300 via-emerald-300 to-amber-200 bg-clip-text text-transparent mt-1">
+                <span class="text-xs uppercase tracking-widest text-amber-400 font-semibold">Jornada Ancestral Nhandewa</span>
+                <h1 class="font-game text-3xl md:text-5xl font-bold bg-gradient-to-r from-amber-300 via-emerald-300 to-amber-200 bg-clip-text text-transparent mt-1 drop-shadow-md">
                     Tape Marangatu
                 </h1>
-                <p class="text-xs md:text-sm text-emerald-200/80 mt-2">
-                    Escolhe o teu guardião para iniciar a caminhada sagrada na aldeia e aprender os saberes Nhandewa.
+                <p class="text-xs md:text-sm text-emerald-200/80 mt-2 max-w-md mx-auto">
+                    Escolha o seu guardião para percorrer a trilha sagrada, explorar a floresta e aprender os saberes Nhandewa.
                 </p>
             </div>
 
@@ -86,32 +87,32 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                 <!-- Konomi -->
                 <div onclick="selectCharacter('konomi')" class="character-card glass-card p-5 rounded-2xl border-2 border-emerald-500/30 flex flex-col items-center">
-                    <div class="w-20 h-20 rounded-full bg-amber-600/40 border-2 border-amber-400 flex items-center justify-center text-4xl mb-3 shadow-inner">
+                    <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-amber-700 to-amber-500 border-2 border-amber-300 flex items-center justify-center text-4xl mb-3 shadow-lg">
                         👦🏽
                     </div>
-                    <h3 class="font-game text-xl text-amber-300">Konomi</h3>
-                    <p class="text-xs text-emerald-300/80 mt-1 text-center">O jovem explorador das trilhas da floresta.</p>
+                    <h3 class="font-game text-2xl text-amber-300">Konomi</h3>
+                    <p class="text-xs text-emerald-200/90 mt-1 text-center font-medium">O jovem explorador das trilhas e guardião do Awati.</p>
                 </div>
 
                 <!-- Kunhataĩ -->
                 <div onclick="selectCharacter('kunhatai')" class="character-card glass-card p-5 rounded-2xl border-2 border-emerald-500/30 flex flex-col items-center">
-                    <div class="w-20 h-20 rounded-full bg-emerald-600/40 border-2 border-amber-400 flex items-center justify-center text-4xl mb-3 shadow-inner">
+                    <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-emerald-800 to-teal-600 border-2 border-amber-300 flex items-center justify-center text-4xl mb-3 shadow-lg">
                         👧🏽
                     </div>
-                    <h3 class="font-game text-xl text-amber-300">Kunhataĩ</h3>
-                    <p class="text-xs text-emerald-300/80 mt-1 text-center">A jovem guardiã das memórias e da Kwatiá.</p>
+                    <h3 class="font-game text-2xl text-amber-300">Kunhataĩ</h3>
+                    <p class="text-xs text-emerald-200/90 mt-1 text-center font-medium">A jovem sábia guardiã das memórias e da Kwatiá.</p>
                 </div>
             </div>
 
-            <div class="text-[11px] text-emerald-400/60 font-medium">
-                Clica num dos personagens para começar a aventura 3D.
+            <div class="text-[11px] text-emerald-400/70 font-medium">
+                <i class="fas fa-touch-app mr-1"></i> Clique em um guardião para começar a aventura
             </div>
         </div>
     </div>
 
-    <!-- Interface Superior do Jogo (Oculta até começar) -->
+    <!-- Header Superior -->
     <header id="game-header" class="absolute top-0 left-0 w-full px-4 py-3 flex justify-between items-center z-20 pointer-events-auto hidden">
-        <div class="glass-card px-4 py-2 rounded-xl flex items-center space-x-3">
+        <div class="glass-card px-4 py-2 rounded-xl flex items-center space-x-3 border border-amber-500/30">
             <div id="player-avatar-icon" class="w-10 h-10 rounded-full bg-amber-600 border-2 border-amber-300 flex items-center justify-center text-amber-100 font-bold text-xl shadow-lg">
                 👦🏽
             </div>
@@ -119,13 +120,13 @@
                 <h1 class="font-game text-sm md:text-lg font-bold bg-gradient-to-r from-amber-300 to-emerald-400 bg-clip-text text-transparent">
                     Tape Marangatu 3D
                 </h1>
-                <p id="player-name-display" class="text-[10px] text-emerald-300/80">Guardião: Konomi</p>
+                <p id="player-name-display" class="text-[10px] text-emerald-300/90 font-semibold">Guardião: Konomi</p>
             </div>
         </div>
 
         <div class="flex items-center space-x-2">
-            <div class="glass-card px-4 py-2 rounded-xl text-xs flex items-center space-x-2">
-                <i class="fas fa-flag-checkered text-amber-400"></i>
+            <div class="glass-card px-4 py-2 rounded-xl text-xs flex items-center space-x-2 border border-emerald-500/30">
+                <i class="fas fa-map-marker-alt text-amber-400"></i>
                 <span id="phase-indicator" class="text-amber-200 font-semibold">Fase 1: O Segredo do AWATI</span>
             </div>
         </div>
@@ -134,11 +135,11 @@
     <!-- Canvas 3D -->
     <div id="canvas-container" class="w-full h-full"></div>
 
-    <!-- Botão de Ação / Interatividade -->
+    <!-- Botão de Ação Interativa -->
     <div class="absolute bottom-6 right-6 z-20 flex flex-col items-end space-y-2 pointer-events-auto">
-        <button id="btn-interact" onclick="checkCurrentProximity()" class="hidden glass-card bg-amber-500 hover:bg-amber-400 text-amber-950 font-bold px-5 py-3 rounded-2xl shadow-xl flex items-center space-x-2 text-sm border-2 border-amber-200 animate-bounce">
-            <i class="fas fa-hand-pointer text-lg"></i>
-            <span id="interact-label">Ler Kwatiá (A)</span>
+        <button id="btn-interact" onclick="checkCurrentProximity()" class="hidden glass-card bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-amber-950 font-bold px-6 py-3.5 rounded-2xl shadow-2xl flex items-center space-x-2 text-sm border-2 border-amber-200 animate-bounce transition-all">
+            <i class="fas fa-book-open text-lg"></i>
+            <span id="interact-label">Ler Kwatiá (Espaço)</span>
         </button>
     </div>
 
@@ -155,10 +156,10 @@
         <div></div>
     </div>
 
-    <!-- Dica Teclado -->
-    <div id="keyboard-tip" class="hidden md:flex absolute bottom-4 left-4 glass-card px-3 py-1.5 rounded-lg text-[11px] text-emerald-300/80 items-center space-x-2 z-20 hidden">
-        <i class="fas fa-keyboard"></i>
-        <span>Caminhe com <b>WASD</b> ou <b>Setas</b>. Pressione <b>ESPAÇO</b> para interagir!</span>
+    <!-- Dica Teclado (Desktop) -->
+    <div id="keyboard-tip" class="hidden md:flex absolute bottom-4 left-4 glass-card px-3.5 py-2 rounded-xl text-xs text-emerald-300/90 items-center space-x-2 z-20 border border-emerald-500/20">
+        <i class="fas fa-keyboard text-amber-400"></i>
+        <span>Explore com <b>WASD</b> ou <b>Setas</b>. Pressione <b>ESPAÇO</b> para interagir.</span>
     </div>
 
     <!-- MODAL: Leitura da Kwatiá -->
@@ -169,7 +170,7 @@
                     <span id="kwatia-letter" class="font-game text-4xl text-amber-900 font-bold">A a A a</span>
                     <h2 id="kwatia-title" class="font-game text-2xl text-amber-900">AWATI</h2>
                 </div>
-                <button onclick="closeModal('read-modal')" class="text-amber-900 hover:text-amber-700 text-2xl font-bold">✕</button>
+                <button onclick="closeModal('read-modal')" class="text-amber-900 hover:text-amber-700 text-2xl font-bold p-1">✕</button>
             </div>
 
             <div class="my-4 flex-1 overflow-y-auto space-y-3 pr-1">
@@ -177,11 +178,11 @@
                     🌽
                 </div>
                 <div id="kwatia-text-list" class="space-y-1.5 font-semibold text-sm text-amber-950 font-serif">
-                    <!-- Dinâmico -->
+                    <!-- Conteúdo Dinâmico -->
                 </div>
             </div>
 
-            <button onclick="openQuestionModal()" class="w-full py-3 bg-amber-800 hover:bg-amber-700 text-amber-50 font-bold rounded-xl shadow-lg flex items-center justify-center space-x-2 transition text-sm">
+            <button onclick="openQuestionModal()" class="w-full py-3.5 bg-amber-800 hover:bg-amber-700 text-amber-50 font-bold rounded-xl shadow-lg flex items-center justify-center space-x-2 transition text-sm">
                 <span>Responder às Perguntas do Enigma</span>
                 <i class="fas fa-arrow-right"></i>
             </button>
@@ -192,12 +193,12 @@
     <div id="question-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
         <div class="glass-card max-w-md w-full rounded-2xl p-6 border-2 border-amber-400/60 shadow-2xl">
             <div class="flex items-center space-x-3 mb-4 border-b border-emerald-500/30 pb-3">
-                <div class="w-10 h-10 rounded-full bg-amber-500 flex items-center justify-center text-amber-950 font-bold text-xl">
+                <div class="w-10 h-10 rounded-full bg-amber-500 flex items-center justify-center text-amber-950 font-bold text-xl shadow-md">
                     ❓
                 </div>
                 <div>
                     <h3 class="font-game text-lg text-amber-300">Desafio do Tape Marangatu</h3>
-                    <p class="text-[11px] text-emerald-300">Responda corretamente para avançar no caminho!</p>
+                    <p class="text-[11px] text-emerald-300/80">Demonstre seus conhecimentos Nhandewa</p>
                 </div>
             </div>
 
@@ -206,16 +207,20 @@
             <div id="options-container" class="space-y-2 mb-4"></div>
 
             <div class="flex justify-end">
-                <button onclick="closeModal('question-modal')" class="text-xs text-emerald-400 hover:text-emerald-200">
-                    Voltar ao texto
+                <button onclick="closeModal('question-modal')" class="text-xs text-emerald-400 hover:text-emerald-200 underline">
+                    Voltar ao texto da Kwatiá
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Lógica do Jogo 3D -->
+    <!-- Mensagem de Feedback Customizada (Substituto do alert) -->
+    <div id="toast-message" class="fixed top-16 left-1/2 transform -translate-x-1/2 z-50 hidden glass-card px-6 py-3 rounded-2xl border-2 border-amber-400 text-amber-200 text-sm font-semibold shadow-2xl text-center max-w-sm">
+        <span id="toast-text"></span>
+    </div>
+
     <script>
-        let selectedCharacter = null;
+        // Data Didática Nhandewa
         const gameData = {
             phase1: {
                 letter: "A a A a",
@@ -229,7 +234,7 @@
                     "AWATI DJEGWÁ",
                     "AWATI MARA'ẼY"
                 ],
-                question: "De acordo com o caderno de campo, qual das opções representa o milho branco?",
+                question: "De acordo com a Kwatiá Nhandewa, qual expressão representa o milho branco sagrado?",
                 options: [
                     { text: "Awati Ũ", correct: false },
                     { text: "Awati Morõti", correct: true },
@@ -250,7 +255,7 @@
                     "DJAGWARETE YYAKÁ RARÕÁ",
                     "DJAGWARETE NHANDẼ PY'Y ÃWÃ O'Á YWYRUPI"
                 ],
-                question: "Qual expressão descreve a Onça que pertence à verdadeira floresta (Ka'agwy Ete Regwa)?",
+                question: "Qual expressão refere-se à Onça guardiã que habita a verdadeira floresta (Ka'agwy Ete Regwa)?",
                 options: [
                     { text: "Djagwarete Ipara Porã", correct: false },
                     { text: "Djagwarete Ka'agwy Ete Regwa", correct: true },
@@ -260,15 +265,22 @@
             }
         };
 
+        let selectedCharacter = 'konomi';
         let currentPhase = 1;
         let activeInteractiveObject = null;
         let gameStarted = false;
+
+        function showToast(msg, duration = 3500) {
+            const toast = document.getElementById('toast-message');
+            document.getElementById('toast-text').innerText = msg;
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), duration);
+        }
 
         function selectCharacter(char) {
             selectedCharacter = char;
             gameStarted = true;
 
-            // Atualizar UI
             document.getElementById('character-select-screen').classList.add('hidden');
             document.getElementById('game-header').classList.remove('hidden');
             document.getElementById('touch-controls').classList.remove('hidden');
@@ -281,77 +293,482 @@
                 document.getElementById('player-avatar-icon').innerText = "👧🏽";
                 document.getElementById('player-name-display').innerText = "Guardiã: Kunhataĩ";
             }
+
+            buildPlayerMesh();
         }
 
+        // --- RENDERIZADOR E CENA THREE.JS ---
         const container = document.getElementById('canvas-container');
         const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x0a1e12);
-        scene.fog = new THREE.FogExp2(0x0a1e12, 0.02);
+        scene.background = new THREE.Color(0x061a0e);
+        scene.fog = new THREE.FogExp2(0x061a0e, 0.018);
 
         const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         container.appendChild(renderer.domElement);
 
-        scene.add(new THREE.AmbientLight(0xdcfce7, 0.7));
-        const dirLight = new THREE.DirectionalLight(0xfef08a, 0.9);
-        dirLight.position.set(20, 40, 20);
-        dirLight.castShadow = true;
-        scene.add(dirLight);
+        // ILUMINAÇÃO ORGANICA DA FLORESTA
+        const ambientLight = new THREE.AmbientLight(0xdcfce7, 0.7);
+        scene.add(ambientLight);
 
-        // Terreno e Trilha
-        const terrain = new THREE.Mesh(new THREE.PlaneGeometry(100, 100), new THREE.MeshLambertMaterial({ color: 0x166534 }));
+        const sunLight = new THREE.DirectionalLight(0xfef08a, 1.2);
+        sunLight.position.set(30, 50, 20);
+        sunLight.castShadow = true;
+        sunLight.shadow.mapSize.width = 1024;
+        sunLight.shadow.mapSize.height = 1024;
+        sunLight.shadow.camera.near = 0.5;
+        sunLight.shadow.camera.far = 150;
+        const d = 40;
+        sunLight.shadow.camera.left = -d;
+        sunLight.shadow.camera.right = d;
+        sunLight.shadow.camera.top = d;
+        sunLight.shadow.camera.bottom = -d;
+        scene.add(sunLight);
+
+        // TERRENO E TRILHA ORGANICA
+        const terrainGeo = new THREE.PlaneGeometry(160, 220, 32, 32);
+        // Deformar relevo suavemente
+        const posAttr = terrainGeo.attributes.position;
+        for (let i = 0; i < posAttr.count; i++) {
+            const x = posAttr.getX(i);
+            const y = posAttr.getY(i);
+            if (Math.abs(x) > 6) {
+                posAttr.setZ(i, Math.sin(x * 0.1) * Math.cos(y * 0.1) * 1.8);
+            }
+        }
+        terrainGeo.computeVertexNormals();
+
+        const terrainMat = new THREE.MeshStandardMaterial({ color: 0x14532d, roughness: 0.9, metalness: 0.1 });
+        const terrain = new THREE.Mesh(terrainGeo, terrainMat);
         terrain.rotation.x = -Math.PI / 2;
+        terrain.receiveShadow = true;
         scene.add(terrain);
 
-        const path = new THREE.Mesh(new THREE.PlaneGeometry(8, 80), new THREE.MeshLambertMaterial({ color: 0x78350f }));
+        // Trilha Principal
+        const pathGeo = new THREE.PlaneGeometry(7, 180, 16, 32);
+        const pathMat = new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.95, metalness: 0.05 });
+        const path = new THREE.Mesh(pathGeo, pathMat);
         path.rotation.x = -Math.PI / 2;
-        path.position.set(0, 0.02, 0);
+        path.position.set(0, 0.05, 0);
+        path.receiveShadow = true;
         scene.add(path);
 
-        // Objeto Fase 1 (Awati)
-        const awatiGroup = new THREE.Group();
-        const stalk = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.2, 4, 8), new THREE.MeshLambertMaterial({ color: 0x84cc16 }));
-        stalk.position.y = 2;
-        awatiGroup.add(stalk);
-        const corn = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.2, 1.2, 8), new THREE.MeshLambertMaterial({ color: 0xfacc15 }));
-        corn.position.set(0.3, 2.2, 0);
-        corn.rotation.z = -0.4;
-        awatiGroup.add(corn);
-        const ring1 = new THREE.Mesh(new THREE.RingGeometry(1.2, 1.6, 16), new THREE.MeshBasicMaterial({ color: 0xfacc15, side: THREE.DoubleSide }));
-        ring1.rotation.x = -Math.PI / 2;
-        ring1.position.y = 0.05;
-        awatiGroup.add(ring1);
-        awatiGroup.position.set(-6, 0, 10);
-        scene.add(awatiGroup);
-
-        // Barreira
-        const barrier = new THREE.Mesh(new THREE.BoxGeometry(12, 6, 0.5), new THREE.MeshBasicMaterial({ color: 0xef4444, transparent: true, opacity: 0.4 }));
-        barrier.position.set(0, 3, -8);
+        // BARREIRA MÍSTICA DE FASE
+        const barrierGeo = new THREE.BoxGeometry(16, 8, 0.4);
+        const barrierMat = new THREE.MeshStandardMaterial({
+            color: 0xef4444,
+            transparent: true,
+            opacity: 0.35,
+            emissive: 0x991b1b,
+            emissiveIntensity: 0.5
+        });
+        const barrier = new THREE.Mesh(barrierGeo, barrierMat);
+        barrier.position.set(0, 4, -8);
         scene.add(barrier);
 
-        // Objeto Fase 2 (Djagwarete)
-        const jaguarGroup = new THREE.Group();
-        const body = new THREE.Mesh(new THREE.BoxGeometry(1.5, 1.2, 3), new THREE.MeshLambertMaterial({ color: 0xd97706 }));
-        body.position.y = 1;
-        jaguarGroup.add(body);
-        const ring2 = new THREE.Mesh(new THREE.RingGeometry(1.5, 2.0, 16), new THREE.MeshBasicMaterial({ color: 0xf59e0b, side: THREE.DoubleSide }));
-        ring2.rotation.x = -Math.PI / 2;
-        ring2.position.y = 0.05;
-        jaguarGroup.add(ring2);
-        jaguarGroup.position.set(0, 0, -25);
-        scene.add(jaguarGroup);
+        // --- CONSTRUTORES DE MODELOS PROCEDURAIS DETALHADOS ---
 
-        // Jogador (Avatar 3D)
-        const playerGroup = new THREE.Group();
-        const playerBody = new THREE.Mesh(new THREE.CapsuleGeometry(0.5, 1, 4, 8), new THREE.MeshLambertMaterial({ color: 0xf59e0b }));
-        playerBody.position.y = 1;
-        playerGroup.add(playerBody);
-        playerGroup.position.set(0, 0, 25);
+        // 1. PÉ DE MILHO ORGANICO (AWATI)
+        function createAwatiPlant() {
+            const group = new THREE.Group();
+
+            // Colmo (Caule articulado)
+            const stalkMat = new THREE.MeshStandardMaterial({ color: 0x65a30d, roughness: 0.6 });
+            for (let i = 0; i < 4; i++) {
+                const seg = new THREE.Mesh(new THREE.CylinderGeometry(0.12 - i*0.015, 0.14 - i*0.015, 1.2, 8), stalkMat);
+                seg.position.y = 0.6 + i * 1.1;
+                seg.castShadow = true;
+                group.add(seg);
+
+                // Anéis dos nós do caule
+                const node = new THREE.Mesh(new THREE.TorusGeometry(0.14 - i*0.015, 0.03, 8, 12), new THREE.MeshStandardMaterial({ color: 0x4d7c0f }));
+                node.rotation.x = Math.PI / 2;
+                node.position.y = i * 1.1;
+                group.add(node);
+            }
+
+            // Folhas Longas e Curvadas
+            const leafMat = new THREE.MeshStandardMaterial({ color: 0x4d7c0f, side: THREE.DoubleSide, roughness: 0.5 });
+            for (let i = 0; i < 8; i++) {
+                const leafCurve = new THREE.CurvePath();
+                const angle = (i * Math.PI / 4) + (Math.random() * 0.2);
+                const leafShape = new THREE.PlaneGeometry(0.35, 2.5, 4, 8);
+                
+                // Deformar para folha arqueada
+                const leaf = new THREE.Mesh(leafShape, leafMat);
+                leaf.position.set(0, 1.2 + (i * 0.35), 0);
+                leaf.rotation.y = angle;
+                leaf.rotation.x = 0.6 + (i * 0.08);
+                leaf.rotation.z = (i % 2 === 0 ? 0.3 : -0.3);
+                leaf.scale.set(1 - i*0.05, 1, 1);
+                leaf.castShadow = true;
+                group.add(leaf);
+            }
+
+            // Espigas de Milho com Textura e Palha
+            const cornGoldMat = new THREE.MeshStandardMaterial({ color: 0xfacc15, roughness: 0.4 });
+            const huskMat = new THREE.MeshStandardMaterial({ color: 0x84cc16, roughness: 0.7, side: THREE.DoubleSide });
+            const silkMat = new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.9 });
+
+            for (let side = -1; side <= 1; side += 2) {
+                const earGroup = new THREE.Group();
+                
+                // Grãos do milho
+                const cob = new THREE.Mesh(new THREE.ConeGeometry(0.22, 1.3, 10), cornGoldMat);
+                cob.position.y = 0.65;
+                cob.castShadow = true;
+                earGroup.add(cob);
+
+                // Palha envolvente
+                for (let h = 0; h < 3; h++) {
+                    const husk = new THREE.Mesh(new THREE.ConeGeometry(0.26, 1.1, 6, 1, true), huskMat);
+                    husk.position.y = 0.5;
+                    husk.rotation.y = h * 2.1;
+                    husk.rotation.z = 0.15;
+                    earGroup.add(husk);
+                }
+
+                // Cabelo do milho (Stigmas)
+                const silk = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.12, 0.4, 6), silkMat);
+                silk.position.y = 1.35;
+                earGroup.add(silk);
+
+                earGroup.position.set(side * 0.3, 1.8, 0);
+                earGroup.rotation.z = side * -0.55;
+                group.add(earGroup);
+            }
+
+            // Anel Indicador no Chão
+            const ringGeo = new THREE.RingGeometry(1.6, 2.0, 32);
+            const ringMat = new THREE.MeshBasicMaterial({ color: 0xfacc15, side: THREE.DoubleSide, transparent: true, opacity: 0.8 });
+            const ring = new THREE.Mesh(ringGeo, ringMat);
+            ring.rotation.x = -Math.PI / 2;
+            ring.position.y = 0.08;
+            group.add(ring);
+
+            return group;
+        }
+
+        // 2. ONÇA-PINTADA ORGANICA (DJAGWARETE)
+        function createJaguar() {
+            const jaguar = new THREE.Group();
+
+            const skinMat = new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.7 });
+            const bellyMat = new THREE.MeshStandardMaterial({ color: 0xfef3c7, roughness: 0.8 });
+            const spotMat = new THREE.MeshStandardMaterial({ color: 0x292524, roughness: 0.9 });
+
+            // Corpo Principal Esculpido
+            const bodyGeo = new THREE.CylinderGeometry(0.7, 0.85, 3.2, 12);
+            const body = new THREE.Mesh(bodyGeo, skinMat);
+            body.rotation.x = Math.PI / 2;
+            body.position.y = 1.6;
+            body.castShadow = true;
+            jaguar.add(body);
+
+            // Barriga Clara
+            const belly = new THREE.Mesh(new THREE.CylinderGeometry(0.68, 0.83, 3.1, 12), bellyMat);
+            belly.rotation.x = Math.PI / 2;
+            belly.position.set(0, 1.52, 0);
+            jaguar.add(belly);
+
+            // Cabeça e Focinho
+            const headGroup = new THREE.Group();
+            const head = new THREE.Mesh(new THREE.SphereGeometry(0.6, 12, 12), skinMat);
+            head.scale.set(1, 0.9, 1.1);
+            head.castShadow = true;
+            headGroup.add(head);
+
+            const snout = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.35, 0.5), bellyMat);
+            snout.position.set(0, -0.1, 0.45);
+            headGroup.add(snout);
+
+            const nose = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.15, 0.1), spotMat);
+            nose.position.set(0, 0.02, 0.7);
+            headGroup.add(nose);
+
+            // Orelhas
+            for (let side = -1; side <= 1; side += 2) {
+                const ear = new THREE.Mesh(new THREE.ConeGeometry(0.18, 0.3, 6), skinMat);
+                ear.position.set(side * 0.35, 0.5, 0.1);
+                ear.rotation.z = side * -0.3;
+                headGroup.add(ear);
+
+                // Olhos
+                const eye = new THREE.Mesh(new THREE.SphereGeometry(0.08, 8, 8), new THREE.MeshStandardMaterial({ color: 0xa3e635, roughness: 0.2 }));
+                eye.position.set(side * 0.25, 0.15, 0.48);
+                headGroup.add(eye);
+            }
+
+            headGroup.position.set(0, 2.3, 1.6);
+            jaguar.add(headGroup);
+
+            // Patas Robustas Articuladas
+            const legPositions = [
+                { x: -0.65, z: 1.1 }, { x: 0.65, z: 1.1 },
+                { x: -0.65, z: -1.1 }, { x: 0.65, z: -1.1 }
+            ];
+
+            legPositions.forEach(pos => {
+                const legGroup = new THREE.Group();
+                const upperLeg = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.18, 1.2, 8), skinMat);
+                upperLeg.position.y = -0.6;
+                upperLeg.castShadow = true;
+                legGroup.add(upperLeg);
+
+                const paw = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.2, 0.45), bellyMat);
+                paw.position.set(0, -1.15, 0.1);
+                paw.castShadow = true;
+                legGroup.add(paw);
+
+                legGroup.position.set(pos.x, 1.7, pos.z);
+                jaguar.add(legGroup);
+            });
+
+            // Cauda Flexível
+            const tailGroup = new THREE.Group();
+            for (let t = 0; t < 5; t++) {
+                const tailSeg = new THREE.Mesh(new THREE.CylinderGeometry(0.12 - t*0.015, 0.14 - t*0.015, 0.6, 8), skinMat);
+                tailSeg.position.set(0, -t * 0.4, -t * 0.15);
+                tailSeg.rotation.x = -0.3 - (t * 0.1);
+                tailGroup.add(tailSeg);
+            }
+            tailGroup.position.set(0, 1.8, -1.6);
+            jaguar.add(tailGroup);
+
+            // Rosetas / Pintas Procedurais (Ipara Porã)
+            for (let s = 0; s < 22; s++) {
+                const spot = new THREE.Mesh(new THREE.DodecahedronGeometry(0.12 + Math.random()*0.06), spotMat);
+                const angle = Math.random() * Math.PI * 2;
+                const zPos = (Math.random() - 0.5) * 2.6;
+                spot.position.set(Math.cos(angle) * 0.72, 1.6 + Math.sin(angle) * 0.6, zPos);
+                spot.scale.set(1, 0.4, 1.2);
+                jaguar.add(spot);
+            }
+
+            // Anel Indicador no Chão
+            const ringGeo = new THREE.RingGeometry(2.2, 2.7, 32);
+            const ringMat = new THREE.MeshBasicMaterial({ color: 0xf59e0b, side: THREE.DoubleSide, transparent: true, opacity: 0.8 });
+            const ring = new THREE.Mesh(ringGeo, ringMat);
+            ring.rotation.x = -Math.PI / 2;
+            ring.position.y = 0.08;
+            jaguar.add(ring);
+
+            return jaguar;
+        }
+
+        // 3. JOGADOR (KONOMI / KUNHATAĨ DETALHADOS)
+        let playerGroup = new THREE.Group();
         scene.add(playerGroup);
 
+        function buildPlayerMesh() {
+            // Limpar anterior
+            while(playerGroup.children.length > 0) playerGroup.remove(playerGroup.children[0]);
+
+            const isKonomi = (selectedCharacter === 'konomi');
+            const skinColor = 0xd97706;
+            const clothesColor = isKonomi ? 0xb45309 : 0x0d9488;
+            const paintColor = 0xef4444; // Urucum
+
+            const skinMat = new THREE.MeshStandardMaterial({ color: skinColor, roughness: 0.6 });
+            const clothesMat = new THREE.MeshStandardMaterial({ color: clothesColor, roughness: 0.8 });
+            const paintMat = new THREE.MeshStandardMaterial({ color: paintColor, roughness: 0.4 });
+            const hairMat = new THREE.MeshStandardMaterial({ color: 0x1c1917, roughness: 0.9 });
+
+            // Tronco / Corpo
+            const torso = new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.3, 1.3, 10), clothesMat);
+            torso.position.y = 1.35;
+            torso.castShadow = true;
+            playerGroup.add(torso);
+
+            // Cabeça
+            const head = new THREE.Mesh(new THREE.SphereGeometry(0.35, 12, 12), skinMat);
+            head.position.y = 2.25;
+            head.castShadow = true;
+            playerGroup.add(head);
+
+            // Cabelo característico
+            const hairGeo = isKonomi ? 
+                new THREE.SphereGeometry(0.38, 12, 12, 0, Math.PI * 2, 0, Math.PI / 2.2) :
+                new THREE.CylinderGeometry(0.39, 0.42, 0.9, 10);
+            const hair = new THREE.Mesh(hairGeo, hairMat);
+            hair.position.y = isKonomi ? 2.32 : 2.1;
+            playerGroup.add(hair);
+
+            // Pintura Facial (Urucum)
+            const facePaint = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.08, 0.05), paintMat);
+            facePaint.position.set(0, 2.22, 0.33);
+            playerGroup.add(facePaint);
+
+            // Braços
+            for (let side = -1; side <= 1; side += 2) {
+                const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.09, 1.0, 8), skinMat);
+                arm.position.set(side * 0.48, 1.35, 0);
+                arm.rotation.z = side * -0.15;
+                arm.castShadow = true;
+                playerGroup.add(arm);
+
+                // Pernas
+                const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.1, 1.1, 8), skinMat);
+                leg.position.set(side * 0.18, 0.55, 0);
+                leg.castShadow = true;
+                playerGroup.add(leg);
+            }
+
+            // Acessório / Cocar simples para Kunhataĩ
+            if (!isKonomi) {
+                const headband = new THREE.Mesh(new THREE.TorusGeometry(0.36, 0.04, 8, 16), paintMat);
+                headband.rotation.x = Math.PI / 2;
+                headband.position.y = 2.4;
+                playerGroup.add(headband);
+            }
+
+            playerGroup.position.set(0, 0, 30);
+        }
+
+        // 4. ÁRVORES E VEGETAÇÃO DIVERSIFICADA DA FLORESTA
+        function createTree(type = 0) {
+            const tree = new THREE.Group();
+            const trunkMat = new THREE.MeshStandardMaterial({ color: 0x451a03, roughness: 0.9 });
+            
+            // Tronco orgânico
+            const trunkGeo = new THREE.CylinderGeometry(0.3, 0.5, 4.5, 8);
+            const trunk = new THREE.Mesh(trunkGeo, trunkMat);
+            trunk.position.y = 2.25;
+            trunk.castShadow = true;
+            tree.add(trunk);
+
+            // Copas com tons de verde nativo
+            const greens = [0x15803d, 0x166534, 0x047857, 0x14532d];
+            const leafMat = new THREE.MeshStandardMaterial({ color: greens[type % greens.length], roughness: 0.6 });
+
+            if (type % 2 === 0) {
+                // Copa em camadas arredondadas
+                for (let c = 0; c < 3; c++) {
+                    const crown = new THREE.Mesh(new THREE.DodecahedronGeometry(2.2 - (c * 0.4)), leafMat);
+                    crown.position.y = 4.2 + (c * 1.3);
+                    crown.castShadow = true;
+                    tree.add(crown);
+                }
+            } else {
+                // Copa densa tipo mata atlântica
+                const crown = new THREE.Mesh(new THREE.IcosahedronGeometry(2.8, 1), leafMat);
+                crown.position.y = 4.8;
+                crown.scale.set(1.2, 0.9, 1.2);
+                crown.castShadow = true;
+                tree.add(crown);
+            }
+
+            return tree;
+        }
+
+        // 5. ANIMAIS DECORATIVOS DA FLORESTA (JABUTI E TU CANO)
+        function createTurtle() {
+            const turtle = new THREE.Group();
+            const shellMat = new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.8 });
+            const skinMat = new THREE.MeshStandardMaterial({ color: 0x65a30d, roughness: 0.7 });
+
+            // Casco Arredondado
+            const shell = new THREE.Mesh(new THREE.SphereGeometry(0.6, 8, 8), shellMat);
+            shell.scale.set(1, 0.65, 1.3);
+            shell.position.y = 0.4;
+            shell.castShadow = true;
+            turtle.add(shell);
+
+            // Cabeça
+            const head = new THREE.Mesh(new THREE.SphereGeometry(0.18, 8, 8), skinMat);
+            head.position.set(0, 0.3, 0.8);
+            turtle.add(head);
+
+            // Patinhas
+            for(let x of [-0.45, 0.45]) {
+                for(let z of [-0.4, 0.4]) {
+                    const leg = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.15, 0.25), skinMat);
+                    leg.position.set(x, 0.1, z);
+                    turtle.add(leg);
+                }
+            }
+            return turtle;
+        }
+
+        function createToucan() {
+            const toucan = new THREE.Group();
+            const bodyMat = new THREE.MeshStandardMaterial({ color: 0x1c1917, roughness: 0.8 });
+            const beakMat = new THREE.MeshStandardMaterial({ color: 0xf97316, roughness: 0.3 }); // Bico Laranja
+
+            // Corpo
+            const body = new THREE.Mesh(new THREE.SphereGeometry(0.25, 8, 8), bodyMat);
+            body.scale.set(0.8, 1.2, 0.8);
+            toucan.add(body);
+
+            // Bico Grande Característico
+            const beak = new THREE.Mesh(new THREE.ConeGeometry(0.14, 0.65, 8), beakMat);
+            beak.rotation.x = Math.PI / 2;
+            beak.position.set(0, 0.1, 0.4);
+            toucan.add(beak);
+
+            return toucan;
+        }
+
+        // --- POPULAR O CENÁRIO DA ALDEIA ---
+
+        // Instanciar Objetos Principais Didáticos
+        const awatiPlant = createAwatiPlant();
+        awatiPlant.position.set(-6, 0, 10);
+        scene.add(awatiPlant);
+
+        const jaguarModel = createJaguar();
+        jaguarModel.position.set(0, 0, -25);
+        scene.add(jaguarModel);
+
+        // Gerar Floresta Densa nas Laterais da Trilha
+        for (let z = -80; z <= 70; z += 6) {
+            // Lado Esquerdo
+            const treeL = createTree(Math.floor(Math.abs(z)));
+            treeL.position.set(-9 - (Math.random() * 14), 0, z + (Math.random() * 3));
+            const sL = 0.8 + Math.random() * 0.6;
+            treeL.scale.set(sL, sL, sL);
+            scene.add(treeL);
+
+            // Lado Direito
+            const treeR = createTree(Math.floor(z * 2));
+            treeR.position.set(9 + (Math.random() * 14), 0, z + (Math.random() * 3));
+            const sR = 0.8 + Math.random() * 0.6;
+            treeR.scale.set(sR, sR, sR);
+            scene.add(treeR);
+
+            // Adicionar Arbustos e Pedras Ornamentais
+            if (Math.random() > 0.4) {
+                const rockMat = new THREE.MeshStandardMaterial({ color: 0x57534e, roughness: 0.9 });
+                const rock = new THREE.Mesh(new THREE.DodecahedronGeometry(0.4 + Math.random()*0.6), rockMat);
+                const side = Math.random() > 0.5 ? 1 : -1;
+                rock.position.set(side * (4.5 + Math.random() * 3), 0.2, z);
+                rock.rotation.set(Math.random(), Math.random(), 0);
+                scene.add(rock);
+            }
+        }
+
+        // Adicionar Jabutis Decorativos na Trilha
+        const turtle1 = createTurtle();
+        turtle1.position.set(4, 0, 18);
+        turtle1.rotation.y = -0.8;
+        scene.add(turtle1);
+
+        const turtle2 = createTurtle();
+        turtle2.position.set(-4.5, 0, -12);
+        turtle2.rotation.y = 1.2;
+        scene.add(turtle2);
+
+        // Adicionar Tucano num galho de árvore
+        const toucan = createToucan();
+        toucan.position.set(-8, 4.2, 8);
+        toucan.rotation.y = 1.4;
+        scene.add(toucan);
+
+        // --- CONTROLES E MOVIMENTAÇÃO DO JOGADOR ---
         const keys = {};
         let touchDir = { x: 0, z: 0 };
 
@@ -372,16 +789,26 @@
         setupTouch('btn-left', -1, 0);
         setupTouch('btn-right', 1, 0);
 
+        // --- LOOP DE ANIMAÇÃO E LÓGICA DO JOGO ---
         const clock = new THREE.Clock();
+
         function animate() {
             requestAnimationFrame(animate);
+
+            const delta = clock.getDelta();
+            const elapsedTime = clock.getElapsedTime();
 
             if (!gameStarted) {
                 renderer.render(scene, camera);
                 return;
             }
 
-            const speed = 8 * clock.getDelta();
+            // Animação Suave dos Elementos Decorativos
+            awatiPlant.rotation.y = Math.sin(elapsedTime * 0.8) * 0.05;
+            jaguarModel.children[0].position.y = 1.6 + Math.sin(elapsedTime * 2) * 0.03; // Respiração da onça
+
+            // Movimento do Jogador
+            const speed = 9 * delta;
             let moveX = 0, moveZ = 0;
 
             if (keys['w'] || keys['arrowup']) moveZ -= 1;
@@ -395,32 +822,48 @@
             }
 
             if (moveX !== 0 || moveZ !== 0) {
-                playerGroup.rotation.y = Math.atan2(moveX, moveZ);
+                // Rotacionar personagem na direção do movimento
+                const targetAngle = Math.atan2(moveX, moveZ);
+                playerGroup.rotation.y = targetAngle;
+
+                // Limite de Bloqueio da Barreira
                 let nextZ = playerGroup.position.z + moveZ * speed;
                 if (currentPhase === 1 && nextZ < -7.5) nextZ = -7.5;
 
-                playerGroup.position.x += moveX * speed;
+                // Limites Laterais da Trilha
+                let nextX = playerGroup.position.x + moveX * speed;
+                if (nextX > 12) nextX = 12;
+                if (nextX < -12) nextX = -12;
+
+                playerGroup.position.x = nextX;
                 playerGroup.position.z = nextZ;
+
+                // Efeito de passos (caminhada)
+                playerGroup.position.y = Math.abs(Math.sin(elapsedTime * 10)) * 0.15;
+            } else {
+                playerGroup.position.y = 0;
             }
 
+            // Câmera Dinâmica em 3ª Pessoa
             camera.position.x = playerGroup.position.x;
-            camera.position.y = playerGroup.position.y + 7;
-            camera.position.z = playerGroup.position.z + 10;
-            camera.lookAt(playerGroup.position);
+            camera.position.y = playerGroup.position.y + 7.5;
+            camera.position.z = playerGroup.position.z + 11;
+            camera.lookAt(playerGroup.position.x, playerGroup.position.y + 1.5, playerGroup.position.z);
 
-            const distAwati = playerGroup.position.distanceTo(awatiGroup.position);
-            const distJaguar = playerGroup.position.distanceTo(jaguarGroup.position);
+            // Verificação de Proximidade com Objetos Didáticos
+            const distAwati = playerGroup.position.distanceTo(awatiPlant.position);
+            const distJaguar = playerGroup.position.distanceTo(jaguarModel.position);
             const interactBtn = document.getElementById('btn-interact');
             const interactLabel = document.getElementById('interact-label');
 
-            if (currentPhase === 1 && distAwati < 4) {
+            if (currentPhase === 1 && distAwati < 4.2) {
                 activeInteractiveObject = 'phase1';
                 interactBtn.classList.remove('hidden');
-                interactLabel.innerText = "Ler Kwatiá (A)";
-            } else if (currentPhase === 2 && distJaguar < 4) {
+                interactLabel.innerText = "Ler Kwatiá (AWATI)";
+            } else if (currentPhase === 2 && distJaguar < 4.5) {
                 activeInteractiveObject = 'phase2';
                 interactBtn.classList.remove('hidden');
-                interactLabel.innerText = "Ler Kwatiá (DJ)";
+                interactLabel.innerText = "Ler Kwatiá (DJAGWARETE)";
             } else {
                 activeInteractiveObject = null;
                 interactBtn.classList.add('hidden');
@@ -431,7 +874,10 @@
 
         animate();
 
-        function checkCurrentProximity() { if (activeInteractiveObject) openKwatiaModal(); }
+        // --- SISTEMA DE MODAIS E APRENDIZAGEM ---
+        function checkCurrentProximity() { 
+            if (activeInteractiveObject) openKwatiaModal(); 
+        }
 
         function openKwatiaModal() {
             const data = gameData[activeInteractiveObject];
@@ -443,7 +889,7 @@
             listContainer.innerHTML = '';
             data.lines.forEach(line => {
                 const p = document.createElement('p');
-                p.className = "border-b border-amber-800/10 pb-0.5";
+                p.className = "border-b border-amber-800/15 pb-1 font-medium tracking-wide";
                 p.innerText = line;
                 listContainer.appendChild(p);
             });
@@ -459,8 +905,8 @@
             optionsBox.innerHTML = '';
             data.options.forEach(opt => {
                 const btn = document.createElement('button');
-                btn.className = "w-full py-3 px-4 bg-emerald-900/85 hover:bg-emerald-700 border border-emerald-500/40 text-emerald-100 text-xs rounded-xl font-semibold transition text-left flex justify-between items-center";
-                btn.innerHTML = `<span>${opt.text}</span> <i class="fas fa-chevron-right text-emerald-400/50"></i>`;
+                btn.className = "w-full py-3.5 px-4 bg-emerald-950/80 hover:bg-emerald-800 border border-emerald-500/40 text-emerald-100 text-xs rounded-xl font-semibold transition text-left flex justify-between items-center shadow-md";
+                btn.innerHTML = `<span>${opt.text}</span> <i class="fas fa-chevron-right text-emerald-400/60"></i>`;
                 btn.onclick = () => answerQuestion(opt.correct);
                 optionsBox.appendChild(btn);
             });
@@ -470,22 +916,30 @@
         function answerQuestion(isCorrect) {
             if (isCorrect) {
                 if (currentPhase === 1) {
-                    alert("✨ AGUYJEVETE! Resposta Correta!\n\nPassagem desbloqueada no Tape Marangatu!");
+                    showToast("✨ AGUYJEVETE! Resposta Correta!\nCaminho desbloqueado para o próximo sabedoria.");
                     currentPhase = 2;
                     barrier.visible = false;
                     document.getElementById('phase-indicator').innerText = "Fase 2: O Desafio do DJAGWARETE";
                 } else if (currentPhase === 2) {
-                    alert("🎉 PARABÉNS! Concluíste o Tape Marangatu com sucesso!");
+                    showToast("🎉 PARABÉNS! Concluiu toda a trilha do Tape Marangatu com sucesso!");
                 }
                 closeModal('question-modal');
             } else {
-                alert("Nhananderõ! Tenta novamente.");
+                showToast("⚠️ Nhananderõ! Tente novamente consultando o texto da Kwatiá.");
             }
         }
 
-        function openModal(id) { document.getElementById(id).classList.add('flex'); document.getElementById(id).classList.remove('hidden'); }
-        function closeModal(id) { document.getElementById(id).classList.remove('flex'); document.getElementById(id).classList.add('hidden'); }
+        function openModal(id) { 
+            document.getElementById(id).classList.add('flex'); 
+            document.getElementById(id).classList.remove('hidden'); 
+        }
+        
+        function closeModal(id) { 
+            document.getElementById(id).classList.remove('flex'); 
+            document.getElementById(id).classList.add('hidden'); 
+        }
 
+        // Responsividade da Tela
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
