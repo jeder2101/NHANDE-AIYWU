@@ -38,19 +38,21 @@
                 <div class="rounded-xl border border-amber-300/25 bg-black/20 p-3"><div class="text-2xl">📜</div><div class="text-[10px] sm:text-xs font-bold text-amber-100 mt-1">Aprenda</div></div>
                 <div class="rounded-xl border border-sky-300/20 bg-black/20 p-3"><div class="text-2xl">🐆</div><div class="text-[10px] sm:text-xs font-bold text-sky-100 mt-1">Supere desafios</div></div>
             </div>
+            <div class="pc-controls-card" aria-label="Controles do computador">
+                <div class="pc-controls-title">CONTROLES DO COMPUTADOR</div>
+                <div class="pc-controls-grid">
+                    <span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> ou setas <strong>Movimentar</strong></span>
+                    <span><kbd>ESPAÇO</kbd> <strong>Pular / interagir</strong></span>
+                    <span><kbd>↓</kbd> <strong>Agachar</strong></span>
+                    <span><kbd>Mouse</kbd> <strong>Girar câmera</strong></span>
+                    <span><kbd>Scroll</kbd> <strong>Aproximar / afastar</strong></span>
+                </div>
+            </div>
             <button id="start-game-button" type="button" onclick="beginCharacterSelection()" class="start-cta w-full rounded-2xl border-2 border-amber-100 px-6 py-4 font-game font-bold text-emerald-950 shadow-xl transition active:scale-[.98]" style="background:linear-gradient(135deg,#fef3c7,#fbbf24 52%,#d97706);box-shadow:0 6px 0 #78350f,0 0 28px rgba(251,191,36,.2)">COMEÇAR A JORNADA <span class="ml-2">➜</span></button>
-            <p class="mt-4 text-[10px] sm:text-xs text-emerald-200/70">Desenvolvido para celulares e tablets • Melhor experiência com a tela na horizontal</p>
+            <p class="mt-4 text-[10px] sm:text-xs text-emerald-200/70">Versão para PC • Teclado e mouse</p>
         </div>
     </section>
 
-    <!-- Aviso para computadores sem tela de toque -->
-    <section id="device-warning" class="fixed inset-0 z-[200] items-center justify-center bg-[#03140d] p-6 text-center text-emerald-50">
-        <div class="glass-card-amber w-full max-w-lg rounded-3xl p-8 border-2 border-amber-300/60">
-            <div class="text-6xl mb-4">📱</div>
-            <h2 class="font-game text-3xl text-amber-200 font-bold mb-3">Jogo para celular e tablet</h2>
-            <p class="text-emerald-100 leading-relaxed">Tape Marangatu 3D foi preparado para controles por toque. Abra este jogo em um celular ou tablet para explorar a floresta com o joystick e os botões de ação.</p>
-        </div>
-    </section>
 
     <!-- CHARACTER SELECTION SCREEN -->
     <div id="character-select-screen" class="hidden absolute inset-0 z-50 bg-gradient-to-br from-[#02130b] via-[#0b2b18] to-[#041208] flex items-center justify-center p-4">
