@@ -31,28 +31,26 @@
                 <div class="text-[10px] sm:text-xs uppercase tracking-[.25em] text-emerald-200 font-bold font-tribal">Uma jornada de memória e saber</div>
                 <h1 class="start-title font-game font-bold mt-3 bg-gradient-to-r from-amber-200 via-lime-200 to-emerald-300 bg-clip-text text-transparent">TAPE<br class="sm:hidden"> MARANGATU <span class="text-amber-300">3D</span></h1>
                 <div class="mt-3 inline-flex items-center gap-2 rounded-full border border-emerald-300/30 bg-emerald-950/60 px-4 py-2 text-[10px] sm:text-xs font-bold tracking-widest text-amber-100"><span>✦</span> GUARDIÕES DA MEMÓRIA NHANDEWA <span>✦</span></div>
-                <p class="start-subtitle text-emerald-50/90 max-w-xl mt-5">Entre na floresta, siga a trilha sagrada, conheça os saberes da <strong class="text-amber-200">Kwatiá</strong> e supere os desafios de <strong class="text-amber-200">Awati</strong> e <strong class="text-amber-200">Djagwarete</strong>.</p>
+                <p class="start-subtitle text-emerald-50/90 max-w-xl mt-5">Entre na floresta, siga a trilha sagrada e aprenda com 20 fases e minijogos aleatórios: ligue as cores, descubra os nomes, resolva cruzadinhas e caça-palavras, charadas, frases e palavras embaralhadas.</p>
             </div>
             <div class="start-details grid grid-cols-3 gap-2 sm:gap-3 mt-6 mb-6">
                 <div class="rounded-xl border border-emerald-300/20 bg-black/20 p-3"><div class="text-2xl">🌿</div><div class="text-[10px] sm:text-xs font-bold text-emerald-100 mt-1">Explore</div></div>
                 <div class="rounded-xl border border-amber-300/25 bg-black/20 p-3"><div class="text-2xl">📜</div><div class="text-[10px] sm:text-xs font-bold text-amber-100 mt-1">Aprenda</div></div>
                 <div class="rounded-xl border border-sky-300/20 bg-black/20 p-3"><div class="text-2xl">🐆</div><div class="text-[10px] sm:text-xs font-bold text-sky-100 mt-1">Supere desafios</div></div>
             </div>
-            <div class="pc-controls-card" aria-label="Controles do computador">
-                <div class="pc-controls-title">CONTROLES DO COMPUTADOR</div>
-                <div class="pc-controls-grid">
-                    <span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> ou setas <strong>Movimentar</strong></span>
-                    <span><kbd>ESPAÇO</kbd> <strong>Pular / interagir</strong></span>
-                    <span><kbd>↓</kbd> <strong>Agachar</strong></span>
-                    <span><kbd>Mouse</kbd> <strong>Girar câmera</strong></span>
-                    <span><kbd>Scroll</kbd> <strong>Aproximar / afastar</strong></span>
-                </div>
-            </div>
             <button id="start-game-button" type="button" onclick="beginCharacterSelection()" class="start-cta w-full rounded-2xl border-2 border-amber-100 px-6 py-4 font-game font-bold text-emerald-950 shadow-xl transition active:scale-[.98]" style="background:linear-gradient(135deg,#fef3c7,#fbbf24 52%,#d97706);box-shadow:0 6px 0 #78350f,0 0 28px rgba(251,191,36,.2)">COMEÇAR A JORNADA <span class="ml-2">➜</span></button>
-            <p class="mt-4 text-[10px] sm:text-xs text-emerald-200/70">Versão para PC • Teclado e mouse</p>
+            <p class="mt-4 text-[10px] sm:text-xs text-emerald-200/70">20 fases • 7 tipos de atividades educativas • celular, tablet e computador</p>
         </div>
     </section>
 
+    <!-- Aviso para computadores sem tela de toque -->
+    <section id="device-warning" class="fixed inset-0 z-[200] items-center justify-center bg-[#03140d] p-6 text-center text-emerald-50">
+        <div class="glass-card-amber w-full max-w-lg rounded-3xl p-8 border-2 border-amber-300/60">
+            <div class="text-6xl mb-4">📱</div>
+            <h2 class="font-game text-3xl text-amber-200 font-bold mb-3">Jogo para celular e tablet</h2>
+            <p class="text-emerald-100 leading-relaxed">Tape Marangatu 3D foi preparado para controles por toque. Abra este jogo em um celular ou tablet para explorar a floresta com o joystick e os botões de ação.</p>
+        </div>
+    </section>
 
     <!-- CHARACTER SELECTION SCREEN -->
     <div id="character-select-screen" class="hidden absolute inset-0 z-50 bg-gradient-to-br from-[#02130b] via-[#0b2b18] to-[#041208] flex items-center justify-center p-4">
@@ -220,7 +218,7 @@
             </div>
 
             <button onclick="openQuestionModal()" class="w-full py-3.5 bg-amber-900 hover:bg-amber-800 text-amber-100 font-bold rounded-xl shadow-lg flex items-center justify-center space-x-2 transition text-sm">
-                <span>Responder ao Enigma da Kwatiá</span>
+                <span>Sortear uma atividade</span>
                 <i class="fas fa-arrow-right"></i>
             </button>
         </div>
@@ -232,8 +230,8 @@
             <div class="flex items-center space-x-3 mb-4 border-b border-emerald-500/30 pb-3">
                 <div class="w-10 h-10 rounded-full bg-amber-500 flex items-center justify-center text-amber-950 font-bold text-xl">❓</div>
                 <div>
-                    <h3 class="font-game text-lg text-amber-300">Desafio de Interpretação</h3>
-                    <p class="text-[11px] text-emerald-300">Responde corretamente para avançar!</p>
+                    <h3 id="question-title" class="font-game text-lg text-amber-300">Desafio da Kwatiá</h3>
+                    <p id="question-subtitle" class="text-[11px] text-emerald-300">Uma atividade aleatória para avançar!</p>
                 </div>
             </div>
 
