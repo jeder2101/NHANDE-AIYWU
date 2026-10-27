@@ -500,52 +500,81 @@ body {
     }
 }
 
-
 /* =====================================================
-   VERSÃO PC — layout amplo e controles por teclado/mouse
+   AJUSTE FINAL: REFLUXO DE TELA APÓS ROTAÇÃO
+   Prioriza as dimensões atualizadas pelo JavaScript e respeita áreas seguras.
    ===================================================== */
-@media (pointer: fine) and (min-width: 900px) {
-    html, body { width:100%; height:100%; min-height:100%; overflow:hidden; cursor:default; }
-    #canvas-container { position:fixed; inset:0; width:100vw; height:100vh; height:100dvh; }
-    #canvas-container canvas { width:100%; height:100%; display:block; }
-    #touch-controls, #rotate-screen-button, #landscape-hint, #device-warning { display:none !important; }
-    #keyboard-tip { display:flex !important; position:fixed; left:22px; bottom:18px; max-width:min(760px, calc(100vw - 44px)); padding:12px 16px; font-size:12px; line-height:1.5; pointer-events:none; }
-    #game-header { padding:18px 22px 0; gap:14px; align-items:flex-start; }
-    #game-header > div:first-child { max-width:unset; min-width:250px; padding:10px 14px; }
-    #game-header > div:last-child { gap:12px; }
-    #game-header #phase-indicator { max-width:unset; font-size:13px; }
-    #game-header .compass-ring { width:58px; height:58px; }
-    #survival-hud { top:104px; left:50%; transform:translateX(-50%); width:min(620px, 48vw); }
-    #survival-hud > div { padding:10px 14px; gap:12px; }
-    #start-screen, #character-select-screen { padding:24px; }
-    .start-shell { width:min(100%, 980px); max-height:calc(100dvh - 48px); padding:clamp(28px, 3vw, 46px) !important; border-radius:32px; }
-    .start-title { font-size:clamp(3.5rem, 6vw, 6rem); line-height:1; }
-    .start-emblem { width:96px; height:96px; font-size:58px; }
-    .start-subtitle { font-size:clamp(1rem, 1.3vw, 1.25rem); }
-    .start-details > div { padding:16px; }
-    .start-details > div > div:first-child { font-size:30px; }
-    .start-cta { min-height:58px; font-size:1.15rem; cursor:pointer; }
-    .pc-controls-card { margin:0 auto 22px; width:min(100%, 760px); padding:14px 18px; border:1px solid rgba(110,231,183,.3); border-radius:18px; background:rgba(0,0,0,.25); color:#ecfdf5; text-align:left; }
-    .pc-controls-title { margin-bottom:10px; color:#fcd34d; font-size:11px; font-weight:800; letter-spacing:.16em; text-align:center; }
-    .pc-controls-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px 18px; font-size:12px; align-items:center; }
-    .pc-controls-grid span { display:flex; flex-wrap:wrap; align-items:center; gap:4px; }
-    .pc-controls-grid strong { margin-left:5px; color:#d1fae5; font-weight:600; }
-    .pc-controls-grid kbd { display:inline-flex; min-width:25px; height:25px; padding:0 6px; align-items:center; justify-content:center; border:1px solid rgba(253,230,138,.65); border-radius:6px; background:rgba(6,30,20,.9); color:#fde68a; font-family:inherit; font-size:10px; font-weight:800; box-shadow:0 2px 0 rgba(0,0,0,.45); }
-    .character-panel { max-width:900px; padding:36px !important; }
-    .character-card { cursor:pointer; transition:transform .18s ease, border-color .18s ease, background .18s ease; }
-    .character-card:hover { transform:translateY(-4px); border-color:rgba(252,211,77,.8); background-color:rgba(20,83,45,.3); }
-    button, [role="button"], .character-card { cursor:pointer; }
+html, body {
+    width: var(--app-width, 100vw) !important;
+    height: var(--app-height, 100dvh) !important;
+    min-height: 0 !important;
 }
-@media (pointer: fine) and (min-width: 900px) and (max-height: 700px) {
-    .start-shell { display:grid; grid-template-columns:minmax(0,1fr) minmax(300px,.8fr); align-items:center; column-gap:26px; padding:22px !important; }
-    .start-copy { grid-column:1; grid-row:1 / span 3; }
-    .start-details { grid-column:2; margin-top:8px; margin-bottom:12px; }
-    .pc-controls-card { grid-column:2; margin-bottom:12px; padding:10px 12px; }
-    #start-game-button { grid-column:2; }
-    .start-shell > p { grid-column:2; }
-    .start-emblem { width:72px; height:72px; font-size:42px; margin-bottom:8px; }
-    .start-subtitle { margin-top:10px; }
+#canvas-container {
+    width: var(--app-width, 100vw) !important;
+    height: var(--app-height, 100dvh) !important;
 }
-@media (pointer: fine) and (min-width: 900px) {
-    #read-modal, #question-modal, #game-over-modal { overscroll-behavior:contain; }
+#canvas-container canvas {
+    max-width: none !important;
+    max-height: none !important;
+}
+#touch-controls {
+    width: var(--app-width, 100vw) !important;
+    max-width: 100vw !important;
+    box-sizing: border-box !important;
+    pointer-events: none;
+}
+#mobile-joystick, .mobile-actions, .mobile-action {
+    flex-shrink: 0;
+}
+.mobile-action { pointer-events: auto; }
+
+/* Horizontal em celular e tablet: joystick à esquerda, ações à direita, sem cortes. */
+@media (pointer: coarse) and (orientation: landscape) {
+    #touch-controls,
+    body.is-landscape #touch-controls {
+        position: fixed !important;
+        inset: 0 !important;
+        height: var(--app-height, 100dvh) !important;
+        padding-top: max(8px, env(safe-area-inset-top, 0px)) !important;
+        padding-right: max(12px, env(safe-area-inset-right, 0px)) !important;
+        padding-bottom: max(8px, env(safe-area-inset-bottom, 0px)) !important;
+        padding-left: max(12px, env(safe-area-inset-left, 0px)) !important;
+        align-items: flex-end !important;
+        justify-content: space-between !important;
+    }
+    #mobile-joystick { width: clamp(78px, 20dvh, 118px) !important; height: clamp(78px, 20dvh, 118px) !important; }
+    #joystick-knob { width: clamp(32px, 7.5dvh, 46px) !important; height: clamp(32px, 7.5dvh, 46px) !important; }
+    .mobile-actions { flex-direction: row !important; align-items: flex-end !important; gap: clamp(6px, 1.8vw, 14px) !important; }
+    .mobile-action { width: clamp(54px, 13dvh, 72px) !important; height: clamp(48px, 12dvh, 62px) !important; border-radius: 14px !important; }
+    .mobile-action i { font-size: clamp(16px, 4dvh, 21px) !important; }
+    #btn-interact { max-width: min(52vw, 360px) !important; }
+    #game-header { max-width: 100vw; }
+    #rotate-screen-button { max-width: 42vw; }
+}
+
+/* Retrato: mantém o joystick e as ações no rodapé sem cobrir a área de jogo. */
+@media (pointer: coarse) and (orientation: portrait) {
+    #touch-controls,
+    body.is-portrait #touch-controls {
+        position: fixed !important;
+        inset: auto 0 max(8px, env(safe-area-inset-bottom, 0px)) 0 !important;
+        height: clamp(108px, 20dvh, 158px) !important;
+        padding-left: max(12px, env(safe-area-inset-left, 0px)) !important;
+        padding-right: max(12px, env(safe-area-inset-right, 0px)) !important;
+        align-items: flex-end !important;
+        justify-content: space-between !important;
+    }
+    .mobile-actions { flex-direction: column !important; gap: clamp(5px, 1dvh, 10px) !important; }
+    .mobile-action { width: clamp(56px, 17vw, 72px) !important; height: clamp(48px, 8dvh, 62px) !important; }
+}
+
+/* Em telas horizontais muito baixas, compacta HUD e menus para preservar a área útil. */
+@media (pointer: coarse) and (orientation: landscape) and (max-height: 430px) {
+    #game-header { transform: scale(.88); transform-origin: top left; width: 112%; }
+    #survival-hud { top: max(38px, calc(5px + env(safe-area-inset-top, 0px))) !important; transform: scale(.88); transform-origin: top center; }
+    #question-modal, #read-modal { align-items: flex-start !important; }
+    #question-modal > .glass-card, #read-modal > .kwatia-paper {
+        max-height: calc(var(--app-height, 100dvh) - 12px) !important;
+        overflow-y: auto !important;
+    }
 }
