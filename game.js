@@ -1,4 +1,4 @@
-* Diagnóstico de erros: mostra mensagens de falha na tela em vez de deixar o jogo aparentemente travado. */
+/* Diagnóstico de erros: mostra mensagens de falha na tela em vez de deixar o jogo aparentemente travado. */
 (function () {
     function showGameError(message) {
         let panel = document.getElementById('game-js-error-panel');
@@ -28,7 +28,6 @@ let selectedCharacter = null;
         let isGameOver = false;
         let currentPhase = 1;
         let activeInteractiveObject = null;
-        let gameCompleted = false;
 
         // PEDAGOGICAL QUIZ BANK
         const quizBank = {
@@ -101,55 +100,6 @@ let selectedCharacter = null;
                 ]
             }
         };
-
-        // FASES 3 A 20 — nomes e objetos definidos para o percurso Nhandewa.
-        // As fases 1 (AWATI) e 2 (DJAGWARETE) permanecem como no jogo original.
-        const additionalPhases = [
-            { prefix: "e", title: "E´I", icon: "🐝", object: "bee" },
-            { prefix: "gw", title: "GWYRA", icon: "🐦", object: "bird" },
-            { prefix: "i", title: "ITÁ", icon: "🪨", object: "stone" },
-            { prefix: "k", title: "KARU", icon: "🍲", object: "eating-child" },
-            { prefix: "m", title: "MITANGWÉ", icon: "🧒", object: "child" },
-            { prefix: "mb", title: "MBORAI", icon: "🎸", object: "guitar-child" },
-            { prefix: "n", title: "NAMBU", icon: "🐦", object: "nambu" },
-            { prefix: "nd", title: "NDERU", icon: "🧓", object: "elder" },
-            { prefix: "nh", title: "NHÂKYRÂ", icon: "✨", object: "glow" },
-            { prefix: "gw", title: "GWATSU", icon: "🛖", object: "big-house" },
-            { prefix: "p", title: "PIRA", icon: "🐟", object: "fish" },
-            { prefix: "r", title: "RREKOA", icon: "🏡", object: "village" },
-            { prefix: "t", title: "TAY", icon: "🐜", object: "ant" },
-            { prefix: "ts", title: "TSUGWAI", icon: "🐗", object: "pig" },
-            { prefix: "tx", title: "TXIWI", icon: "🐈", object: "cat" },
-            { prefix: "u", title: "URU", icon: "🐔", object: "chicken" },
-            { prefix: "w", title: "WERA", icon: "⚡", object: "lightning" },
-            { prefix: "y", title: "YWYRA", icon: "🌳", object: "great-tree" }
-        ];
-
-        const totalPhases = 2 + additionalPhases.length;
-        additionalPhases.forEach((phase, index) => {
-            const phaseNumber = index + 3;
-            const key = `phase${phaseNumber}`;
-            const prefixUpper = phase.prefix.toLocaleUpperCase('pt-BR');
-            gameData[key] = {
-                letter: `${prefixUpper} ${phase.prefix.toLocaleLowerCase('pt-BR')}  →  ${phase.title}`,
-                title: phase.title,
-                icon: phase.icon,
-                lines: [
-                    `${prefixUpper} ${phase.prefix.toLocaleLowerCase('pt-BR')}  →  ${phase.title}`,
-                    phase.title,
-                    `Fase ${phaseNumber} de ${totalPhases}`
-                ]
-            };
-            const otherOptions = additionalPhases
-                .filter((other, otherIndex) => otherIndex !== index)
-                .slice((index * 3) % (additionalPhases.length - 3))
-                .slice(0, 3)
-                .map(other => ({ text: other.title, correct: false }));
-            quizBank[key] = [{
-                question: `Qual grafia corresponde à fase ${phaseNumber}?`,
-                options: [{ text: phase.title, correct: true }, ...otherOptions]
-            }];
-        });
 
         // --- THREE.JS DAYTIME & INFINITE HORIZON SETUP ---
         const container = document.getElementById('canvas-container');
@@ -554,164 +504,6 @@ let selectedCharacter = null;
         jaguarGroup.position.set(jagX, 0, -35);
         scene.add(jaguarGroup);
 
-        // --- OBJETOS 3D DAS FASES 3 A 20 ---
-        // Modelos procedurais leves: não dependem de imagens nem de arquivos externos.
-        const phaseLandmarks = {};
-        const mat = (color, extra = {}) => new THREE.MeshLambertMaterial({ color, ...extra });
-        function addPart(group, geometry, material, x, y, z, rx = 0, ry = 0, rz = 0) {
-            const mesh = new THREE.Mesh(geometry, material);
-            mesh.position.set(x, y, z);
-            mesh.rotation.set(rx, ry, rz);
-            mesh.castShadow = true;
-            mesh.receiveShadow = true;
-            group.add(mesh);
-            return mesh;
-        }
-        function makePerson(group, clothes = 0x1f8a70, scale = 1) {
-            const skin = mat(0xb97855), hair = mat(0x211a17), shirt = mat(clothes), shorts = mat(0x49372c);
-            addPart(group, new THREE.BoxGeometry(.68*scale,.82*scale,.38*scale), shirt, 0, 1.02*scale, 0);
-            addPart(group, new THREE.SphereGeometry(.32*scale, 10, 8), skin, 0, 1.72*scale, .02*scale);
-            addPart(group, new THREE.BoxGeometry(.68*scale,.16*scale,.42*scale), hair, 0, 1.94*scale, -.01*scale);
-            addPart(group, new THREE.BoxGeometry(.16*scale,.56*scale,.18*scale), skin, -.45*scale, 1.05*scale, 0, 0, 0, -.16);
-            addPart(group, new THREE.BoxGeometry(.16*scale,.56*scale,.18*scale), skin, .45*scale, 1.05*scale, 0, 0, 0, .16);
-            addPart(group, new THREE.BoxGeometry(.22*scale,.62*scale,.23*scale), shorts, -.19*scale, .35*scale, 0);
-            addPart(group, new THREE.BoxGeometry(.22*scale,.62*scale,.23*scale), shorts, .19*scale, .35*scale, 0);
-            addPart(group, new THREE.BoxGeometry(.26*scale,.12*scale,.38*scale), mat(0x3b2b20), -.19*scale, .05*scale, .04*scale);
-            addPart(group, new THREE.BoxGeometry(.26*scale,.12*scale,.38*scale), mat(0x3b2b20), .19*scale, .05*scale, .04*scale);
-        }
-        function makeBird(group, groundBird = false) {
-            const feather = mat(groundBird ? 0x7c4a2d : 0x277da1), wing = mat(groundBird ? 0x5b3525 : 0x64a9c6), beak = mat(0xe8a23a), legs = mat(0x8b5e34);
-            addPart(group, new THREE.SphereGeometry(groundBird ? .72 : .52, 12, 9), feather, 0, groundBird ? .9 : 1.05, 0).scale.set(1.25, .9, 1.45);
-            addPart(group, new THREE.SphereGeometry(groundBird ? .34 : .3, 10, 8), feather, 0, groundBird ? 1.35 : 1.48, .52);
-            addPart(group, new THREE.ConeGeometry(.12,.42,5), beak, 0, groundBird ? 1.27 : 1.43, .88, Math.PI/2, 0, 0);
-            [-1,1].forEach(side => {
-                addPart(group, new THREE.BoxGeometry(groundBird ? .12 : .18,.12,.5), wing, side*(groundBird ? .65 : .48), groundBird ? 1.02 : 1.08, -.03, 0, 0, side*.18);
-                addPart(group, new THREE.CylinderGeometry(.045,.055,.42,6), legs, side*.23, .25, .05);
-                addPart(group, new THREE.BoxGeometry(.28,.07,.16), legs, side*.23, .06, .13);
-            });
-            if (!groundBird) addPart(group, new THREE.ConeGeometry(.18,.55,5), feather, 0, 1.18, -.63, -Math.PI/2, 0, 0);
-        }
-        function makeHouse(group, size = 1) {
-            const wall = mat(0xc99b62), dark = mat(0x68452d), roof = mat(0x8b3f2f), door = mat(0x40291d);
-            addPart(group, new THREE.BoxGeometry(3.2*size,2.5*size,2.8*size), wall, 0, 1.25*size, 0);
-            addPart(group, new THREE.ConeGeometry(2.55*size,1.7*size,4), roof, 0, 3.2*size, 0, 0, Math.PI/4, 0);
-            addPart(group, new THREE.BoxGeometry(.68*size,1.35*size,.1*size), door, 0, .68*size, 1.42*size);
-            for (let side of [-1,1]) addPart(group, new THREE.BoxGeometry(.38*size,.42*size,.08*size), mat(0x9bd5e8), side*.92*size,1.55*size,1.43*size);
-            // Colunas de madeira na frente
-            for (let side of [-1,1]) addPart(group,new THREE.CylinderGeometry(.09*size,.12*size,2.7*size,6),dark,side*1.7*size,1.35*size,1.48*size);
-        }
-        function makePhaseObject(kind) {
-            const g = new THREE.Group();
-            const wood = mat(0x805333), skin = mat(0xb97855), green = mat(0x398044), dark = mat(0x35251d);
-            if (kind === 'bee') {
-                const yellow = mat(0xf5c542), black = mat(0x292522), wing = new THREE.MeshLambertMaterial({color:0xdff7ff, transparent:true, opacity:.8});
-                addPart(g,new THREE.SphereGeometry(.42,12,9),yellow,0,1.3,0).scale.set(1.25,.8,1);
-                [-.17,.17].forEach(x=>addPart(g,new THREE.BoxGeometry(.12,.7,.65),black,x,1.3,0));
-                addPart(g,new THREE.SphereGeometry(.25,10,8),yellow,0,1.32,.48);
-                [-1,1].forEach(side=>addPart(g,new THREE.SphereGeometry(.27,8,6),wing,side*.28,1.72,-.02,0,0,side*.35));
-                [-1,1].forEach(side=>addPart(g,new THREE.CylinderGeometry(.025,.025,.35,5),dark,side*.12,1.65,.55,0,0,side*.5));
-            } else if (kind === 'bird') makeBird(g,false);
-            else if (kind === 'nambu') makeBird(g,true);
-            else if (kind === 'stone') {
-                const rock = addPart(g,new THREE.DodecahedronGeometry(1.25,0),mat(0x777b7d),0,.92,0,.15,.2,.1); rock.scale.set(1.15,.85,1);
-                addPart(g,new THREE.DodecahedronGeometry(.55,0),mat(0x9da3a5),-.28,1.5,-.1,.2,.1,.2);
-            } else if (kind === 'eating-child') {
-                makePerson(g,0xe3a52f,.9);
-                addPart(g,new THREE.CylinderGeometry(.32,.38,.14,10),mat(0x9b5d31),.56,.78,.18);
-                addPart(g,new THREE.SphereGeometry(.16,8,7),mat(0xf2c14e),.56,.91,.18);
-                addPart(g,new THREE.BoxGeometry(.11,.55,.12),skin,.38,1.1,.22,0,0,-.8);
-                addPart(g,new THREE.SphereGeometry(.09,8,6),mat(0xf2c14e),.3,1.43,.26);
-            } else if (kind === 'child') {
-                makePerson(g,0x2c9b68,.92);
-                addPart(g,new THREE.BoxGeometry(.13,.38,.13),mat(0xf4e3b1),-.42,1.3,.06,0,0,-.25);
-            } else if (kind === 'guitar-child') {
-                makePerson(g,0xc94d3f,.92);
-                addPart(g,new THREE.SphereGeometry(.31,10,8),mat(0x9b5d31),.42,1.05,.38).scale.set(.78,1.15,.45);
-                addPart(g,new THREE.BoxGeometry(.18,.82,.12),wood,.55,1.55,.38,0,0,-.15);
-                addPart(g,new THREE.BoxGeometry(.22,.13,.16),dark,.55,1.98,.38);
-                for(let i=0;i<3;i++) addPart(g,new THREE.BoxGeometry(.012,.9,.012),mat(0xe8d9b0),.48+i*.05,1.53,.45);
-            } else if (kind === 'elder') {
-                makePerson(g,0x766b45,1.03);
-                addPart(g,new THREE.SphereGeometry(.34,10,8),mat(0xd7d0c2),0,1.69,.12).scale.set(1,.42,.7);
-                addPart(g,new THREE.CylinderGeometry(.055,.08,2.2,6),wood,.78,1.1,0);
-            } else if (kind === 'glow') {
-                addPart(g,new THREE.DodecahedronGeometry(.72,1),mat(0x8a74d6,{emissive:0x49358a}),0,1.1,0,.2,.3,.1);
-                const halo = new THREE.Mesh(new THREE.TorusGeometry(1.15,.055,6,24),new THREE.MeshBasicMaterial({color:0xf5e6a8})); halo.rotation.x=Math.PI/2; halo.position.y=.12; g.add(halo);
-                for(let i=0;i<5;i++) addPart(g,new THREE.SphereGeometry(.09,6,5),mat(0xffed9a,{emissive:0xffc857}),Math.cos(i*1.25)*1.05,1.1+Math.sin(i*1.25)*.45,Math.sin(i*1.25)*.65);
-            } else if (kind === 'big-house') makeHouse(g,1.35);
-            else if (kind === 'fish') {
-                const body=addPart(g,new THREE.SphereGeometry(.72,12,9),mat(0x2f9cc2),0,1.05,0); body.scale.set(1.45,.72,.65);
-                addPart(g,new THREE.ConeGeometry(.42,.7,4),mat(0x1976a1),0,1.05,-1.0,Math.PI/2,0,0);
-                addPart(g,new THREE.ConeGeometry(.28,.45,4),mat(0xf6b84a),0,1.48,-.1,0,0,Math.PI);
-                [-1,1].forEach(side=>{addPart(g,new THREE.SphereGeometry(.09,8,6),mat(0xffffff),side*.48,1.22,.42);addPart(g,new THREE.SphereGeometry(.045,6,5),dark,side*.5,1.22,.49);});
-            } else if (kind === 'village') {
-                makeHouse(g,.72);
-                const hut2=new THREE.Group(); makeHouse(hut2,.5); hut2.position.set(-3.1,0,-1.1); g.add(hut2);
-                const hut3=new THREE.Group(); makeHouse(hut3,.48); hut3.position.set(3.0,0,-1.8); g.add(hut3);
-                addPart(g,new THREE.BoxGeometry(.22,1.8,.22),wood,-1.5,.9,2.2,0,0,.2);
-                addPart(g,new THREE.BoxGeometry(.22,1.8,.22),wood,1.5,.9,2.2,0,0,-.2);
-                addPart(g,new THREE.BoxGeometry(3.4,.12,.12),wood,0,1.6,2.2);
-            } else if (kind === 'ant') {
-                const black=mat(0x292522), legs=mat(0x33241d);
-                [-.52,0,.48].forEach((x,i)=>addPart(g,new THREE.SphereGeometry(i===1?.27:.22,8,6),black,x,.65,i===1?.1:-.08));
-                for(let side of [-1,1]) for(let i=0;i<3;i++) addPart(g,new THREE.BoxGeometry(.07,.58,.07),legs,side*(.2+i*.13),.37,(i-1)*.3,0,0,side*(i===1?.25:.65));
-                [-1,1].forEach(side=>addPart(g,new THREE.CylinderGeometry(.025,.025,.45,5),black,side*.12,1.03,.28,0,0,side*.45));
-            } else if (kind === 'pig') {
-                const pink=mat(0xd98d91), snout=mat(0xf1b3b2), hoof=mat(0x51403c);
-                addPart(g,new THREE.SphereGeometry(.72,12,9),pink,0,.86,0).scale.set(1.25,.85,1.2);
-                addPart(g,new THREE.SphereGeometry(.43,10,8),pink,0,1.18,.68);
-                addPart(g,new THREE.BoxGeometry(.42,.28,.15),snout,0,1.08,1.02);
-                [-1,1].forEach(side=>{addPart(g,new THREE.ConeGeometry(.16,.35,4),pink,side*.28,1.55,.62,0,0,side*.3);addPart(g,new THREE.BoxGeometry(.2,.42,.22),pink,side*.42,.3,.4);addPart(g,new THREE.BoxGeometry(.2,.42,.22),pink,side*.42,.3,-.45);});
-                addPart(g,new THREE.TorusGeometry(.15,.045,5,10),pink,0,.88,-.88,Math.PI/2,0,0);
-            } else if (kind === 'cat') {
-                const fur=mat(0xd18b45), cream=mat(0xf1dfbd), eye=mat(0x3f9b63);
-                addPart(g,new THREE.SphereGeometry(.55,10,8),fur,0,.78,-.1).scale.set(.8,.85,1.25);
-                addPart(g,new THREE.SphereGeometry(.39,10,8),fur,0,1.42,.48);
-                [-1,1].forEach(side=>{addPart(g,new THREE.ConeGeometry(.17,.42,4),fur,side*.25,1.78,.43,0,0,side*.15);addPart(g,new THREE.SphereGeometry(.065,8,6),eye,side*.15,1.48,.81);addPart(g,new THREE.BoxGeometry(.09,.42,.09),fur,side*.32,.35,.12);});
-                addPart(g,new THREE.SphereGeometry(.17,8,6),cream,0,1.27,.77);
-                const tail=addPart(g,new THREE.CylinderGeometry(.09,.13,.85,7),fur,.48,.9,-.72,0,0,-1.05);
-            } else if (kind === 'chicken') {
-                const feather=mat(0xf5f0df), red=mat(0xc53d32), beak=mat(0xe6a33b);
-                addPart(g,new THREE.SphereGeometry(.62,10,8),feather,0,.78,0).scale.set(1.1,.85,1.15);
-                addPart(g,new THREE.SphereGeometry(.31,10,8),feather,0,1.35,.38);
-                addPart(g,new THREE.SphereGeometry(.14,8,6),red,0,1.65,.38);
-                addPart(g,new THREE.ConeGeometry(.12,.28,5),beak,0,1.32,.72,Math.PI/2,0,0);
-                [-1,1].forEach(side=>{addPart(g,new THREE.BoxGeometry(.12,.48,.12),mat(0xb98b39),side*.22,.28,.03);addPart(g,new THREE.BoxGeometry(.28,.07,.14),mat(0xb98b39),side*.22,.05,.13);});
-                addPart(g,new THREE.ConeGeometry(.25,.55,5),feather,0,1.0,-.65,-Math.PI/2,0,0);
-            } else if (kind === 'lightning') {
-                const boltMat = new THREE.MeshBasicMaterial({color:0xffe34d,emissive:0xffd000});
-                const bolt = new THREE.Group();
-                addPart(bolt,new THREE.BoxGeometry(.42,1.3,.24),boltMat,0,0,0,0,0,-.28);
-                addPart(bolt,new THREE.BoxGeometry(.42,1.25,.24),boltMat,.18,-.88,0,0,0,.45);
-                addPart(bolt,new THREE.BoxGeometry(.3,.95,.24),boltMat,-.12,-1.68,0,0,0,-.45);
-                bolt.position.y=3.4; g.add(bolt);
-                const cloud=mat(0x566477);
-                [-.7,0,.7].forEach((x,i)=>addPart(g,new THREE.SphereGeometry(.62,8,6),cloud,x,4.5+(i===1?.2:0),0).scale.set(1,.65,1));
-                const glow=new THREE.Mesh(new THREE.CylinderGeometry(.05,.5,3.1,8),new THREE.MeshBasicMaterial({color:0xfff2a1,transparent:true,opacity:.16})); glow.position.set(0,1.7,0); g.add(glow);
-            } else if (kind === 'great-tree') {
-                addPart(g,new THREE.CylinderGeometry(.72,1.0,7.5,7),mat(0x68432b),0,3.75,0);
-                const leaves=[0x1b5e20,0x2e7d32,0x3f8d35,0x5a9e3d];
-                for(let i=0;i<7;i++) {
-                    const crown=addPart(g,new THREE.BoxGeometry(4.3-i*.22,2.25,4.1-i*.2),mat(leaves[i%leaves.length]),(i%2?.38:-.22),6.2+i*.72,(i%3-.8)*.2);
-                    crown.rotation.y=(i%2)*.18;
-                }
-                // Raízes grandes para caracterizar a árvore final.
-                for(let side=0;side<6;side++) addPart(g,new THREE.BoxGeometry(.34,2.0,.38),mat(0x68432b),Math.cos(side*Math.PI/3)*1.0,.72,Math.sin(side*Math.PI/3)*1.0,0,0,Math.cos(side*Math.PI/3)*.45);
-            }
-            return g;
-        }
-        // Posiciona cada marco ao longo da trilha; a fase final termina junto à grande YWYRA.
-        additionalPhases.forEach((phase, index) => {
-            const phaseNumber = index + 3;
-            const z = -39 - index * 3.05;
-            const x = getTrailXAtZ(z) + (index % 2 === 0 ? 2.4 : -2.4);
-            const landmark = makePhaseObject(phase.object);
-            landmark.position.set(x, 0, z);
-            if (phase.object === 'great-tree') landmark.scale.setScalar(1.18);
-            scene.add(landmark);
-            phaseLandmarks['phase' + phaseNumber] = landmark;
-        });
-
         // A onça usa o modelo procedural em blocos; não precisa baixar arquivos GLB.
         // Grupo, posição, anel e distância de interação permanecem iguais.
 
@@ -932,8 +724,7 @@ let selectedCharacter = null;
             isGameOver = true;
             const overlay = document.getElementById('game-over-overlay');
             const phaseText = document.getElementById('game-over-phase');
-            const phaseData = gameData['phase' + currentPhase];
-            const phaseName = phaseData ? `Fase ${currentPhase} — ${phaseData.title}` : `Fase ${currentPhase}`;
+            const phaseName = currentPhase === 1 ? 'Fase 1 — AWATI (milho)' : 'Fase ' + currentPhase + ' — desafio do DJAGWARETE (onça)';
             if (phaseText) phaseText.textContent = 'Você perdeu na ' + phaseName + '. Reinicie para tentar novamente nesta mesma fase.';
             if (overlay) { overlay.classList.remove('hidden'); overlay.classList.add('flex'); }
         }
@@ -1236,16 +1027,12 @@ let selectedCharacter = null;
             }
         }
 
-        // O jogo foi planejado para celular/tablet com toque; evita mostrar a interface de toque
-        // em computador convencional sem impedir tablets grandes com tela sensível ao toque.
+        // Versão PC: não bloqueia computadores sem tela de toque.
+        // Os controles de teclado já existentes continuam ativos e o CSS oculta os controles táteis.
         function detectTouchDevice() {
-            const hasTouch = (navigator.maxTouchPoints || 0) > 0 || ('ontouchstart' in window) || window.matchMedia('(pointer: coarse)').matches;
-            const wideDesktop = window.innerWidth >= 1024 && !hasTouch;
-            document.body.classList.toggle('desktop-no-touch', wideDesktop);
+            document.body.classList.remove('desktop-no-touch');
         }
         detectTouchDevice();
-        window.addEventListener('resize', detectTouchDevice, { passive: true });
-        window.addEventListener('orientationchange', () => setTimeout(detectTouchDevice, 120), { passive: true });
 
         function selectCharacter(char) {
             selectedCharacter = char;
@@ -1523,23 +1310,18 @@ let selectedCharacter = null;
 
             // Proximity Check for Interactions
             const distAwati = player.mesh.position.distanceTo(awatiGroup.position);
-            const currentLandmark = currentPhase >= 3 ? phaseLandmarks['phase' + currentPhase] : jaguarGroup;
-            const distCurrentLandmark = currentLandmark ? player.mesh.position.distanceTo(currentLandmark.position) : Infinity;
+            const distJaguar = player.mesh.position.distanceTo(jaguarGroup.position);
             const interactBtn = document.getElementById('btn-interact');
             const interactLabel = document.getElementById('interact-label');
 
-            if (!gameCompleted && currentPhase === 1 && distAwati < 4.8) {
+            if (currentPhase === 1 && distAwati < 4.8) {
                 activeInteractiveObject = 'phase1';
                 interactBtn.classList.remove('hidden');
-                interactLabel.innerText = `Ler Kwatiá (A - ${gameData.phase1.title})`;
-            } else if (!gameCompleted && currentPhase === 2 && distCurrentLandmark < 4.8) {
+                interactLabel.innerText = "Ler Kwatiá (A - AWATI)";
+            } else if (currentPhase === 2 && distJaguar < 4.8) {
                 activeInteractiveObject = 'phase2';
                 interactBtn.classList.remove('hidden');
-                interactLabel.innerText = `Ler Kwatiá (${gameData.phase2.title})`;
-            } else if (!gameCompleted && currentPhase >= 3 && currentPhase <= totalPhases && distCurrentLandmark < 4.8) {
-                activeInteractiveObject = 'phase' + currentPhase;
-                interactBtn.classList.remove('hidden');
-                interactLabel.innerText = `Ler Kwatiá (${gameData[activeInteractiveObject].title})`;
+                interactLabel.innerText = "Ler Kwatiá (DJ - DJAGWARETE)";
             } else {
                 activeInteractiveObject = null;
                 interactBtn.classList.add('hidden');
@@ -1608,30 +1390,19 @@ let selectedCharacter = null;
 
         function answerQuestion(isCorrect) {
             if (isCorrect) {
-                if (currentPhase < totalPhases) {
-                    const completedPhase = currentPhase;
-                    currentPhase += 1;
+                if (currentPhase === 1) {
+                    alert("✨ AGUYJEVETE! Resposta Correta!\n\nA passagem pela trilha sinuosa foi liberada!");
+                    currentPhase = 2;
                     doubleDangerAnimalsForPhase();
+                    phaseTimeLeft = 90;
+                    updateSurvivalHUD();
+                    document.getElementById('phase-indicator').innerText = "Fase 2: O Desafio do DJAGWARETE";
+                    showGameFeedback('Fase 2 liberada! O tempo foi reiniciado. Fique atento aos animais.');
+                } else if (currentPhase === 2) {
+                    alert("🎉 PARABÉNS! Concluíste a caminhada sagrada no Tape Marangatu!");
                     phaseTimeLeft = 90;
                     playerHealth = 100;
                     updateSurvivalHUD();
-                    const nextData = gameData['phase' + currentPhase];
-                    const indicator = document.getElementById('phase-indicator');
-                    if (indicator) indicator.innerText = `Fase ${currentPhase}: ${nextData.title}`;
-                    const message = currentPhase === 2
-                        ? 'Fase 2 liberada! O tempo foi reiniciado. Fique atento aos animais.'
-                        : `Fase ${currentPhase} liberada: ${nextData.title}. Continue até a fase final!`;
-                    alert(`✨ AGUYJEVETE! Resposta correta!\n\nFase ${completedPhase} concluída.`);
-                    showGameFeedback(message);
-                } else {
-                    gameCompleted = true;
-                    activeInteractiveObject = null;
-                    const indicator = document.getElementById('phase-indicator');
-                    if (indicator) indicator.innerText = `Jornada concluída: ${totalPhases}/${totalPhases}`;
-                    const interactBtn = document.getElementById('btn-interact');
-                    if (interactBtn) interactBtn.classList.add('hidden');
-                    alert(`🎉 AGUYJEVETE! Você concluiu as ${totalPhases} fases do Tape Marangatu!`);
-                    showGameFeedback('Jornada concluída! Você chegou à fase final: YWYRA, a grande árvore.');
                 }
                 closeModal('question-modal');
             } else {
@@ -1664,34 +1435,17 @@ let selectedCharacter = null;
             });
         }
 
-        // Sincroniza a interface e o canvas com o viewport REAL após girar o aparelho.
-        // visualViewport ajuda em navegadores móveis que atualizam innerWidth/innerHeight com atraso.
+        // Redimensionamento robusto: usa a caixa real do canvas, não apenas innerWidth/innerHeight.
+        // Em celulares, a barra do navegador e a rotação podem atualizar essas medidas em momentos diferentes.
         let resizeFramePending = false;
-        function syncMobileViewport() {
-            const vv = window.visualViewport;
-            const width = Math.max(1, Math.round((vv && vv.width) || document.documentElement.clientWidth || window.innerWidth));
-            const height = Math.max(1, Math.round((vv && vv.height) || document.documentElement.clientHeight || window.innerHeight));
-            const root = document.documentElement;
-            root.style.setProperty('--app-width', width + 'px');
-            root.style.setProperty('--app-height', height + 'px');
-            document.body.classList.toggle('is-landscape', width > height);
-            document.body.classList.toggle('is-portrait', height >= width);
-
-            // Não deixa o joystick preso se a rotação ocorrer durante um toque.
-            if (typeof resetJoystick === 'function') resetJoystick();
-            return { width, height };
-        }
         function resizeGameViewport() {
             if (resizeFramePending) return;
             resizeFramePending = true;
             requestAnimationFrame(() => {
                 resizeFramePending = false;
-                const viewport = syncMobileViewport();
                 const rect = container.getBoundingClientRect();
-                // O contêiner pode reportar dimensões antigas por um frame durante a rotação.
-                const rectUsable = rect.width > 2 && rect.height > 2;
-                const width = Math.max(1, Math.round(rectUsable ? rect.width : viewport.width));
-                const height = Math.max(1, Math.round(rectUsable ? rect.height : viewport.height));
+                const width = Math.max(1, Math.round(rect.width || document.documentElement.clientWidth || window.innerWidth));
+                const height = Math.max(1, Math.round(rect.height || document.documentElement.clientHeight || window.innerHeight));
                 camera.aspect = width / height;
                 camera.updateProjectionMatrix();
                 renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, width < 700 ? 1.5 : 2));
@@ -1701,16 +1455,13 @@ let selectedCharacter = null;
             });
         }
         function settleOrientationResize() {
-            // Recalcula várias vezes porque Safari/Chrome podem terminar a rotação em etapas.
-            [0, 80, 180, 350, 650].forEach(delay => setTimeout(resizeGameViewport, delay));
+            // Alguns navegadores reportam o novo tamanho após a animação de rotação.
+            [0, 120, 300, 550].forEach(delay => setTimeout(resizeGameViewport, delay));
         }
         window.addEventListener('resize', resizeGameViewport, { passive: true });
         window.addEventListener('orientationchange', settleOrientationResize, { passive: true });
         window.addEventListener('pageshow', settleOrientationResize, { passive: true });
-        if (window.visualViewport) {
-            window.visualViewport.addEventListener('resize', settleOrientationResize, { passive: true });
-            window.visualViewport.addEventListener('scroll', resizeGameViewport, { passive: true });
-        }
+        if (window.visualViewport) window.visualViewport.addEventListener('resize', resizeGameViewport, { passive: true });
         if (screen.orientation && screen.orientation.addEventListener) {
             screen.orientation.addEventListener('change', settleOrientationResize);
         }
