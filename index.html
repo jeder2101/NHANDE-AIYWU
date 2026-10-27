@@ -3,26 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Karumbé & Nhande Ayvu - Guardiões da Memória Nhandewa</title>
+    <title>Karumbé & Nhande Ayvu - Jogo 3D</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Importar Three.js para o motor 3D -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Outfit:wght@300;400;600;800&display=swap');
         
         body {
             font-family: 'Outfit', sans-serif;
-            background-color: #0b1d13;
+            background-color: #08140c;
             color: #f0fdf4;
             user-select: none;
             touch-action: manipulation;
+            overflow: hidden;
         }
 
         .font-game {
             font-family: 'Fredoka', cursive;
-        }
-
-        .forest-gradient {
-            background: radial-gradient(circle at center, #143823 0%, #08140c 100%);
         }
 
         .glass-card {
@@ -30,11 +29,6 @@
             backdrop-filter: blur(12px);
             border: 1px solid rgba(74, 222, 128, 0.2);
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-        }
-
-        canvas {
-            image-rendering: pixelated;
-            border-radius: 1rem;
         }
 
         .btn-touch {
@@ -50,7 +44,7 @@
 
         /* Custom Scrollbar */
         ::-webkit-scrollbar {
-            width: 8px;
+            width: 6px;
         }
         ::-webkit-scrollbar-track {
             background: #08140c;
@@ -61,84 +55,82 @@
         }
     </style>
 </head>
-<body class="h-screen w-screen overflow-hidden flex flex-col forest-gradient">
+<body class="h-screen w-screen relative">
 
-    <!-- Header / Navbar -->
-    <header class="w-full px-4 py-3 flex justify-between items-center z-10 glass-card rounded-b-xl border-b border-emerald-500/30">
-        <div class="flex items-center space-x-3">
+    <!-- Header / Navbar UI -->
+    <header class="absolute top-0 left-0 w-full px-4 py-3 flex justify-between items-center z-20 pointer-events-auto">
+        <div class="glass-card px-4 py-2 rounded-xl flex items-center space-x-3">
             <div class="w-10 h-10 rounded-full bg-emerald-600 border-2 border-amber-400 flex items-center justify-center text-amber-300 font-bold text-xl shadow-lg">
                 🐢
             </div>
             <div>
-                <h1 class="font-game text-xl md:text-2xl font-bold bg-gradient-to-r from-emerald-400 to-amber-300 bg-clip-text text-transparent">
-                    Karumbé & Nhande Ayvu
+                <h1 class="font-game text-lg md:text-xl font-bold bg-gradient-to-r from-emerald-400 to-amber-300 bg-clip-text text-transparent">
+                    Karumbé 3D
                 </h1>
-                <p class="text-xs text-emerald-300/80">Guardiões da Memória Nhandewa</p>
+                <p class="text-[10px] text-emerald-300/80">Nhande Ayvu - Explorador Tridimensional</p>
             </div>
         </div>
 
-        <!-- Quest Tracker & Actions -->
-        <div class="flex items-center space-x-3">
-            <div class="hidden md:flex items-center bg-emerald-950/80 border border-emerald-500/40 px-3 py-1.5 rounded-lg text-xs space-x-2">
-                <i class="fas fa-scroll text-amber-400"></i>
-                <span id="quest-text" class="text-emerald-200 font-medium">Missão: Fale com o Ancião Xejaru na Opy</span>
+        <!-- Quest Tracker & Modais -->
+        <div class="flex items-center space-x-2">
+            <div class="hidden md:flex items-center glass-card px-3 py-1.5 rounded-xl text-xs space-x-2">
+                <i class="fas fa-compass text-amber-400 animate-spin"></i>
+                <span id="quest-text" class="text-emerald-200 font-medium">Missão: Explore a aldeia 3D e aproxima-te da Opy ou dos Anciãos</span>
             </div>
 
-            <button onclick="openModal('caderno-modal')" class="bg-amber-600/30 hover:bg-amber-600/50 border border-amber-500/50 text-amber-200 text-xs px-3 py-1.5 rounded-lg flex items-center space-x-1.5 transition">
+            <button onclick="openModal('caderno-modal')" class="glass-card bg-amber-600/30 hover:bg-amber-600/50 text-amber-200 text-xs px-3 py-2 rounded-xl flex items-center space-x-1.5 transition">
                 <i class="fas fa-book-bookmark"></i>
-                <span class="hidden sm:inline">Caderno de Campo</span>
+                <span class="hidden sm:inline">Dicionário</span>
             </button>
 
-            <button onclick="openModal('estudio-modal')" class="bg-emerald-600/30 hover:bg-emerald-600/50 border border-emerald-500/50 text-emerald-200 text-xs px-3 py-1.5 rounded-lg flex items-center space-x-1.5 transition">
+            <button onclick="openModal('estudio-modal')" class="glass-card bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-200 text-xs px-3 py-2 rounded-xl flex items-center space-x-1.5 transition">
                 <i class="fas fa-microphone-lines"></i>
-                <span class="hidden sm:inline">Estúdio de Captação</span>
+                <span class="hidden sm:inline">ProAC 3D</span>
             </button>
         </div>
     </header>
 
-    <!-- Main Game Area -->
-    <main class="flex-1 relative flex items-center justify-center p-2 sm:p-4">
-        <canvas id="gameCanvas" class="shadow-2xl border-2 border-emerald-600/40 bg-emerald-950 max-w-full max-h-full object-contain"></canvas>
+    <!-- Canvas 3D (Renderizador Three.js) -->
+    <div id="canvas-container" class="w-full h-full"></div>
 
-        <!-- Touch Controls (Mobile D-Pad) -->
-        <div id="touch-controls" class="absolute bottom-6 left-6 grid grid-cols-3 gap-2 w-36 h-36 md:hidden z-20">
-            <div></div>
-            <button id="btn-up" class="btn-touch rounded-t-xl text-emerald-300 text-xl font-bold flex items-center justify-center">▲</button>
-            <div></div>
-            <button id="btn-left" class="btn-touch rounded-l-xl text-emerald-300 text-xl font-bold flex items-center justify-center">◄</button>
-            <div class="flex items-center justify-center text-xs text-emerald-500 font-game">D-PAD</div>
-            <button id="btn-right" class="btn-touch rounded-r-xl text-emerald-300 text-xl font-bold flex items-center justify-center">►</button>
-            <div></div>
-            <button id="btn-down" class="btn-touch rounded-b-xl text-emerald-300 text-xl font-bold flex items-center justify-center">▼</button>
-            <div></div>
-        </div>
+    <!-- Controles Touch / D-Pad para Dispositivos Móveis -->
+    <div id="touch-controls" class="absolute bottom-6 left-6 grid grid-cols-3 gap-2 w-36 h-36 md:hidden z-20 pointer-events-auto">
+        <div></div>
+        <button id="btn-up" class="btn-touch rounded-t-xl text-emerald-300 text-xl font-bold flex items-center justify-center">▲</button>
+        <div></div>
+        <button id="btn-left" class="btn-touch rounded-l-xl text-emerald-300 text-xl font-bold flex items-center justify-center">◄</button>
+        <div class="flex items-center justify-center text-[10px] text-emerald-500 font-game">3D</div>
+        <button id="btn-right" class="btn-touch rounded-r-xl text-emerald-300 text-xl font-bold flex items-center justify-center">►</button>
+        <div></div>
+        <button id="btn-down" class="btn-touch rounded-b-xl text-emerald-300 text-xl font-bold flex items-center justify-center">▼</button>
+        <div></div>
+    </div>
 
-        <!-- Action Button (Mobile) -->
-        <button id="btn-action" onclick="interactNPC()" class="absolute bottom-8 right-8 w-16 h-16 rounded-full bg-amber-500 border-2 border-amber-200 text-emerald-950 font-bold text-xl flex items-center justify-center shadow-lg md:hidden z-20 active:scale-90 transition">
-            💬
-        </button>
-    </main>
+    <!-- Dica de Controles Desktop -->
+    <div class="hidden md:flex absolute bottom-4 left-4 glass-card px-3 py-1.5 rounded-lg text-[11px] text-emerald-300/80 items-center space-x-2 z-20">
+        <i class="fas fa-keyboard"></i>
+        <span>Use <b>WASD</b> ou as <b>Setas do Teclado</b> para caminhar no mundo 3D</span>
+    </div>
 
-    <!-- Modal: Interação Ancião / Quiz -->
+    <!-- Modal: Interação com Ancião -->
     <div id="npc-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="glass-card max-w-md w-full rounded-2xl p-6 border-2 border-amber-400/50 shadow-2xl relative">
             <div class="flex items-center space-x-4 mb-4">
-                <div id="npc-avatar" class="w-16 h-16 rounded-full bg-amber-700 border-2 border-amber-300 flex items-center justify-center text-3xl shadow-inner">
+                <div id="npc-avatar" class="w-14 h-14 rounded-full bg-amber-700 border-2 border-amber-300 flex items-center justify-center text-2xl shadow-inner">
                     🧔‍♂️
                 </div>
                 <div>
-                    <h3 id="npc-name" class="font-game text-xl text-amber-300">Ancião Xejaru</h3>
-                    <p id="npc-role" class="text-xs text-emerald-300">Guardião dos Saberes & Memória Linguística</p>
+                    <h3 id="npc-name" class="font-game text-lg text-amber-300">Ancião Xejaru</h3>
+                    <p id="npc-role" class="text-xs text-emerald-300">Guardião da Memória Nhandewa</p>
                 </div>
             </div>
 
             <div class="bg-emerald-950/70 rounded-xl p-4 border border-emerald-500/30 mb-5">
                 <p id="npc-dialogue" class="text-sm text-emerald-100 leading-relaxed">
-                    "Mba'éichapa, Karumbé! Para proteger a nossa cultura, deves aprender as palavras dos nossos antepassados."
+                    "Mba'éichapa! Bem-vindo à nossa aldeia em 3D. A língua vive nas palavras e na terra."
                 </p>
             </div>
 
-            <!-- Puzzle Area -->
             <div id="puzzle-box" class="space-y-3 mb-5">
                 <div class="flex justify-between items-center text-xs text-amber-300/90 font-semibold mb-1">
                     <span>DESAFIO DE TRADUÇÃO:</span>
@@ -150,309 +142,328 @@
                     "Y"
                 </div>
                 <div id="puzzle-options" class="grid grid-cols-2 gap-2 pt-2">
-                    <!-- Dinamicamente preenchido -->
+                    <!-- Opções preenchidas por JS -->
                 </div>
             </div>
 
             <div class="flex justify-end">
                 <button onclick="closeModal('npc-modal')" class="px-4 py-2 bg-emerald-800 hover:bg-emerald-700 text-emerald-100 text-xs rounded-lg transition font-medium">
-                    Continuar Trilha
+                    Continuar Exploração
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Modal: Caderno de Campo -->
+    <!-- Modal: Caderno de Campo / Dicionário -->
     <div id="caderno-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="glass-card max-w-xl w-full rounded-2xl p-6 border border-emerald-500/40 max-h-[85vh] flex flex-col">
             <div class="flex justify-between items-center mb-4 border-b border-emerald-500/30 pb-3">
                 <h3 class="font-game text-xl text-amber-300 flex items-center space-x-2">
                     <i class="fas fa-book-bookmark text-amber-400"></i>
-                    <span>Caderno de Campo - Vocabulário Nhandewa</span>
+                    <span>Vocabulário Guarani Nhandewa</span>
                 </h3>
                 <button onclick="closeModal('caderno-modal')" class="text-emerald-400 hover:text-emerald-200 text-lg">✕</button>
             </div>
 
             <div id="dictionary-list" class="flex-1 overflow-y-auto space-y-3 pr-2">
-                <!-- Preenchido via JS -->
+                <!-- Conteúdo gerado via JS -->
             </div>
         </div>
     </div>
 
-    <!-- Modal: Estúdio de Captação -->
+    <!-- Modal: Apresentação ProAC 3D -->
     <div id="estudio-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="glass-card max-w-lg w-full rounded-2xl p-6 border border-amber-500/40">
             <div class="flex justify-between items-center mb-4 border-b border-emerald-500/30 pb-3">
                 <h3 class="font-game text-xl text-amber-300 flex items-center space-x-2">
-                    <i class="fas fa-microphone-lines text-amber-400"></i>
-                    <span>Estúdio de Captação & Salvaguarda</span>
+                    <i class="fas fa-cubes text-amber-400"></i>
+                    <span>Transição para WebGL 3D (ProAC)</span>
                 </h3>
                 <button onclick="closeModal('estudio-modal')" class="text-emerald-400 hover:text-emerald-200 text-lg">✕</button>
             </div>
 
             <div class="text-xs text-emerald-100 space-y-3 leading-relaxed">
                 <p>
-                    <strong class="text-amber-300">Direção Técnica & ProAC 05/2026:</strong> Este protótipo integra a estratégia de salvaguarda fonética da língua Guarani Nhandewa.
+                    <strong class="text-amber-300">Inovação e Imersão Cultural:</strong> O projeto evoluiu para um ambiente 3D interativo rodando nativamente na Web através de WebGL/Three.js sem necessidade de plugins ou descargas adicionais.
                 </p>
                 <div class="bg-emerald-950/80 p-3 rounded-xl border border-emerald-500/30 space-y-2">
                     <div class="flex items-center space-x-2 text-amber-400 font-semibold">
-                        <i class="fas fa-sliders"></i> <span>Equipamentos Previstos:</span>
+                        <i class="fas fa-layer-group"></i> <span>Recursos 3D Implementados:</span>
                     </div>
                     <ul class="list-disc list-inside space-y-1 text-emerald-200">
-                        <li>Gravador Portátil Zoom H6 (Captação de Alta Fidelidade 24-bit/96kHz)</li>
-                        <li>Microfones Condensadores Par Casado (Shure SM81)</li>
-                        <li>Tratamento e Remuneração Épica/Honroza dos Anciãos Consultores</li>
+                        <li>Terreno tridimensional com folhagem e rios estilizados</li>
+                        <li>Modelo da Opy (Casa de Reza) com iluminação interna</li>
+                        <li>Câmara em 3ª pessoa e sistema de deteção de presença 3D</li>
+                        <li>Compatibilidade total com computadores e telemóveis</li>
                     </ul>
                 </div>
-                <p class="text-emerald-300/80">
-                    Todas as gravações realizadas nas aldeias alimentam diretamente o motor de jogo e o dicionário digital interativo.
-                </p>
             </div>
         </div>
     </div>
 
-    <!-- Logic JavaScript -->
+    <!-- Código do Motor 3D Three.js e Lógica do Jogo -->
     <script>
-        // --- Dados do Jogo ---
+        // --- Dicionário Cultural ---
         const dictionary = [
-            { word: "Y", translation: "Água", phonetic: "[ɨ]", audioNote: "Vogal central alta não-arredondada", category: "Natureza" },
-            { word: "Opy", translation: "Casa de Reza", phonetic: "[o'pɨ]", audioNote: "Local sagrado de oração e canto", category: "Cultura" },
-            { word: "Ka'aguy", translation: "Mata / Floresta", phonetic: "[kaʔa'ɡwɨ]", audioNote: "Glotal oclusiva na pausa central", category: "Natureza" },
-            { word: "Karumbé", translation: "Tartaruga / Cágado", phonetic: "[kaɾum'be]", audioNote: "Símbolo de paciência e memória", category: "Fauna" },
-            { word: "Nhande Ayvu", translation: "Nossa Linguagem / Fala", phonetic: "[ɲa'nde aj'vu]", audioNote: "Expressão da alma Nhandewa", category: "Cultura" }
+            { word: "Y", translation: "Água", phonetic: "[ɨ]", audioNote: "Vogal central alta não-arredondada" },
+            { word: "Opy", translation: "Casa de Reza", phonetic: "[o'pɨ]", audioNote: "Local sagrado de oração e comunidade" },
+            { word: "Ka'aguy", translation: "Mata / Floresta", phonetic: "[kaʔa'ɡwɨ]", audioNote: "Ambiente sagrado de preservação" },
+            { word: "Karumbé", translation: "Tartaruga / Cágado", phonetic: "[kaɾum'be]", audioNote: "Símbolo de paciência e perseverança" },
+            { word: "Nhande Ayvu", translation: "Nossa Língua / Palavra", phonetic: "[ɲa'nde aj'vu]", audioNote: "Essência da fala Nhandewa" }
         ];
 
-        let questStep = 0;
         let currentNPC = null;
-
-        const npcs = [
-            { id: 'xejaru', name: 'Ancião Xejaru', role: 'Guardião dos Cantos Sagrados', x: 220, y: 180, icon: '🧔‍♂️', wordTarget: 'Y', options: ['Água', 'Fogo', 'Terra', 'Vento'], correct: 'Água', dialogue: "Mba'éichapa! Para atravessar a floresta, precisamos primeiro honrar a fonte de vida. Como dizemos Água em Nhandewa?" },
-            { id: 'xevyry', name: 'Anciã Xevyry', role: 'Mestra das Plantas & Tradição', x: 550, y: 320, icon: '👵🏽', wordTarget: "Ka'aguy", options: ['Rio', 'Mata / Floresta', 'Céu', 'Sol'], correct: 'Mata / Floresta', dialogue: "Nhande rko aguijá! A floresta nos dá alimento e remédio. Sabes qual é a palavra sagrada para Mata?" }
+        const npcsData = [
+            { id: 'xejaru', name: 'Ancião Xejaru', role: 'Guardião dos Cantos Sagrados', x: -8, z: 5, icon: '🧔‍♂️', wordTarget: 'Y', options: ['Água', 'Fogo', 'Terra', 'Vento'], correct: 'Água', dialogue: "Mba'éichapa! Para caminhar na floresta 3D, precisas de aprender a honrar a fonte da vida. Qual é a palavra para Água?" },
+            { id: 'xevyry', name: 'Anciã Xevyry', role: 'Mestra da Tradição', x: 8, z: -6, icon: '👵🏽', wordTarget: "Ka'aguy", options: ['Rio', 'Mata / Floresta', 'Céu', 'Sol'], correct: 'Mata / Floresta', dialogue: "Nhande rko aguijá! A mata abençoa a nossa aldeia. Como chamamos a Floresta em Nhandewa?" }
         ];
 
-        // --- Configuração do Canvas ---
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
+        // --- Configuração da Cena 3D Three.js ---
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x0a1e12);
+        scene.fog = new THREE.FogExp2(0x0a1e12, 0.025);
 
-        function resizeCanvas() {
-            canvas.width = Math.min(800, window.innerWidth - 32);
-            canvas.height = Math.min(500, window.innerHeight - 180);
+        // Câmara 3D
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+        
+        // Renderizador WebGL
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.shadowMap.enabled = true;
+        container.appendChild(renderer.domElement);
+
+        // --- Iluminação 3D ---
+        const ambientLight = new THREE.AmbientLight(0xdcfce7, 0.6);
+        scene.add(ambientLight);
+
+        const sunLight = new THREE.DirectionalLight(0xfef08a, 0.8);
+        sunLight.position.set(20, 40, 20);
+        sunLight.castShadow = true;
+        scene.add(sunLight);
+
+        // --- Terreno da Aldeia ---
+        const terrainGeo = new THREE.PlaneGeometry(80, 80, 32, 32);
+        const terrainMat = new THREE.MeshLambertMaterial({ color: 0x166534, flatShading: true });
+        const terrain = new THREE.Mesh(terrainGeo, terrainMat);
+        terrain.rotation.x = -Math.PI / 2;
+        terrain.receiveShadow = true;
+        scene.add(terrain);
+
+        // Rio 3D
+        const riverGeo = new THREE.PlaneGeometry(12, 80);
+        const riverMat = new THREE.MeshPhongMaterial({ color: 0x0284c7, transparent: true, opacity: 0.8, shininess: 80 });
+        const river = new THREE.Mesh(riverGeo, riverMat);
+        river.rotation.x = -Math.PI / 2;
+        river.position.set(18, 0.05, 0);
+        scene.add(river);
+
+        // --- Construção da OPY (Casa de Reza 3D) ---
+        const opyGroup = new THREE.Group();
+        
+        // Paredes de Madeira
+        const wallGeo = new THREE.BoxGeometry(8, 4, 10);
+        const wallMat = new THREE.MeshLambertMaterial({ color: 0x78350f });
+        const walls = new THREE.Mesh(wallGeo, wallMat);
+        walls.position.y = 2;
+        walls.castShadow = true;
+        opyGroup.add(walls);
+
+        // Telhado de Palha
+        const roofGeo = new THREE.ConeGeometry(7.5, 4, 4);
+        const roofMat = new THREE.MeshLambertMaterial({ color: 0xa16207, flatShading: true });
+        const roof = new THREE.Mesh(roofGeo, roofMat);
+        roof.position.y = 6;
+        roof.rotation.y = Math.PI / 4;
+        roof.castShadow = true;
+        opyGroup.add(roof);
+
+        // Luz Quente no Interior da Opy
+        const opyLight = new THREE.PointLight(0xf59e0b, 2, 10);
+        opyLight.position.set(0, 2, 0);
+        opyGroup.add(opyLight);
+
+        opyGroup.position.set(0, 0, -15);
+        scene.add(opyGroup);
+
+        // --- Árvores 3D na Floresta ---
+        function createTree(x, z) {
+            const treeGroup = new THREE.Group();
+            
+            // Tronco
+            const trunkGeo = new THREE.CylinderGeometry(0.3, 0.5, 3, 6);
+            const trunkMat = new THREE.MeshLambertMaterial({ color: 0x451a03 });
+            const trunk = new THREE.Mesh(trunkGeo, trunkMat);
+            trunk.position.y = 1.5;
+            treeGroup.add(trunk);
+
+            // Copa de Folhas
+            const leavesGeo = new THREE.DodecahedronGeometry(2);
+            const leavesMat = new THREE.MeshLambertMaterial({ color: 0x15803d, flatShading: true });
+            const leaves = new THREE.Mesh(leavesGeo, leavesMat);
+            leaves.position.y = 3.5;
+            treeGroup.add(leaves);
+
+            treeGroup.position.set(x, 0, z);
+            scene.add(treeGroup);
         }
-        resizeCanvas();
-        window.addEventListener('resize', resizeCanvas);
 
-        // --- Estado do Player ---
-        const player = {
-            x: 100,
-            y: 250,
-            size: 24,
-            speed: 4,
-            color: '#f59e0b',
-            dx: 0,
-            dy: 0
-        };
+        // Espalhar árvores pelo cenário
+        const treePositions = [
+            [-15, -10], [-20, 5], [-12, 15], [10, -20], [-5, -25], [25, -10], [28, 10]
+        ];
+        treePositions.forEach(pos => createTree(pos[0], pos[1]));
 
-        // --- Sistema de Input ---
+        // --- Personagem Karumbé (Jogador 3D) ---
+        const playerGroup = new THREE.Group();
+        
+        // Casco da Tartaruga (Karumbé)
+        const shellGeo = new THREE.SphereGeometry(1, 8, 8, 0, Math.PI * 2, 0, Math.PI / 2);
+        const shellMat = new THREE.MeshLambertMaterial({ color: 0xd97706, flatShading: true });
+        const shell = new THREE.Mesh(shellGeo, shellMat);
+        shell.position.y = 0.5;
+        shell.scale.set(1, 0.7, 1.2);
+        playerGroup.add(shell);
+
+        // Cabeça
+        const headGeo = new THREE.SphereGeometry(0.4, 8, 8);
+        const headMat = new THREE.MeshLambertMaterial({ color: 0x15803d });
+        const head = new THREE.Mesh(headGeo, headMat);
+        head.position.set(0, 0.6, 1);
+        playerGroup.add(head);
+
+        playerGroup.position.set(0, 0, 10);
+        scene.add(playerGroup);
+
+        // --- Criar NPCs 3D (Anciãos) ---
+        const npcMeshes = [];
+        npcsData.forEach(data => {
+            const npcGroup = new THREE.Group();
+            
+            const bodyGeo = new THREE.CylinderGeometry(0.5, 0.5, 2, 8);
+            const bodyMat = new THREE.MeshLambertMaterial({ color: 0xb45309 });
+            const body = new THREE.Mesh(bodyGeo, bodyMat);
+            body.position.y = 1;
+            npcGroup.add(body);
+
+            // Anel Brilhante aos pés do NPC
+            const ringGeo = new THREE.RingGeometry(0.8, 1.2, 16);
+            const ringMat = new THREE.MeshBasicMaterial({ color: 0xfef08a, side: THREE.DoubleSide });
+            const ring = new THREE.Mesh(ringGeo, ringMat);
+            ring.rotation.x = -Math.PI / 2;
+            ring.position.y = 0.05;
+            npcGroup.add(ring);
+
+            npcGroup.position.set(data.x, 0, data.z);
+            scene.add(npcGroup);
+
+            npcMeshes.push({ group: npcGroup, data: data });
+        });
+
+        // --- Movimentação & Controles ---
         const keys = {};
-        window.addEventListener('keydown', e => keys[e.key] = true);
-        window.addEventListener('keyup', e => keys[e.key] = false);
+        let touchDir = { x: 0, z: 0 };
 
-        // Touch Controls
-        const setupTouch = (id, dx, dy) => {
+        window.addEventListener('keydown', e => keys[e.key.toLowerCase()] = true);
+        window.addEventListener('keyup', e => keys[e.key.toLowerCase()] = false);
+
+        // Configuração do D-Pad Touch
+        const bindTouch = (id, x, z) => {
             const btn = document.getElementById(id);
             if (!btn) return;
-            btn.addEventListener('touchstart', (e) => { e.preventDefault(); player.dx = dx; player.dy = dy; });
-            btn.addEventListener('touchend', (e) => { e.preventDefault(); player.dx = 0; player.dy = 0; });
+            btn.addEventListener('touchstart', (e) => { e.preventDefault(); touchDir.x = x; touchDir.z = z; });
+            btn.addEventListener('touchend', (e) => { e.preventDefault(); touchDir.x = 0; touchDir.z = 0; });
         };
-        setupTouch('btn-up', 0, -1);
-        setupTouch('btn-down', 0, 1);
-        setupTouch('btn-left', -1, 0);
-        setupTouch('btn-right', 1, 0);
+        bindTouch('btn-up', 0, -1);
+        bindTouch('btn-down', 0, 1);
+        bindTouch('btn-left', -1, 0);
+        bindTouch('btn-right', 1, 0);
 
-        // --- Game Loop ---
-        function update() {
-            // Teclado
-            let mx = 0, my = 0;
-            if (keys['ArrowUp'] || keys['w'] || keys['W']) my -= 1;
-            if (keys['ArrowDown'] || keys['s'] || keys['S']) my += 1;
-            if (keys['ArrowLeft'] || keys['a'] || keys['A']) mx -= 1;
-            if (keys['ArrowRight'] || keys['d'] || keys['D']) mx += 1;
+        // --- Loop Principal da Animação 3D ---
+        const clock = new THREE.Clock();
 
-            if (mx !== 0 || my !== 0) {
-                player.x += mx * player.speed;
-                player.y += my * player.speed;
-            } else {
-                player.x += player.dx * player.speed;
-                player.y += player.dy * player.speed;
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const speed = 7 * clock.getDelta();
+            let moveX = 0;
+            let moveZ = 0;
+
+            if (keys['w'] || keys['arrowup']) moveZ -= 1;
+            if (keys['s'] || keys['arrowdown']) moveZ += 1;
+            if (keys['a'] || keys['arrowleft']) moveX -= 1;
+            if (keys['d'] || keys['arrowright']) moveX += 1;
+
+            if (touchDir.x !== 0 || touchDir.z !== 0) {
+                moveX = touchDir.x;
+                moveZ = touchDir.z;
             }
 
-            // Limites da Tela
-            player.x = Math.max(player.size, Math.min(canvas.width - player.size, player.x));
-            player.y = Math.max(player.size, Math.min(canvas.height - player.size, player.y));
+            // Mover Karumbé no Espaço 3D
+            if (moveX !== 0 || moveZ !== 0) {
+                const angle = Math.atan2(moveX, moveZ);
+                playerGroup.rotation.y = angle;
+                
+                playerGroup.position.x += moveX * speed;
+                playerGroup.position.z += moveZ * speed;
+            }
 
-            // Checar Proximidade com NPCs
-            npcs.forEach(npc => {
-                const dist = Math.hypot(player.x - npc.x, player.y - npc.y);
-                if (dist < 40 && keys[' ']) {
-                    triggerInteraction(npc);
+            // Posicionar a câmara a seguir o jogador em 3ª pessoa
+            camera.position.x = playerGroup.position.x;
+            camera.position.y = playerGroup.position.y + 8;
+            camera.position.z = playerGroup.position.z + 12;
+            camera.lookAt(playerGroup.position);
+
+            // Verificar Proximidade com Anciãos 3D
+            npcMeshes.forEach(npc => {
+                const dist = playerGroup.position.distanceTo(npc.group.position);
+                if (dist < 2.5 && !currentNPC) {
+                    triggerInteraction(npc.data);
                 }
             });
+
+            renderer.render(scene, camera);
         }
 
-        function drawScenario() {
-            // Fundo Floresta
-            ctx.fillStyle = '#0f291e';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        animate();
 
-            // Desenhar Trilha de Terra
-            ctx.strokeStyle = '#3d2612';
-            ctx.lineWidth = 40;
-            ctx.lineCap = 'round';
-            ctx.beginPath();
-            ctx.moveTo(80, 250);
-            ctx.quadraticCurveTo(250, 150, 400, 250);
-            ctx.quadraticCurveTo(550, 350, 720, 250);
-            ctx.stroke();
+        // --- Lógica de Interface e Quiz ---
+        function triggerInteraction(data) {
+            currentNPC = data;
+            document.getElementById('npc-name').innerText = data.name;
+            document.getElementById('npc-role').innerText = data.role;
+            document.getElementById('npc-avatar').innerText = data.icon;
+            document.getElementById('npc-dialogue').innerText = `"${data.dialogue}"`;
+            document.getElementById('word-target').innerText = `"${data.wordTarget}"`;
 
-            // Desenhar Rio Sinuoso
-            ctx.strokeStyle = '#0284c7';
-            ctx.lineWidth = 18;
-            ctx.beginPath();
-            ctx.moveTo(300, 0);
-            ctx.quadraticCurveTo(280, 250, 350, canvas.height);
-            ctx.stroke();
-
-            // Desenhar OPY (Casa de Reza)
-            ctx.fillStyle = '#854d0e';
-            ctx.fillRect(350, 80, 100, 70);
-            ctx.fillStyle = '#a16207';
-            ctx.beginPath();
-            ctx.moveTo(330, 80);
-            ctx.lineTo(400, 30);
-            ctx.lineTo(470, 80);
-            ctx.fill();
-            ctx.fillStyle = '#fde047';
-            ctx.font = '12px Fredoka';
-            ctx.fillText("OPY (Casa de Reza)", 340, 25);
-
-            // Desenhar Árvores Decorativas
-            const trees = [{x:80,y:80},{x:200,y:380},{x:650,y:100},{x:700,y:400},{x:120,y:420}];
-            trees.forEach(t => {
-                ctx.fillStyle = '#15803d';
-                ctx.beginPath();
-                ctx.arc(t.x, t.y, 25, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.fillStyle = '#166534';
-                ctx.beginPath();
-                ctx.arc(t.x - 5, t.y - 5, 18, 0, Math.PI * 2);
-                ctx.fill();
-            });
-        }
-
-        function drawEntities() {
-            // Desenhar NPCs
-            npcs.forEach(npc => {
-                // Brilho Indicador
-                ctx.fillStyle = 'rgba(251, 191, 36, 0.2)';
-                ctx.beginPath();
-                ctx.arc(npc.x, npc.y, 28, 0, Math.PI * 2);
-                ctx.fill();
-
-                // Avatar / Ícone
-                ctx.font = '24px serif';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillText(npc.icon, npc.x, npc.y);
-
-                // Nome
-                ctx.fillStyle = '#fef08a';
-                ctx.font = '11px Outfit';
-                ctx.fillText(npc.name, npc.x, npc.y - 25);
-            });
-
-            // Desenhar Karumbé (Jogador)
-            ctx.fillStyle = player.color;
-            ctx.beginPath();
-            ctx.arc(player.x, player.y, player.size / 2, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.strokeStyle = '#fef08a';
-            ctx.lineWidth = 2;
-            ctx.stroke();
-
-            // Ícone do Tartaruga
-            ctx.font = '16px serif';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText('🐢', player.x, player.y);
-        }
-
-        function render() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            drawScenario();
-            drawEntities();
-            update();
-            requestAnimationFrame(render);
-        }
-
-        // --- Interações & UI ---
-        function triggerInteraction(npc) {
-            currentNPC = npc;
-            document.getElementById('npc-name').innerText = npc.name;
-            document.getElementById('npc-role').innerText = npc.role;
-            document.getElementById('npc-avatar').innerText = npc.icon;
-            document.getElementById('npc-dialogue').innerText = `"${npc.dialogue}"`;
-            document.getElementById('word-target').innerText = `"${npc.wordTarget}"`;
-
-            // Gerar Opções
             const container = document.getElementById('puzzle-options');
             container.innerHTML = '';
-            npc.options.forEach(opt => {
+            data.options.forEach(opt => {
                 const btn = document.createElement('button');
                 btn.className = "w-full py-2 bg-emerald-900/80 hover:bg-emerald-700 border border-emerald-500/40 text-emerald-100 text-xs rounded-lg transition font-medium";
                 btn.innerText = opt;
-                btn.onclick = () => checkAnswer(opt, npc.correct);
+                btn.onclick = () => checkAnswer(opt, data.correct);
                 container.appendChild(btn);
             });
 
             openModal('npc-modal');
         }
 
-        function interactNPC() {
-            npcs.forEach(npc => {
-                const dist = Math.hypot(player.x - npc.x, player.y - npc.y);
-                if (dist < 60) {
-                    triggerInteraction(npc);
-                }
-            });
-        }
-
         function checkAnswer(selected, correct) {
             if (selected === correct) {
-                alert("✨ Aguyjevete! Resposta correta. Palavra registrada no teu Caderno de Campo!");
+                alert("✨ Aguyjevete! Acertaste na tradução!");
                 closeModal('npc-modal');
-                questStep++;
-                updateQuestUI();
             } else {
-                alert("Tenta novamente! Ouve a pronúncia com atenção.");
-            }
-        }
-
-        function updateQuestUI() {
-            const qText = document.getElementById('quest-text');
-            if (questStep === 1) {
-                qText.innerText = "Missão: Siga pela trilha e encontre a Anciã Xevyry";
-            } else if (questStep >= 2) {
-                qText.innerText = "Missão Cumprida: Você aprendeu os saberes básicos da aldeia!";
+                alert("Tenta novamente! Ouve a pronúncia.");
             }
         }
 
         function playPhoneticSound() {
-            // Sintetizador Nativo Web Audio / Speech como fallback de protótipo
             if ('speechSynthesis' in window) {
                 const utterance = new SpeechSynthesisUtterance(currentNPC ? currentNPC.wordTarget : "Y");
-                utterance.lang = 'es-ES'; // Aproximação fonética guarani
+                utterance.lang = 'es-ES';
                 utterance.pitch = 0.9;
-                utterance.rate = 0.8;
                 window.speechSynthesis.speak(utterance);
             }
         }
@@ -470,9 +481,8 @@
                             <span class="text-xs text-emerald-400/80">${item.phonetic}</span>
                         </div>
                         <p class="text-xs text-emerald-100 font-medium">${item.translation}</p>
-                        <p class="text-[10px] text-emerald-400/60">${item.audioNote}</p>
                     </div>
-                    <button onclick="speakWord('${item.word}')" class="w-8 h-8 rounded-full bg-emerald-800/80 hover:bg-emerald-700 text-emerald-200 flex items-center justify-center text-xs transition">
+                    <button onclick="speakWord('${item.word}')" class="w-8 h-8 rounded-full bg-emerald-800/80 hover:bg-emerald-700 text-emerald-200 flex items-center justify-center text-xs">
                         <i class="fas fa-volume-high"></i>
                     </button>
                 `;
@@ -495,10 +505,15 @@
 
         function closeModal(id) {
             document.getElementById(id).classList.add('hidden');
+            currentNPC = null;
         }
 
-        // --- Inicialização ---
-        requestAnimationFrame(render);
+        // Ajuste Redimensionamento da Janela
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
     </script>
 </body>
 </html>
