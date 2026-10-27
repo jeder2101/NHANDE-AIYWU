@@ -4,13 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tape Marangatu 3D - Guardiões da Memória Nhandewa</title>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Outfit:wght@300;400;600;800&family=Cinzel:wght@700&display=swap" rel="stylesheet">
-    <!-- Three.js 3D Engine -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     
     <style>
@@ -22,7 +18,6 @@
             touch-action: manipulation;
             overflow: hidden;
         }
-
         .font-game { font-family: 'Fredoka', cursive; }
         .font-tribal { font-family: 'Cinzel', serif; }
 
@@ -32,14 +27,12 @@
             border: 1px solid rgba(74, 222, 128, 0.3);
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
         }
-
         .glass-card-amber {
             background: linear-gradient(135deg, rgba(45, 26, 9, 0.94) 0%, rgba(20, 10, 3, 0.96) 100%);
             backdrop-filter: blur(14px);
             border: 1px solid rgba(245, 158, 11, 0.5);
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
         }
-
         .kwatia-paper {
             background: #fef3c7;
             background-image: radial-gradient(#fde68a 1px, transparent 0);
@@ -49,7 +42,6 @@
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), inset 0 0 40px rgba(180, 83, 9, 0.2);
             border-radius: 1.5rem;
         }
-
         .btn-touch {
             background: rgba(34, 197, 94, 0.3);
             border: 2px solid rgba(74, 222, 128, 0.5);
@@ -60,21 +52,53 @@
             background: rgba(34, 197, 94, 0.7);
             transform: scale(0.92);
         }
-
         @keyframes pulseGlow {
             0%, 100% { box-shadow: 0 0 15px rgba(245, 158, 11, 0.6); transform: scale(1); }
             50% { box-shadow: 0 0 30px rgba(245, 158, 11, 0.9); transform: scale(1.03); }
         }
         .animate-glow { animation: pulseGlow 2s infinite ease-in-out; }
-
-        .character-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }
-        .character-card:hover {
-            transform: translateY(-8px) scale(1.02);
-            border-color: #facc15;
-            box-shadow: 0 15px 35px rgba(245, 158, 11, 0.4);
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-5px); }
+            40% { transform: translateX(5px); }
+            60% { transform: translateX(-5px); }
+            80% { transform: translateX(5px); }
         }
+        .shake { animation: shake 0.3s ease-in-out; }
 
-        /* Compass HUD styling */
+        /* Barra de Vida */
+        .health-bar-container {
+            width: 160px;
+            height: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .health-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #ef4444 0%, #22c55e 100%);
+            border-radius: 8px;
+            transition: width 0.3s ease;
+        }
+        .danger-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2.5rem;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 15;
+            text-shadow: 0 0 10px rgba(255,0,0,0.8);
+        }
+        .danger-visible { opacity: 1; animation: dangerPulse 0.5s infinite; }
+        @keyframes dangerPulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.2); }
+        }
         .compass-ring {
             width: 56px;
             height: 56px;
@@ -87,15 +111,11 @@
         }
         .compass-needle {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 4px;
-            height: 40px;
-            margin-top: -20px;
-            margin-left: -2px;
+            top: 50%; left: 50%;
+            width: 4px; height: 40px;
+            margin-top: -20px; margin-left: -2px;
             transition: transform 0.05s linear;
         }
-
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #050e08; }
         ::-webkit-scrollbar-thumb { background: #059669; border-radius: 4px; }
@@ -103,70 +123,55 @@
 </head>
 <body class="h-screen w-screen relative">
 
-    <!-- CHARACTER SELECTION SCREEN -->
+    <div id="danger-indicator" class="danger-indicator">⚠️</div>
+
+    <!-- Tela de Seleção -->
     <div id="character-select-screen" class="absolute inset-0 z-50 bg-gradient-to-br from-[#02130b] via-[#0b2b18] to-[#041208] flex items-center justify-center p-4">
         <div class="glass-card-amber max-w-xl w-full rounded-3xl p-6 md:p-8 border-2 border-amber-500/50 text-center shadow-2xl relative overflow-hidden">
             <div class="absolute -top-12 -right-12 w-40 h-40 bg-amber-500/15 rounded-full blur-3xl pointer-events-none"></div>
-            
             <div class="mb-6">
                 <span class="text-xs uppercase tracking-widest text-amber-400 font-semibold font-tribal">Jornada da Memória Nhandewa</span>
-                <h1 class="font-game text-3xl md:text-5xl font-bold bg-gradient-to-r from-amber-300 via-emerald-300 to-amber-100 bg-clip-text text-transparent mt-1">
-                    Tape Marangatu
-                </h1>
-                <p class="text-xs md:text-sm text-emerald-200/90 mt-2">
-                    Escolhe o teu guardião para percorrer a trilha sinuosa da floresta, desviar dos animais escondidos e aprender a Kwatiá.
-                </p>
+                <h1 class="font-game text-3xl md:text-5xl font-bold bg-gradient-to-r from-amber-300 via-emerald-300 to-amber-100 bg-clip-text text-transparent mt-1">Tape Marangatu</h1>
+                <p class="text-xs md:text-sm text-emerald-200/90 mt-2">Escolhe o teu guardião — Cuidado com a cobra, o rato e a aranha!</p>
             </div>
-
-            <!-- Character Cards -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                 <div onclick="selectCharacter('konomi')" class="character-card glass-card p-5 rounded-2xl border-2 border-emerald-500/30 flex flex-col items-center">
-                    <div class="w-20 h-20 rounded-full bg-amber-600/40 border-2 border-amber-400 flex items-center justify-center text-4xl mb-3 shadow-inner">
-                        👦🏽
-                    </div>
+                    <div class="w-20 h-20 rounded-full bg-amber-600/40 border-2 border-amber-400 flex items-center justify-center text-4xl mb-3">👦🏽</div>
                     <h3 class="font-game text-xl text-amber-300">Konomi</h3>
-                    <p class="text-xs text-emerald-300/80 mt-1 text-center">O jovem explorador das trilhas da mata.</p>
+                    <p class="text-xs text-emerald-300/80 mt-1 text-center">O jovem explorador das trilhas.</p>
                 </div>
-
                 <div onclick="selectCharacter('kunhatai')" class="character-card glass-card p-5 rounded-2xl border-2 border-emerald-500/30 flex flex-col items-center">
-                    <div class="w-20 h-20 rounded-full bg-emerald-600/40 border-2 border-amber-400 flex items-center justify-center text-4xl mb-3 shadow-inner">
-                        👧🏽
-                    </div>
+                    <div class="w-20 h-20 rounded-full bg-emerald-600/40 border-2 border-amber-400 flex items-center justify-center text-4xl mb-3">👧🏽</div>
                     <h3 class="font-game text-xl text-amber-300">Kunhataĩ</h3>
-                    <p class="text-xs text-emerald-300/80 mt-1 text-center">A jovem guardiã dos saberes ancestrais.</p>
+                    <p class="text-xs text-emerald-300/80 mt-1 text-center">A guardiã dos saberes ancestrais.</p>
                 </div>
-            </div>
-
-            <div class="text-[11px] text-emerald-400/70 font-medium">
-                Clica num dos personagens para começar o jogo 3D
             </div>
         </div>
     </div>
 
-    <!-- Header HUD -->
+    <!-- Cabeçalho HUD -->
     <header id="game-header" class="absolute top-0 left-0 w-full px-4 py-3 flex justify-between items-center z-20 pointer-events-auto hidden">
         <div class="glass-card px-4 py-2 rounded-xl flex items-center space-x-3">
-            <div id="player-avatar-icon" class="w-10 h-10 rounded-full bg-amber-600 border-2 border-amber-300 flex items-center justify-center text-amber-100 font-bold text-xl shadow-lg">
-                👦🏽
-            </div>
+            <div id="player-avatar-icon" class="w-10 h-10 rounded-full bg-amber-600 border-2 border-amber-300 flex items-center justify-center text-xl">👦🏽</div>
             <div>
-                <h1 class="font-game text-sm md:text-lg font-bold bg-gradient-to-r from-amber-300 to-emerald-400 bg-clip-text text-transparent">
-                    Tape Marangatu 3D
-                </h1>
+                <h1 class="font-game text-sm font-bold bg-gradient-to-r from-amber-300 to-emerald-400 bg-clip-text text-transparent">Tape Marangatu 3D</h1>
                 <p id="player-name-display" class="text-[10px] text-emerald-300/80">Guardião: Konomi</p>
             </div>
+            <div class="ml-2">
+                <p class="text-[10px] text-emerald-300 mb-1">Saúde</p>
+                <div class="health-bar-container">
+                    <div id="health-bar" class="health-bar" style="width: 100%;"></div>
+                </div>
+            </div>
         </div>
-
         <div class="flex items-center space-x-4">
-            <!-- 3D Compass HUD -->
-            <div class="compass-ring flex items-center justify-center" title="Bússola de Orientação">
+            <div class="compass-ring flex items-center justify-center">
                 <span class="absolute top-0.5 text-[9px] font-bold text-amber-400">N</span>
                 <div id="compass-needle" class="compass-needle flex flex-col justify-between items-center">
                     <div class="w-0 h-0 border-l-[3px] border-l-transparent border-r-[3px] border-r-transparent border-b-[14px] border-b-red-500"></div>
                     <div class="w-0 h-0 border-l-[3px] border-l-transparent border-r-[3px] border-r-transparent border-t-[14px] border-t-white"></div>
                 </div>
             </div>
-
             <div class="glass-card px-4 py-2 rounded-xl text-xs flex items-center space-x-2">
                 <i class="fas fa-flag-checkered text-amber-400"></i>
                 <span id="phase-indicator" class="text-amber-200 font-semibold">Fase 1: O Segredo do AWATI</span>
@@ -174,201 +179,111 @@
         </div>
     </header>
 
-    <!-- Canvas 3D -->
     <div id="canvas-container" class="w-full h-full cursor-grab active:cursor-grabbing"></div>
 
-    <!-- Action Button -->
-    <div class="absolute bottom-6 right-6 z-20 flex flex-col items-end space-y-2 pointer-events-auto">
+    <div class="absolute bottom-6 right-6 z-20 flex flex-col items-end space-y-2">
         <button id="btn-interact" onclick="checkCurrentProximity()" class="hidden glass-card bg-amber-500 hover:bg-amber-400 text-amber-950 font-bold px-6 py-3.5 rounded-2xl shadow-xl flex items-center space-x-2 text-sm border-2 border-amber-200 animate-glow">
-            <i class="fas fa-book-open text-lg"></i>
-            <span id="interact-label">Ler Kwatiá</span>
+            <i class="fas fa-book-open"></i><span id="interact-label">Ler Kwatiá</span>
         </button>
     </div>
 
-    <!-- Mobile Touch Controls -->
-    <div id="touch-controls" class="absolute bottom-6 left-6 grid grid-cols-3 gap-2 w-36 h-36 md:hidden z-20 pointer-events-auto hidden">
+    <div id="touch-controls" class="absolute bottom-6 left-6 grid grid-cols-3 gap-2 w-36 h-36 md:hidden z-20">
         <div></div>
-        <button id="btn-up" class="btn-touch rounded-t-xl text-emerald-300 text-xl font-bold flex items-center justify-center">▲</button>
+        <button id="btn-up" class="btn-touch rounded-t-xl text-emerald-300 text-xl">▲</button>
         <div></div>
-        <button id="btn-left" class="btn-touch rounded-l-xl text-emerald-300 text-xl font-bold flex items-center justify-center">◄</button>
-        <button id="btn-jump" onclick="triggerJump()" class="btn-touch rounded-lg text-amber-300 text-xs font-bold flex items-center justify-center">PULAR</button>
-        <button id="btn-right" class="btn-touch rounded-r-xl text-emerald-300 text-xl font-bold flex items-center justify-center">►</button>
+        <button id="btn-left" class="btn-touch rounded-l-xl text-emerald-300 text-xl">◄</button>
+        <button id="btn-jump" onclick="triggerJump()" class="btn-touch rounded-lg text-amber-300 text-xs font-bold">PULAR</button>
+        <button id="btn-right" class="btn-touch rounded-r-xl text-emerald-300 text-xl">►</button>
         <div></div>
-        <button id="btn-down" class="btn-touch rounded-b-xl text-emerald-300 text-xl font-bold flex items-center justify-center">▼</button>
+        <button id="btn-down" class="btn-touch rounded-b-xl text-emerald-300 text-xl">▼</button>
         <div></div>
     </div>
 
-    <!-- Controls Tip Overlay -->
     <div id="keyboard-tip" class="hidden md:flex absolute bottom-4 left-4 glass-card px-4 py-2 rounded-xl text-[11px] text-emerald-300/90 items-center space-x-3 z-20">
-        <i class="fas fa-mouse text-amber-400 text-sm"></i>
-        <span><b>WASD / Setas</b> mover | <b>ESPAÇO</b> Pular / Interagir | <b>Arrastar Rato</b> Girar Câmara 360° | <b>Scroll</b> Zoom</span>
+        <i class="fas fa-mouse text-amber-400"></i>
+        <span><b>WASD</b> mover | <b>ESPAÇO</b> interagir/pular | Cuidado com os animais! ⚠️</span>
     </div>
 
-    <!-- MODAL: Kwatiá Reading -->
+    <!-- Modais -->
     <div id="read-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-        <div class="kwatia-paper max-w-lg w-full p-6 relative max-h-[90vh] flex flex-col justify-between">
+        <div class="kwatia-paper max-w-lg w-full p-6 relative max-h-[90vh] flex flex-col">
             <div class="flex justify-between items-start border-b-2 border-amber-900/30 pb-3">
                 <div>
-                    <span id="kwatia-letter" class="font-game text-4xl text-amber-950 font-bold">A a A a</span>
+                    <span id="kwatia-letter" class="font-game text-4xl font-bold text-amber-950">A a A a</span>
                     <h2 id="kwatia-title" class="font-game text-2xl text-amber-950">AWATI</h2>
                 </div>
                 <button onclick="closeModal('read-modal')" class="text-amber-950 hover:text-amber-700 text-2xl font-bold">✕</button>
             </div>
-
             <div class="my-4 flex-1 overflow-y-auto space-y-3 pr-1">
-                <div id="kwatia-illustration" class="w-full h-36 bg-amber-100 rounded-xl border-2 border-amber-800/30 flex items-center justify-center text-6xl shadow-inner">
-                    🌽
-                </div>
+                <div id="kwatia-illustration" class="w-full h-36 bg-amber-100 rounded-xl border-2 border-amber-800/30 flex items-center justify-center text-6xl">🌽</div>
                 <div id="kwatia-text-list" class="space-y-2 font-semibold text-sm text-amber-950 font-serif"></div>
             </div>
-
-            <button onclick="openQuestionModal()" class="w-full py-3.5 bg-amber-900 hover:bg-amber-800 text-amber-100 font-bold rounded-xl shadow-lg flex items-center justify-center space-x-2 transition text-sm">
-                <span>Responder ao Enigma da Kwatiá</span>
-                <i class="fas fa-arrow-right"></i>
+            <button onclick="openQuestionModal()" class="w-full py-3.5 bg-amber-900 hover:bg-amber-800 text-amber-100 font-bold rounded-xl flex items-center justify-center space-x-2">
+                Responder <i class="fas fa-arrow-right"></i>
             </button>
         </div>
     </div>
 
-    <!-- MODAL: Quiz Modal -->
     <div id="question-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-        <div class="glass-card max-w-md w-full rounded-2xl p-6 border-2 border-amber-400/60 shadow-2xl">
+        <div class="glass-card max-w-md w-full rounded-2xl p-6 border-2 border-amber-400/60">
             <div class="flex items-center space-x-3 mb-4 border-b border-emerald-500/30 pb-3">
                 <div class="w-10 h-10 rounded-full bg-amber-500 flex items-center justify-center text-amber-950 font-bold text-xl">❓</div>
-                <div>
-                    <h3 class="font-game text-lg text-amber-300">Desafio de Interpretação</h3>
-                    <p class="text-[11px] text-emerald-300">Responde corretamente para avançar!</p>
-                </div>
+                <div><h3 class="font-game text-lg text-amber-300">Desafio</h3></div>
             </div>
-
-            <p id="question-prompt" class="text-sm text-emerald-100 font-medium mb-4 leading-relaxed"></p>
+            <p id="question-prompt" class="text-sm text-emerald-100 mb-4"></p>
             <div id="options-container" class="space-y-2.5 mb-4"></div>
-
-            <div class="flex justify-end">
-                <button onclick="closeModal('question-modal')" class="text-xs text-emerald-400 hover:text-emerald-200">Voltar ao texto</button>
-            </div>
+            <button onclick="closeModal('question-modal')" class="text-xs text-emerald-400 hover:text-emerald-200">Voltar</button>
         </div>
     </div>
 
-    <!-- Game Logic & Three.js Engine -->
     <script>
-        let selectedCharacter = null;
-        let gameStarted = false;
-        let currentPhase = 1;
-        let activeInteractiveObject = null;
+        let selectedCharacter = null, gameStarted = false, currentPhase = 1, activeInteractiveObject = null;
+        let playerHealth = 100, maxHealth = 100;
+        const DAMAGE_RADIUS = 3.5, DAMAGE_PER_SECOND = 8;
+        let lastDamageTime = { cobra:0, aranha:0, rato:0 };
 
-        // PEDAGOGICAL QUIZ BANK
         const quizBank = {
             phase1: [
-                {
-                    question: "No caderno didático da Kwatiá, qual expressão se refere especificamente ao milho branco?",
-                    options: [
-                        { text: "Awati Ũ", correct: false },
-                        { text: "Awati Morõti", correct: true },
-                        { text: "Awati Pynta", correct: false },
-                        { text: "Awati Pará", correct: false }
-                    ]
-                },
-                {
-                    question: "Qual tipo de Awati é associado à cor vermelha nas tradições Nhandewa?",
-                    options: [
-                        { text: "Awati Pynta", correct: true },
-                        { text: "Awati Morõti", correct: false },
-                        { text: "Awati Djegwá", correct: false },
-                        { text: "Awati Mara'ẽy", correct: false }
-                    ]
-                },
-                {
-                    question: "O termo 'Awati Mara'ẽy' refere-se a qual qualidade sagrada do milho?",
-                    options: [
-                        { text: "Milho preto ou escuro", correct: false },
-                        { text: "Milho colorido / mesclado", correct: false },
-                        { text: "Milho verdadeiro, puro e perfeito", correct: true },
-                        { text: "Milho enfeitado para rituais", correct: false }
-                    ]
-                }
+                { question: "Qual expressão se refere ao milho branco?",
+                  options: [{text:"Awati Ũ",correct:false},{text:"Awati Morõti",correct:true},{text:"Awati Pynta",correct:false}] },
+                { question: "Qual tipo é associado à cor vermelha?",
+                  options: [{text:"Awati Pynta",correct:true},{text:"Awati Morõti",correct:false},{text:"Awati Djegwá",correct:false}] }
             ],
             phase2: [
-                {
-                    question: "No texto sobre o Djagwarete, qual expressão descreve a onça que habita a verdadeira floresta?",
-                    options: [
-                        { text: "Djagwarete Ipara Porã", correct: false },
-                        { text: "Djagwarete Ka'agwy Ete Regwa", correct: true },
-                        { text: "Djagwarete Yy Remberé", correct: false },
-                        { text: "Djagwarete Yyaká Rarõá", correct: false }
-                    ]
-                },
-                {
-                    question: "Qual expressão relaciona a Onça com a proteção das margens dos rios e águas?",
-                    options: [
-                        { text: "Djagwarete Yy Remberé", correct: true },
-                        { text: "Djagwarete O'okwe U'á", correct: false },
-                        { text: "Djagwarete Ipotxy Atsy", correct: false },
-                        { text: "Djagwarete Ka'agwy Ete Regwa", correct: false }
-                    ]
-                }
+                { question: "Qual expressão descreve a onça da floresta verdadeira?",
+                  options: [{text:"Djagwarete Ka'agwy Ete Regwa",correct:true},{text:"Djagwarete Yy Remberé",correct:false}] }
             ]
         };
-
         const gameData = {
-            phase1: {
-                letter: "A a A a",
-                title: "AWATI",
-                icon: "🌽",
-                lines: ["AWATI MORÕTI", "AWATI Ũ", "AWATI PARÁ", "AWATI PYNTA", "AWATI DJEGWÁ", "AWATI MARA'ẼY"]
-            },
-            phase2: {
-                letter: "DJ dj Dj dj",
-                title: "DJAGWARETE",
-                icon: "🐆",
-                lines: [
-                    "DJAGWARETE YY REMBERÉ", "DJAGWARETE IPARA PORÃ", "DJAGWARETE IPOTXY ATSY",
-                    "DJAGWARETE O'OKWE U'Á", "DJAGWARETE KA'AGWY ETE REGWA", "DJAGWARETE YYAKÁ RARÕÁ",
-                    "DJAGWARETE NHANDẼ PY'Y ÃWÃ O'Á YWYRUPI"
-                ]
-            }
+            phase1: { letter:"A a A a", title:"AWATI", icon:"🌽", lines:["AWATI MORÕTI","AWATI Ũ","AWATI PARÁ","AWATI PYNTA","AWATI DJEGWÁ","AWATI MARA'ẼY"] },
+            phase2: { letter:"DJ dj", title:"DJAGWARETE", icon:"🐆", lines:["DJAGWARETE YY REMBERÉ","DJAGWARETE KA'AGWY ETE REGWA"] }
         };
 
-        // --- THREE.JS DAYTIME & INFINITE HORIZON SETUP ---
         const container = document.getElementById('canvas-container');
         const scene = new THREE.Scene();
-        
-        scene.background = new THREE.Color(0x87ceeb); // Bright daytime sky
-        scene.fog = new THREE.FogExp2(0x9be2ff, 0.009); // Dense fog blending sky into terrain horizon
-
+        scene.background = new THREE.Color(0x87ceeb);
+        scene.fog = new THREE.FogExp2(0x9be2ff, 0.009);
         const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         renderer.shadowMap.enabled = true;
-        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         container.appendChild(renderer.domElement);
 
-        // --- DAYLIGHTING & SUN ---
+        // Luzes
         const ambientLight = new THREE.AmbientLight(0xfffaed, 0.75);
         scene.add(ambientLight);
-
         const sunLight = new THREE.DirectionalLight(0xfff5cc, 1.25);
         sunLight.position.set(40, 70, 30);
         sunLight.castShadow = true;
         sunLight.shadow.mapSize.width = 2048;
         sunLight.shadow.mapSize.height = 2048;
-        sunLight.shadow.camera.near = 0.5;
-        sunLight.shadow.camera.far = 250;
-        const d = 60;
-        sunLight.shadow.camera.left = -d;
-        sunLight.shadow.camera.right = d;
-        sunLight.shadow.camera.top = d;
-        sunLight.shadow.camera.bottom = -d;
         scene.add(sunLight);
-
-        const sunMesh = new THREE.Mesh(
-            new THREE.SphereGeometry(5, 16, 16),
-            new THREE.MeshBasicMaterial({ color: 0xfff066 })
-        );
+        const sunMesh = new THREE.Mesh(new THREE.SphereGeometry(5, 16, 16), new THREE.MeshBasicMaterial({ color: 0xfff066 }));
         sunMesh.position.set(90, 150, 50);
         scene.add(sunMesh);
 
-        // --- LARGE TERRAIN ---
+        // Terreno
         const terrainGeo = new THREE.PlaneGeometry(350, 350, 32, 32);
         const terrainMat = new THREE.MeshLambertMaterial({ color: 0x2e7d32 });
         const terrain = new THREE.Mesh(terrainGeo, terrainMat);
@@ -376,73 +291,38 @@
         terrain.receiveShadow = true;
         scene.add(terrain);
 
-        // --- CURVED WINDING TRAIL (TRILHA SINUOSA) ---
-        // Smooth spline defining the winding trail curve
+        // Trilha
         const curvePoints = [
-            new THREE.Vector3(0, 0, 45),
-            new THREE.Vector3(3, 0, 30),
-            new THREE.Vector3(-6, 0, 15),
-            new THREE.Vector3(-4, 0, 0),
-            new THREE.Vector3(5, 0, -15),
-            new THREE.Vector3(2, 0, -30),
-            new THREE.Vector3(0, 0, -50)
+            new THREE.Vector3(0, 0, 45), new THREE.Vector3(3, 0, 30), new THREE.Vector3(-6, 0, 15),
+            new THREE.Vector3(-4, 0, 0), new THREE.Vector3(5, 0, -15), new THREE.Vector3(2, 0, -30), new THREE.Vector3(0, 0, -50)
         ];
         const pathSpline = new THREE.CatmullRomCurve3(curvePoints);
-
-        // Draw curved dirt trail mesh
-        const trailGeometry = new THREE.PlaneGeometry(8, 140, 32, 64);
-        const trailVertices = trailGeometry.attributes.position;
-        // Warp plane along spline
-        for (let i = 0; i < trailVertices.count; i++) {
-            const u = (trailVertices.getY(i) + 70) / 140; // Normalize 0 to 1
-            const pointOnCurve = pathSpline.getPointAt(Math.max(0, Math.min(1, u)));
-            const tangent = pathSpline.getTangentAt(Math.max(0, Math.min(1, u)));
-            const normal = new THREE.Vector3(-tangent.z, 0, tangent.x).normalize();
-            
-            const offsetX = trailVertices.getX(i);
-            const finalPos = pointOnCurve.clone().add(normal.multiplyScalar(offsetX));
-            trailVertices.setXYZ(i, finalPos.x, finalPos.z, 0.03); // Y is Z for Plane before rotation
-        }
-        trailGeometry.computeVertexNormals();
-
-        const pathMat = new THREE.MeshLambertMaterial({ color: 0x8d6e63, side: THREE.DoubleSide });
-        const curvedPathMesh = new THREE.Mesh(trailGeometry, pathMat);
-        curvedPathMesh.rotation.x = -Math.PI / 2;
-        curvedPathMesh.receiveShadow = true;
-        scene.add(curvedPathMesh);
-
-        // Helper function: get trail X position at any Z coordinate
         function getTrailXAtZ(z) {
             const u = Math.max(0, Math.min(1, (45 - z) / 95));
             return pathSpline.getPointAt(u).x;
         }
 
-        // --- DENSE TREES AND BUSHES FOR CAMOUFLAGE ---
+        // Árvores e arbustos
         function createTree(x, z, scale = 1) {
             const treeGroup = new THREE.Group();
-            
             const trunkGeo = new THREE.CylinderGeometry(0.4 * scale, 0.7 * scale, 9 * scale, 8);
-            const trunkMat = new THREE.MeshLambertMaterial({ color: 0x4e342e });
-            const trunk = new THREE.Mesh(trunkGeo, trunkMat);
-            trunk.position.y = (4.5) * scale;
+            const trunk = new THREE.Mesh(trunkGeo, new THREE.MeshLambertMaterial({ color: 0x4e342e }));
+            trunk.position.y = 4.5 * scale;
             trunk.castShadow = true;
             treeGroup.add(trunk);
-
             const leafColors = [0x1b5e20, 0x2e7d32, 0x388e3c];
             for(let i = 0; i < 3; i++) {
-                const leavesGeo = new THREE.DodecahedronGeometry((3.6 - i * 0.6) * scale);
-                const leavesMat = new THREE.MeshLambertMaterial({ color: leafColors[i], flatShading: true });
-                const leaves = new THREE.Mesh(leavesGeo, leavesMat);
+                const leaves = new THREE.Mesh(
+                    new THREE.DodecahedronGeometry((3.6 - i * 0.6) * scale),
+                    new THREE.MeshLambertMaterial({ color: leafColors[i], flatShading: true })
+                );
                 leaves.position.y = (7 + i * 2.2) * scale;
                 leaves.castShadow = true;
                 treeGroup.add(leaves);
             }
-
             treeGroup.position.set(x, 0, z);
             scene.add(treeGroup);
-            return treeGroup;
         }
-
         function createBush(x, z, scale = 1) {
             const bushGroup = new THREE.Group();
             const bushMat = new THREE.MeshLambertMaterial({ color: 0x2e7d32, flatShading: true });
@@ -454,117 +334,55 @@
             }
             bushGroup.position.set(x, 0, z);
             scene.add(bushGroup);
-            return bushGroup;
         }
-
-        // Generate dense forest borders along winding path
         for (let z = -70; z <= 70; z += 10) {
-            const trailX = getTrailXAtZ(z);
-            createTree(trailX - 9 - Math.random() * 25, z + (Math.random() - 0.5) * 4, 1 + Math.random() * 0.4);
-            createTree(trailX + 9 + Math.random() * 25, z + (Math.random() - 0.5) * 4, 1 + Math.random() * 0.4);
-
-            // Foliage/Bushes along trail edges for hiding animals
-            createBush(trailX - 4.5 - Math.random() * 2, z, 1.2);
-            createBush(trailX + 4.5 + Math.random() * 2, z, 1.2);
+            const tx = getTrailXAtZ(z);
+            createTree(tx - 9 - Math.random() * 25, z + (Math.random() - 0.5) * 4, 1 + Math.random() * 0.4);
+            createTree(tx + 9 + Math.random() * 25, z + (Math.random() - 0.5) * 4, 1 + Math.random() * 0.4);
+            createBush(tx - 4.5 - Math.random() * 2, z, 1.2);
+            createBush(tx + 4.5 + Math.random() * 2, z, 1.2);
         }
 
-        // --- PROCEDURAL CHARACTER MODEL & ORIGINAL ANIMATION (KONOMI & KUNHATAĨ) ---
+        // Personagem
         function buildCharacterModel(isKunhatai = false) {
             const group = new THREE.Group();
-
-            // Colors
-            const skinColor = 0xb87352;
-            const clothesColor = isKunhatai ? 0x059669 : 0xd97706; // Emerald vs Amber
-            const hairColor = 0x1c1917;
-
-            // Torso
-            const torsoGeo = new THREE.CylinderGeometry(0.38, 0.32, 1.1, 8);
-            const torsoMat = new THREE.MeshLambertMaterial({ color: clothesColor });
-            const torso = new THREE.Mesh(torsoGeo, torsoMat);
-            torso.position.y = 1.0;
-            torso.castShadow = true;
-            group.add(torso);
-
-            // Head
-            const headGeo = new THREE.SphereGeometry(0.38, 16, 16);
-            const skinMat = new THREE.MeshLambertMaterial({ color: skinColor });
-            const head = new THREE.Mesh(headGeo, skinMat);
-            head.position.y = 1.8;
-            head.castShadow = true;
-            group.add(head);
-
-            // Hair
-            const hairGeo = isKunhatai 
-                ? new THREE.ConeGeometry(0.48, 0.9, 12) 
-                : new THREE.SphereGeometry(0.4, 12, 12);
-            const hairMat = new THREE.MeshLambertMaterial({ color: hairColor });
-            const hair = new THREE.Mesh(hairGeo, hairMat);
+            const skinColor = 0xb87352, clothesColor = isKunhatai ? 0x059669 : 0xd97706, hairColor = 0x1c1917;
+            const torso = new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.32, 1.1, 8), new THREE.MeshLambertMaterial({ color: clothesColor }));
+            torso.position.y = 1.0; torso.castShadow = true; group.add(torso);
+            const head = new THREE.Mesh(new THREE.SphereGeometry(0.38, 16, 16), new THREE.MeshLambertMaterial({ color: skinColor }));
+            head.position.y = 1.8; head.castShadow = true; group.add(head);
+            const hairGeo = isKunhatai ? new THREE.ConeGeometry(0.48, 0.9, 12) : new THREE.SphereGeometry(0.4, 12, 12);
+            const hair = new THREE.Mesh(hairGeo, new THREE.MeshLambertMaterial({ color: hairColor }));
             hair.position.set(0, 1.95, isKunhatai ? -0.1 : -0.05);
             if (isKunhatai) hair.rotation.x = -0.3;
             group.add(hair);
-
-            // Red Feather / Cocar Detail
-            const featherGeo = new THREE.ConeGeometry(0.08, 0.55, 4);
-            const featherMat = new THREE.MeshBasicMaterial({ color: 0xef4444 });
-            const feather = new THREE.Mesh(featherGeo, featherMat);
+            const feather = new THREE.Mesh(new THREE.ConeGeometry(0.08, 0.55, 4), new THREE.MeshBasicMaterial({ color: 0xef4444 }));
             feather.position.set(isKunhatai ? 0.2 : 0, 2.2, -0.1);
             feather.rotation.z = isKunhatai ? -0.3 : 0;
             group.add(feather);
-
-            // Arms (Pivoted for procedural swiveling animation)
-            const armGeo = new THREE.CylinderGeometry(0.1, 0.08, 0.7);
-
+            const armGeo = new THREE.CylinderGeometry(0.1, 0.08, 0.7), skinMat = new THREE.MeshLambertMaterial({ color: skinColor });
             const leftArmPivot = new THREE.Group();
             leftArmPivot.position.set(-0.48, 1.45, 0);
-            const leftArm = new THREE.Mesh(armGeo, skinMat);
-            leftArm.position.y = -0.35;
-            leftArmPivot.add(leftArm);
-            group.add(leftArmPivot);
-
+            const leftArm = new THREE.Mesh(armGeo, skinMat); leftArm.position.y = -0.35; leftArmPivot.add(leftArm); group.add(leftArmPivot);
             const rightArmPivot = new THREE.Group();
             rightArmPivot.position.set(0.48, 1.45, 0);
-            const rightArm = new THREE.Mesh(armGeo, skinMat);
-            rightArm.position.y = -0.35;
-            rightArmPivot.add(rightArm);
-            group.add(rightArmPivot);
-
-            // Legs (Pivoted for walking animation)
+            const rightArm = new THREE.Mesh(armGeo, skinMat); rightArm.position.y = -0.35; rightArmPivot.add(rightArm); group.add(rightArmPivot);
             const legGeo = new THREE.CylinderGeometry(0.12, 0.09, 0.75);
-
-            const leftLegPivot = new THREE.Group();
-            leftLegPivot.position.set(-0.2, 0.7, 0);
-            const leftLeg = new THREE.Mesh(legGeo, skinMat);
-            leftLeg.position.y = -0.375;
-            leftLegPivot.add(leftLeg);
-            group.add(leftLegPivot);
-
-            const rightLegPivot = new THREE.Group();
-            rightLegPivot.position.set(0.2, 0.7, 0);
-            const rightLeg = new THREE.Mesh(legGeo, skinMat);
-            rightLeg.position.y = -0.375;
-            rightLegPivot.add(rightLeg);
-            group.add(rightLegPivot);
-
+            const leftLegPivot = new THREE.Group(); leftLegPivot.position.set(-0.2, 0.7, 0);
+            const leftLeg = new THREE.Mesh(legGeo, skinMat); leftLeg.position.y = -0.375; leftLegPivot.add(leftLeg); group.add(leftLegPivot);
+            const rightLegPivot = new THREE.Group(); rightLegPivot.position.set(0.2, 0.7, 0);
+            const rightLeg = new THREE.Mesh(legGeo, skinMat); rightLeg.position.y = -0.375; rightLegPivot.add(rightLeg); group.add(rightLegPivot);
             group.position.set(0, 0, 35);
-            return {
-                mesh: group,
-                head, torso,
-                leftArmPivot, rightArmPivot,
-                leftLegPivot, rightLegPivot
-            };
+            return { mesh: group, head, torso, leftArmPivot, rightArmPivot, leftLegPivot, rightLegPivot };
         }
-
         let player = buildCharacterModel(false);
         scene.add(player.mesh);
 
-        // --- LANDMARKS / OBJECTIVES ---
-
-        // 1. AWATI (Corn Stalk - Phase 1 Landmark)
+        // Objetivo: AWATI
         const awatiGroup = new THREE.Group();
         const stalkMat = new THREE.MeshLambertMaterial({ color: 0x65a30d });
         const stalk = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.2, 4.2, 8), stalkMat);
-        stalk.position.y = 2.1;
-        awatiGroup.add(stalk);
+        stalk.position.y = 2.1; awatiGroup.add(stalk);
         for (let i = 0; i < 5; i++) {
             const leaf = new THREE.Mesh(new THREE.ConeGeometry(0.4, 2.5, 5), stalkMat);
             leaf.position.set(0, 1 + i * 0.6, 0);
@@ -572,416 +390,399 @@
             awatiGroup.add(leaf);
         }
         const corn = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.2, 1.4, 8), new THREE.MeshLambertMaterial({ color: 0xeab308 }));
-        corn.position.set(0.35, 2.3, 0);
-        corn.rotation.z = -0.4;
-        awatiGroup.add(corn);
-
+        corn.position.set(0.35, 2.3, 0); corn.rotation.z = -0.4; awatiGroup.add(corn);
         const ring1 = new THREE.Mesh(new THREE.RingGeometry(1.4, 1.9, 24), new THREE.MeshBasicMaterial({ color: 0xfacc15, side: THREE.DoubleSide }));
-        ring1.rotation.x = -Math.PI / 2;
-        ring1.position.y = 0.05;
-        awatiGroup.add(ring1);
-
-        const awatiX = getTrailXAtZ(15) - 4;
-        awatiGroup.position.set(awatiX, 0, 15);
+        ring1.rotation.x = -Math.PI / 2; ring1.position.y = 0.05; awatiGroup.add(ring1);
+        awatiGroup.position.set(getTrailXAtZ(15) - 4, 0, 15);
         scene.add(awatiGroup);
 
-        // 2. DJAGWARETE (Jaguar 3D Model - Phase 2 Landmark)
+        // Objetivo: Onça
         const jaguarGroup = new THREE.Group();
         const jagMat = new THREE.MeshLambertMaterial({ color: 0xd97706 });
         const jagBody = new THREE.Mesh(new THREE.BoxGeometry(1.4, 1.1, 2.8), jagMat);
-        jagBody.position.y = 1.1;
-        jagBody.castShadow = true;
-        jaguarGroup.add(jagBody);
-
+        jagBody.position.y = 1.1; jagBody.castShadow = true; jaguarGroup.add(jagBody);
         const jagHead = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.9, 1.1), jagMat);
-        jagHead.position.set(0, 1.7, 1.6);
-        jagHead.castShadow = true;
-        jaguarGroup.add(jagHead);
-
+        jagHead.position.set(0, 1.7, 1.6); jagHead.castShadow = true; jaguarGroup.add(jagHead);
         const spotMat = new THREE.MeshBasicMaterial({ color: 0x451a03 });
         for(let s = 0; s < 8; s++) {
             const spot = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.3, 0.05), spotMat);
             spot.position.set((s % 2 === 0 ? 0.71 : -0.71), 1.1 + (s % 3) * 0.2, -0.8 + s * 0.3);
             jaguarGroup.add(spot);
         }
-
         const ring2 = new THREE.Mesh(new THREE.RingGeometry(1.6, 2.2, 24), new THREE.MeshBasicMaterial({ color: 0xf59e0b, side: THREE.DoubleSide }));
-        ring2.rotation.x = -Math.PI / 2;
-        ring2.position.y = 0.05;
-        jaguarGroup.add(ring2);
-
-        const jagX = getTrailXAtZ(-35);
-        jaguarGroup.position.set(jagX, 0, -35);
+        ring2.rotation.x = -Math.PI / 2; ring2.position.y = 0.05; jaguarGroup.add(ring2);
+        jaguarGroup.position.set(getTrailXAtZ(-35), 0, -35);
         scene.add(jaguarGroup);
 
-        // --- CAMOUFLAGED ANIMALS WITH NATURAL PROCEDURAL BEHAVIOR ---
-
-        // 1. MBO'I (Cobra Cascavel 🐍) - Undulating S-curve movement on ground leaves
+        // ========== ANIMAIS MELHORADOS ==========
+        // Cobra
         const mboiGroup = new THREE.Group();
         const mboiSegments = [];
-        const snakeMat = new THREE.MeshLambertMaterial({ color: 0x3f6212 });
+        const snakeMat = new THREE.MeshLambertMaterial({ color: 0x5a8f34 });
+        const snakeScale = [1, 0.95, 0.9, 0.85, 0.8, 0.75, 0.7, 0.65, 0.55];
         for (let b = 0; b < 9; b++) {
-            const seg = new THREE.Mesh(new THREE.SphereGeometry(0.25 - b * 0.018, 8, 8), snakeMat);
+            const seg = new THREE.Mesh(new THREE.SphereGeometry(0.22 * snakeScale[b], 10, 10), snakeMat);
             seg.castShadow = true;
             mboiSegments.push(seg);
             mboiGroup.add(seg);
         }
-        // Hiding bush patch for cobra
+        // Olhos da cobra
+        const eyeMat = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+        const snakeEyeL = new THREE.Mesh(new THREE.SphereGeometry(0.05, 8, 8), eyeMat);
+        const snakeEyeR = new THREE.Mesh(new THREE.SphereGeometry(0.05, 8, 8), eyeMat);
+        mboiSegments[0].add(snakeEyeL); mboiSegments[0].add(snakeEyeR);
+        snakeEyeL.position.set(-0.1, 0.05, -0.15);
+        snakeEyeR.position.set(0.1, 0.05, -0.15);
+        // Língua
+        const tongueGeo = new THREE.CylinderGeometry(0.015, 0.01, 0.3);
+        const tongue = new THREE.Mesh(tongueGeo, new THREE.MeshBasicMaterial({ color: 0xff4444 }));
+        tongue.position.set(0, 0, -0.3);
+        mboiSegments[0].add(tongue);
         const cobraBushX = getTrailXAtZ(5) + 3.2;
         createBush(cobraBushX, 5, 1.5);
-        mboiGroup.position.set(cobraBushX - 0.5, 0.1, 5);
+        mboiGroup.position.set(cobraBushX - 0.5, 0.15, 5);
         scene.add(mboiGroup);
 
-        // 2. NHANDU (Aranha Gigante 🕷️) - Camouflaged on silk web between trees
+        // Aranha
         const nhanduGroup = new THREE.Group();
-        const spiderMat = new THREE.MeshLambertMaterial({ color: 0x18181b });
-        const spiderBody = new THREE.Mesh(new THREE.SphereGeometry(0.45, 10, 10), spiderMat);
-        spiderBody.scale.set(1, 0.7, 1.3);
-        nhanduGroup.add(spiderBody);
-
+        const spiderMat = new THREE.MeshLambertMaterial({ color: 0x2c2c2c });
+        const cephalo = new THREE.Mesh(new THREE.SphereGeometry(0.3, 10, 10), spiderMat);
+        cephalo.scale.set(1, 0.9, 1); cephalo.position.z = 0.35;
+        nhanduGroup.add(cephalo);
+        const abdomen = new THREE.Mesh(new THREE.SphereGeometry(0.5, 10, 10), new THREE.MeshLambertMaterial({ color: 0x1a1a1a }));
+        abdomen.scale.set(1, 0.85, 1.2);
+        nhanduGroup.add(abdomen);
+        // Marcas nas costas
+        const markMat = new THREE.MeshBasicMaterial({ color: 0xff3333 });
+        const mark = new THREE.Mesh(new THREE.SphereGeometry(0.15, 8, 8), markMat);
+        mark.scale.set(1.5, 1, 0.5); mark.position.set(0, 0.15, -0.2);
+        nhanduGroup.add(mark);
+        // Olhos
+        const spiderEye = new THREE.Mesh(new THREE.SphereGeometry(0.06, 8, 8), new THREE.MeshBasicMaterial({ color: 0xff0000 }));
+        for(let ex = -1; ex <= 1; ex += 2) {
+            for(let ey = -1; ey <= 1; ey += 2) {
+                const e = spiderEye.clone();
+                e.position.set(ex*0.12, 0.05, 0.6);
+                nhanduGroup.add(e);
+            }
+        }
+        // Pernas
         const spiderLegs = [];
         for (let l = 0; l < 8; l++) {
+            const side = l < 4 ? 1 : -1;
+            const angBase = (l % 4 - 1.5) * 0.4;
             const legPivot = new THREE.Group();
-            const legMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.03, 0.9), spiderMat);
-            legMesh.position.set(l < 4 ? 0.45 : -0.45, -0.2, 0);
-            legMesh.rotation.z = l < 4 ? -0.8 : 0.8;
-            legPivot.add(legMesh);
-            legPivot.position.set(0, 0, (l % 4) * 0.22 - 0.33);
+            const leg1 = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.04, 0.6), spiderMat);
+            leg1.position.y = -0.3;
+            const leg2 = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.03, 0.5), spiderMat);
+            leg2.position.y = -0.55;
+            legPivot.add(leg1); leg1.add(leg2);
+            legPivot.rotation.y = side * angBase;
+            legPivot.position.set(side * 0.35, 0, 0.1);
             spiderLegs.push(legPivot);
             nhanduGroup.add(legPivot);
         }
-
-        // Web thread line
-        const threadGeo = new THREE.CylinderGeometry(0.01, 0.01, 8);
-        const threadMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.6 });
-        const webThread = new THREE.Mesh(threadGeo, threadMat);
-        webThread.position.y = 4;
-        nhanduGroup.add(webThread);
-
+        const webThread = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, 10), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.5 }));
+        webThread.position.y = 5; nhanduGroup.add(webThread);
         const nhanduTreeX = getTrailXAtZ(-12) - 3.8;
-        nhanduGroup.position.set(nhanduTreeX, 4.5, -12); // Elevated in canopy/web
+        nhanduGroup.position.set(nhanduTreeX, 5, -12);
         scene.add(nhanduGroup);
 
-        // 3. ANGUDJÁ (Rato/Preá 🐀) - Quick random dash between bushes
+        // Rato
         const angudjaGroup = new THREE.Group();
-        const ratMat = new THREE.MeshLambertMaterial({ color: 0x57534e });
-        const ratBody = new THREE.Mesh(new THREE.SphereGeometry(0.3, 8, 8), ratMat);
-        ratBody.scale.set(0.8, 0.7, 1.4);
-        ratBody.position.y = 0.2;
-        ratBody.castShadow = true;
-        angudjaGroup.add(ratBody);
-
-        const ratSnout = new THREE.Mesh(new THREE.ConeGeometry(0.15, 0.3, 8), ratMat);
-        ratSnout.rotation.x = -Math.PI / 2;
-        ratSnout.position.set(0, 0.2, 0.5);
-        angudjaGroup.add(ratSnout);
-
+        const ratMat = new THREE.MeshLambertMaterial({ color: 0x8b7355 });
+        const ratBody = new THREE.Mesh(new THREE.SphereGeometry(0.35, 10, 10), ratMat);
+        ratBody.scale.set(0.9, 0.8, 1.5); ratBody.position.y = 0.25; ratBody.castShadow = true; angudjaGroup.add(ratBody);
+        const ratHead = new THREE.Mesh(new THREE.SphereGeometry(0.2, 10, 10), ratMat);
+        ratHead.scale.set(1, 0.9, 1); ratHead.position.set(0, 0.3, 0.55); angudjaGroup.add(ratHead);
+        // Orelhas
+        const ear = new THREE.Mesh(new THREE.SphereGeometry(0.12, 8, 8), ratMat);
+        const earIn = new THREE.Mesh(new THREE.SphereGeometry(0.07, 8, 8), new THREE.MeshLambertMaterial({ color: 0xf5c6c6 }));
+        earIn.scale.set(0.8, 0.8, 0.5); earIn.position.z = 0.05;
+        const earL = ear.clone(); earL.position.set(-0.15, 0.4, 0.45); earL.add(earIn.clone()); angudjaGroup.add(earL);
+        const earR = ear.clone(); earR.position.set(0.15, 0.4, 0.45); earR.add(earIn.clone()); angudjaGroup.add(earR);
+        // Olhos e nariz
+        const ratEye = new THREE.Mesh(new THREE.SphereGeometry(0.04, 8, 8), new THREE.MeshBasicMaterial({ color: 0x000000 }));
+        const eyeL = ratEye.clone(); eyeL.position.set(-0.1, 0.32, 0.65); angudjaGroup.add(eyeL);
+        const eyeR = ratEye.clone(); eyeR.position.set(0.1, 0.32, 0.65); angudjaGroup.add(eyeR);
+        const nose = new THREE.Mesh(new THREE.SphereGeometry(0.06, 8, 8), new THREE.MeshBasicMaterial({ color: 0xd47878 }));
+        nose.position.set(0, 0.28, 0.78); angudjaGroup.add(nose);
+        // Rabo
+        const tail = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.015, 1), new THREE.MeshLambertMaterial({ color: 0x7a6a5a }));
+        tail.position.set(0, 0.2, -0.9); tail.rotation.x = 0.5; angudjaGroup.add(tail);
         const ratX = getTrailXAtZ(25) + 3.8;
-        createBush(ratX, 25, 1.3);
-        createBush(ratX - 6, 25, 1.3);
+        createBush(ratX, 25, 1.3); createBush(ratX - 6, 25, 1.3);
         angudjaGroup.position.set(ratX, 0, 25);
         scene.add(angudjaGroup);
 
-        // --- CAMERA SYSTEM (360 ORBIT WITH MOUSE) ---
-        let isMouseDown = false;
-        let previousMousePosition = { x: 0, y: 0 };
-        let cameraAngleYaw = 0;
-        let cameraAnglePitch = 0.35;
-        let cameraDistance = 12;
+        // Câmera
+        let isMouseDown = false, prevMouse = { x:0, y:0 }, yaw = 0, pitch = 0.35, camDist = 12;
+        container.addEventListener('mousedown', e => { isMouseDown = true; prevMouse = { x: e.clientX, y: e.clientY }; };
+container.addEventListener('mouseup', () => isMouseDown = false);
+container.addEventListener('mousemove', e => {
+    if (!isMouseDown) return;
+    const dx = e.clientX - prevMouse.x, dy = e.clientY - prevMouse.y;
+    yaw -= dx * 0.003; pitch -= dy * 0.003;
+    pitch = Math.max(-0.5, Math.min(1.1, pitch));
+    prevMouse = { x: e.clientX, y: e.clientY };
+});
+container.addEventListener('wheel', e => {
+    camDist += e.deltaY * 0.01;
+    camDist = Math.max(5, Math.min(25, camDist));
+});
 
-        container.addEventListener('mousedown', (e) => {
-            isMouseDown = true;
-            previousMousePosition = { x: e.clientX, y: e.clientY };
-        });
+// Controles teclado
+const keys = {};
+window.addEventListener('keydown', e => { keys[e.code] = true; if(e.code === 'Space') { if(!document.getElementById('character-select-screen').classList.contains('hidden')) return; if(activeInteractiveObject) checkCurrentProximity(); else triggerJump(); } });
+window.addEventListener('keyup', e => keys[e.code] = false);
 
-        container.addEventListener('mousemove', (e) => {
-            if (!isMouseDown) return;
-            const deltaX = e.clientX - previousMousePosition.x;
-            const deltaY = e.clientY - previousMousePosition.y;
+// Controles toque
+const dirState = { up:false, down:false, left:false, right:false };
+function bindTouch(btnId, dirKey) {
+    const btn = document.getElementById(btnId);
+    btn.addEventListener('touchstart', e => { e.preventDefault(); dirState[dirKey] = true; });
+    btn.addEventListener('touchend', e => { e.preventDefault(); dirState[dirKey] = false; });
+}
+bindTouch('btn-up', 'up'); bindTouch('btn-down', 'down');
+bindTouch('btn-left', 'left'); bindTouch('btn-right', 'right');
 
-            cameraAngleYaw -= deltaX * 0.007;
-            cameraAnglePitch = Math.max(0.1, Math.min(1.2, cameraAnglePitch + deltaY * 0.007));
+let velocity = { x:0, z:0 }, isGrounded = true, jumpVy = 0;
+const speed = 0.12, friction = 0.9, gravity = -0.018, jumpForce = 0.32;
 
-            previousMousePosition = { x: e.clientX, y: e.clientY };
-        });
+function selectCharacter(char) {
+    selectedCharacter = char;
+    document.getElementById('character-select-screen').classList.add('hidden');
+    document.getElementById('game-header').classList.remove('hidden');
+    document.getElementById('keyboard-tip').classList.remove('hidden');
+    
+    // Atualiza avatar e nome
+    const isKunhatai = char === 'kunhatai';
+    document.getElementById('player-avatar-icon').innerHTML = isKunhatai ? '👧🏽' : '👦🏽';
+    document.getElementById('player-name-display').textContent = `Guardião: ${isKunhatai ? 'Kunhataĩ' : 'Konomi'}`;
+    
+    // Recria personagem
+    scene.remove(player.mesh);
+    player = buildCharacterModel(isKunhatai);
+    scene.add(player.mesh);
+    
+    gameStarted = true;
+}
 
-        window.addEventListener('mouseup', () => isMouseDown = false);
-        container.addEventListener('contextmenu', e => e.preventDefault());
+function triggerJump() {
+    if(isGrounded) { jumpVy = jumpForce; isGrounded = false; }
+}
 
-        container.addEventListener('wheel', (e) => {
-            cameraDistance = Math.max(6, Math.min(26, cameraDistance + e.deltaY * 0.015));
-        });
+// Sistema de dano
+function updateHealthUI() {
+    const pct = (playerHealth / maxHealth) * 100;
+    document.getElementById('health-bar').style.width = `${pct}%`;
+    if(pct <= 30) {
+        document.getElementById('danger-indicator').classList.add('danger-visible');
+    } else {
+        document.getElementById('danger-indicator').classList.remove('danger-visible');
+    }
+    if(playerHealth <= 0) {
+        alert('Fim de jogo! Tente novamente 🛡️');
+        playerHealth = 100;
+        player.mesh.position.set(0, 0, 35);
+        velocity = { x:0, z:0 };
+    }
+}
 
-        // --- CONTROLS & JUMP SYSTEM ---
-        let playerVelocityY = 0;
-        let isJumping = false;
-        const gravity = -22;
-
-        function triggerJump() {
-            if (!isJumping) {
-                playerVelocityY = 8.5;
-                isJumping = true;
-            }
+function checkDistanceAndDamage(enemyName, enemyPosition) {
+    const now = Date.now();
+    const dx = player.mesh.position.x - enemyPosition.x;
+    const dz = player.mesh.position.z - enemyPosition.z;
+    const dist = Math.sqrt(dx*dx + dz*dz);
+    
+    if(dist < DAMAGE_RADIUS) {
+        if(now - lastDamageTime[enemyName] > 1000) {
+            playerHealth = Math.max(0, playerHealth - DAMAGE_PER_SECOND);
+            lastDamageTime[enemyName] = now;
+            updateHealthUI();
+            document.getElementById('canvas-container').classList.add('shake');
+            setTimeout(() => document.getElementById('canvas-container').classList.remove('shake'), 300);
         }
+    }
+}
 
-        const keys = {};
-        let touchDir = { x: 0, z: 0 };
+// Verificar proximidade com objetos
+function checkCurrentProximity() {
+    if(!activeInteractiveObject) return;
+    openModal('read-modal');
+}
 
-        window.addEventListener('keydown', e => {
-            keys[e.key.toLowerCase()] = true;
-            if (e.key === ' ' || e.code === 'Space') {
-                if (activeInteractiveObject) {
-                    openKwatiaModal();
-                } else {
-                    triggerJump();
-                }
-            }
-        });
-        window.addEventListener('keyup', e => keys[e.key.toLowerCase()] = false);
+function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 
-        const setupTouch = (id, x, z) => {
-            const btn = document.getElementById(id);
-            if (!btn) return;
-            btn.addEventListener('touchstart', (e) => { e.preventDefault(); touchDir.x = x; touchDir.z = z; });
-            btn.addEventListener('touchend', (e) => { e.preventDefault(); touchDir.x = 0; touchDir.z = 0; });
-        };
-        setupTouch('btn-up', 0, -1);
-        setupTouch('btn-down', 0, 1);
-        setupTouch('btn-left', -1, 0);
-        setupTouch('btn-right', 1, 0);
-
-        function selectCharacter(char) {
-            selectedCharacter = char;
-            gameStarted = true;
-
-            // Rebuild character visually if Kunhatai is chosen
-            if (char === 'kunhatai') {
-                scene.remove(player.mesh);
-                player = buildCharacterModel(true);
-                scene.add(player.mesh);
-            }
-
-            document.getElementById('character-select-screen').classList.add('hidden');
-            document.getElementById('game-header').classList.remove('hidden');
-            document.getElementById('touch-controls').classList.remove('hidden');
-
-            if (char === 'konomi') {
-                document.getElementById('player-avatar-icon').innerText = "👦🏽";
-                document.getElementById('player-name-display').innerText = "Guardião: Konomi";
-            } else {
-                document.getElementById('player-avatar-icon').innerText = "👧🏽";
-                document.getElementById('player-name-display').innerText = "Guardiã: Kunhataĩ";
-            }
-        }
-
-        // --- MAIN GAME LOOP & ANIMATION ---
-        const clock = new THREE.Clock();
-
-        // Variables for animal behavioral AI
-        let ratTargetX = ratX;
-        let ratTimer = 0;
-
-        function animate() {
-            requestAnimationFrame(animate);
-
-            if (!gameStarted) {
-                renderer.render(scene, camera);
-                return;
-            }
-
-            const delta = clock.getDelta();
-            const time = clock.getElapsedTime();
-            const speed = 9 * delta;
-            let moveX = 0, moveZ = 0;
-
-            if (keys['w'] || keys['arrowup']) moveZ -= 1;
-            if (keys['s'] || keys['arrowdown']) moveZ += 1;
-            if (keys['a'] || keys['arrowleft']) moveX -= 1;
-            if (keys['d'] || keys['arrowright']) moveX += 1;
-
-            if (touchDir.x !== 0 || touchDir.z !== 0) {
-                moveX = touchDir.x;
-                moveZ = touchDir.z;
-            }
-
-            const isMoving = (moveX !== 0 || moveZ !== 0);
-
-            // Movement & Procedural Character Animation
-            if (isMoving) {
-                const moveAngle = Math.atan2(moveX, moveZ) + cameraAngleYaw;
-                player.mesh.rotation.y = moveAngle;
-
-                let nextX = player.mesh.position.x + Math.sin(moveAngle) * speed;
-                let nextZ = player.mesh.position.z + Math.cos(moveAngle) * speed;
-
-                // Invisible forest barrier for Phase 1
-                if (currentPhase === 1 && nextZ < -8) {
-                    nextZ = -8;
-                }
-
-                player.mesh.position.x = Math.max(-18, Math.min(18, nextX));
-                player.mesh.position.z = Math.max(-55, Math.min(48, nextZ));
-
-                // Natural Procedural Walking Animation
-                const walkCycle = time * 11;
-                player.leftLegPivot.rotation.x = Math.sin(walkCycle) * 0.65;
-                player.rightLegPivot.rotation.x = -Math.sin(walkCycle) * 0.65;
-                player.leftArmPivot.rotation.x = -Math.sin(walkCycle) * 0.6;
-                player.rightArmPivot.rotation.x = Math.sin(walkCycle) * 0.6;
-                player.torso.position.y = 1.0 + Math.abs(Math.sin(walkCycle * 2)) * 0.06;
-                player.head.rotation.y = Math.sin(walkCycle) * 0.08;
-            } else {
-                // Idle breathing animation
-                player.leftLegPivot.rotation.x = 0;
-                player.rightLegPivot.rotation.x = 0;
-                player.leftArmPivot.rotation.x = Math.sin(time * 2) * 0.05;
-                player.rightArmPivot.rotation.x = -Math.sin(time * 2) * 0.05;
-                player.torso.position.y = 1.0 + Math.sin(time * 2) * 0.02;
-            }
-
-            // Jump Physics & Animation
-            if (isJumping) {
-                player.mesh.position.y += playerVelocityY * delta;
-                playerVelocityY += gravity * delta;
-
-                player.leftLegPivot.rotation.x = -0.4;
-                player.rightLegPivot.rotation.x = 0.4;
-
-                if (player.mesh.position.y <= 0) {
-                    player.mesh.position.y = 0;
-                    playerVelocityY = 0;
-                    isJumping = false;
-                }
-            }
-
-            // --- BEHAVIORAL ANIMAL ANIMATIONS ---
-
-            // 1. Mbo'i (Cobra) - Sinusoidal Slithering Motion
-            for (let i = 0; i < mboiSegments.length; i++) {
-                const wave = Math.sin(time * 4 - i * 0.4) * 0.35;
-                mboiSegments[i].position.set(wave, 0, i * 0.32);
-            }
-
-            // 2. Nhandu (Aranha) - Descending/Ascending thread movement & leg twitches
-            const spiderY = 2.5 + Math.sin(time * 1.5) * 1.8;
-            nhanduGroup.position.y = spiderY;
-            webThread.scale.set(1, (6 - spiderY) / 4, 1);
-            webThread.position.y = (6 - spiderY) / 2;
-            spiderLegs.forEach((leg, idx) => {
-                leg.rotation.z = Math.sin(time * 6 + idx) * 0.2;
-            });
-
-            // 3. Angudjá (Rato) - Sudden erratic bursts between bushes
-            ratTimer += delta;
-            if (ratTimer > 2.5) {
-                ratTimer = 0;
-                ratTargetX = (ratTargetX === ratX) ? (ratX - 6) : ratX;
-            }
-            angudjaGroup.position.x += (ratTargetX - angudjaGroup.position.x) * delta * 5;
-            angudjaGroup.rotation.y = (ratTargetX > angudjaGroup.position.x) ? Math.PI / 2 : -Math.PI / 2;
-
-            // Camera Tracking 360 Orbit
-            camera.position.x = player.mesh.position.x + Math.sin(cameraAngleYaw) * cameraDistance * Math.cos(cameraAnglePitch);
-            camera.position.y = player.mesh.position.y + Math.sin(cameraAnglePitch) * cameraDistance;
-            camera.position.z = player.mesh.position.z + Math.cos(cameraAngleYaw) * cameraDistance * Math.cos(cameraAnglePitch);
-            camera.lookAt(player.mesh.position.x, player.mesh.position.y + 1.2, player.mesh.position.z);
-
-            // Update Compass HUD Needle
-            const needle = document.getElementById('compass-needle');
-            if (needle) {
-                const deg = (cameraAngleYaw * 180 / Math.PI);
-                needle.style.transform = `rotate(${deg}deg)`;
-            }
-
-            // Proximity Check for Interactions
-            const distAwati = player.mesh.position.distanceTo(awatiGroup.position);
-            const distJaguar = player.mesh.position.distanceTo(jaguarGroup.position);
-            const interactBtn = document.getElementById('btn-interact');
-            const interactLabel = document.getElementById('interact-label');
-
-            if (currentPhase === 1 && distAwati < 4.8) {
-                activeInteractiveObject = 'phase1';
-                interactBtn.classList.remove('hidden');
-                interactLabel.innerText = "Ler Kwatiá (A - AWATI)";
-            } else if (currentPhase === 2 && distJaguar < 4.8) {
-                activeInteractiveObject = 'phase2';
-                interactBtn.classList.remove('hidden');
-                interactLabel.innerText = "Ler Kwatiá (DJ - DJAGWARETE)";
-            } else {
-                activeInteractiveObject = null;
-                interactBtn.classList.add('hidden');
-            }
-
-            renderer.render(scene, camera);
-        }
-
-        animate();
-
-        // --- INTERACTION & MODAL HANDLERS ---
-        function checkCurrentProximity() {
-            if (activeInteractiveObject) openKwatiaModal();
-        }
-
-        function openKwatiaModal() {
-            const data = gameData[activeInteractiveObject];
-            document.getElementById('kwatia-letter').innerText = data.letter;
-            document.getElementById('kwatia-title').innerText = data.title;
-            document.getElementById('kwatia-illustration').innerText = data.icon;
-
-            const listContainer = document.getElementById('kwatia-text-list');
-            listContainer.innerHTML = '';
-            data.lines.forEach(line => {
-                const p = document.createElement('p');
-                p.className = "border-b border-amber-900/15 pb-1 text-amber-950 font-serif font-bold";
-                p.innerText = line;
-                listContainer.appendChild(p);
-            });
-            openModal('read-modal');
-        }
-
-        function openQuestionModal() {
-            closeModal('read-modal');
-            const questions = quizBank[activeInteractiveObject];
-            const selectedQ = questions[Math.floor(Math.random() * questions.length)];
-
-            document.getElementById('question-prompt').innerText = selectedQ.question;
-            const shuffledOptions = [...selectedQ.options].sort(() => Math.random() - 0.5);
-
-            const optionsBox = document.getElementById('options-container');
-            optionsBox.innerHTML = '';
-            shuffledOptions.forEach(opt => {
-                const btn = document.createElement('button');
-                btn.className = "w-full py-3.5 px-4 bg-emerald-900/85 hover:bg-emerald-700 border border-emerald-500/40 text-emerald-100 text-xs rounded-xl font-semibold transition text-left flex justify-between items-center";
-                btn.innerHTML = `<span>${opt.text}</span> <i class="fas fa-chevron-right text-emerald-400/50"></i>`;
-                btn.onclick = () => answerQuestion(opt.correct);
-                optionsBox.appendChild(btn);
-            });
-            openModal('question-modal');
-        }
-
-        function answerQuestion(isCorrect) {
-            if (isCorrect) {
-                if (currentPhase === 1) {
-                    alert("✨ AGUYJEVETE! Resposta Correta!\n\nA passagem pela trilha sinuosa foi liberada!");
-                    currentPhase = 2;
-                    document.getElementById('phase-indicator').innerText = "Fase 2: O Desafio do DJAGWARETE";
-                } else if (currentPhase === 2) {
-                    alert("🎉 PARABÉNS! Concluíste a caminhada sagrada no Tape Marangatu!");
-                }
+function openQuestionModal() {
+    closeModal('read-modal');
+    const data = quizBank[`phase${currentPhase}`];
+    const q = data[Math.floor(Math.random() * data.length)];
+    document.getElementById('question-prompt').textContent = q.question;
+    const container = document.getElementById('options-container');
+    container.innerHTML = '';
+    q.options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'w-full p-3 rounded-lg border border-emerald-500/40 bg-emerald-900/40 hover:bg-emerald-800/60 text-left text-sm';
+        btn.textContent = opt.text;
+        btn.onclick = () => {
+            if(opt.correct) {
+                alert('✅ Correto! Avançando...');
                 closeModal('question-modal');
+                currentPhase++;
+                if(currentPhase > 2) {
+                    alert('🎉 Parabéns! Você completou Tape Marangatu!');
+                    currentPhase = 1;
+                }
+                document.getElementById('phase-indicator').textContent = `Fase ${currentPhase}: ${currentPhase === 1 ? 'O Segredo do AWATI' : 'O Segredo do DJAGWARETE'}`;
+                activeInteractiveObject = null;
             } else {
-                alert("Nhananderõ! Resposta incorreta. Releia a Kwatiá com atenção!");
+                alert('❌ Tente novamente!');
             }
-        }
+        };
+        container.appendChild(btn);
+    });
+}
 
-        function openModal(id) { document.getElementById(id).classList.add('flex'); document.getElementById(id).classList.remove('hidden'); }
-        function closeModal(id) { document.getElementById(id).classList.remove('flex'); document.getElementById(id).classList.add('hidden'); }
+// Animação de movimento
+let animTime = 0;
+function animateLimbs(delta) {
+    animTime += delta;
+    const walkSpeed = 8;
+    const swingAmt = 0.5;
+    
+    const moving = Math.abs(velocity.x) > 0.001 || Math.abs(velocity.z) > 0.001;
+    
+    if(moving) {
+        player.leftArmPivot.rotation.x = Math.sin(animTime * walkSpeed) * swingAmt;
+        player.rightArmPivot.rotation.x = -Math.sin(animTime * walkSpeed) * swingAmt;
+        player.leftLegPivot.rotation.x = -Math.sin(animTime * walkSpeed) * swingAmt;
+        player.rightLegPivot.rotation.x = Math.sin(animTime * walkSpeed) * swingAmt;
+    } else {
+        player.leftArmPivot.rotation.x *= 0.9;
+        player.rightArmPivot.rotation.x *= 0.9;
+        player.leftLegPivot.rotation.x *= 0.9;
+        player.rightLegPivot.rotation.x *= 0.9;
+    }
+}
 
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
+// Animação dos animais
+let snakeTime = 0, spiderTime = 0, ratTime = 0;
+function animateAnimals(delta) {
+    snakeTime += delta * 2;
+    for(let b = 0; b < mboiSegments.length; b++) {
+        const seg = mboiSegments[b];
+        seg.position.x = Math.sin(snakeTime + b * 0.5) * 0.3;
+        seg.position.z = b * 0.35;
+    }
+    mboiGroup.rotation.y = Math.sin(snakeTime * 0.5) * 0.1;
+    
+    spiderTime += delta * 3;
+    nhanduGroup.rotation.y = Math.sin(spiderTime) * 0.15;
+    spiderLegs.forEach((leg, i) => {
+        leg.rotation.z = Math.sin(spiderTime + i * 0.7) * 0.2;
+    });
+    
+    ratTime += delta * 4;
+    angudjaGroup.position.x += Math.sin(ratTime) * 0.005;
+    angudjaGroup.rotation.y = Math.sin(ratTime * 0.5) * 0.1;
+}
+
+// Loop principal
+let lastTime = performance.now();
+function loop() {
+    requestAnimationFrame(loop);
+    const now = performance.now();
+    const delta = Math.min((now - lastTime) / 1000, 0.1);
+    lastTime = now;
+    
+    if(!gameStarted) { renderer.render(scene, camera); return; }
+    
+    // Movimento
+    let moveX = 0, moveZ = 0;
+    if(keys['KeyW'] || dirState.up) moveZ -= 1;
+    if(keys['KeyS'] || dirState.down) moveZ += 1;
+    if(keys['KeyA'] || dirState.left) moveX -= 1;
+    if(keys['KeyD'] || dirState.right) moveX += 1;
+    
+    const camForward = new THREE.Vector3(-Math.sin(yaw), 0, -Math.cos(yaw));
+    const camRight = new THREE.Vector3().crossVectors(camForward, new THREE.Vector3(0,1,0)).normalize();
+    
+    velocity.x += (camRight.x * moveX + camForward.x * moveZ) * speed;
+    velocity.z += (camRight.z * moveX + camForward.z * moveZ) * speed;
+    
+    velocity.x *= friction;
+    velocity.z *= friction;
+    
+    // Pulo e gravidade
+    jumpVy += gravity;
+    let newY = player.mesh.position.y + jumpVy;
+    if(newY <= 0) { newY = 0; jumpVy = 0; isGrounded = true; }
+    player.mesh.position.y = newY;
+    
+    player.mesh.position.x += velocity.x;
+    player.mesh.position.z += velocity.z;
+    
+    // Rotação do personagem
+    if(Math.abs(velocity.x) > 0.001 || Math.abs(velocity.z) > 0.001) {
+        player.mesh.rotation.y = Math.atan2(velocity.x, velocity.z);
+    }
+    
+    // Câmera
+    camera.position.x = player.mesh.position.x + Math.sin(yaw) * Math.cos(pitch) * camDist;
+    camera.position.y = player.mesh.position.y + 1.8 + Math.sin(pitch) * camDist;
+    camera.position.z = player.mesh.position.z + Math.cos(yaw) * Math.cos(pitch) * camDist;
+    camera.lookAt(player.mesh.position.x, player.mesh.position.y + 1.2, player.mesh.position.z);
+    
+    // Bússola
+    document.getElementById('compass-needle').style.transform = `rotate(${yaw * 180 / Math.PI}deg)`;
+    
+    // Verificar dano dos inimigos
+    checkDistanceAndDamage('cobra', mboiGroup.position);
+    checkDistanceAndDamage('aranha', nhanduGroup.position);
+    checkDistanceAndDamage('rato', angudjaGroup.position);
+    
+    // Verificar proximidade com objetos de missão
+    const targetObj = currentPhase === 1 ? awatiGroup : jaguarGroup;
+    const distToObj = Math.hypot(player.mesh.position.x - targetObj.position.x, player.mesh.position.z - targetObj.position.z);
+    const interactBtn = document.getElementById('btn-interact');
+    
+    if(distToObj < 4) {
+        activeInteractiveObject = currentPhase === 1 ? 'awati' : 'jaguar';
+        interactBtn.classList.remove('hidden');
+        document.getElementById('interact-label').textContent = `Ler ${currentPhase === 1 ? 'Kwatiá AWATI' : 'Kwatiá DJAGWARETE'}`;
+        
+        // Preencher dados do modal
+        const data = gameData[`phase${currentPhase}`];
+        document.getElementById('kwatia-letter').textContent = data.letter;
+        document.getElementById('kwatia-title').textContent = data.title;
+        document.getElementById('kwatia-illustration').textContent = data.icon;
+        const list = document.getElementById('kwatia-text-list');
+        list.innerHTML = '';
+        data.lines.forEach(line => {
+            const p = document.createElement('p');
+            p.textContent = line;
+            list.appendChild(p);
         });
-    </script>
-</body>
-</html>
+    } else {
+        activeInteractiveObject = null;
+        interactBtn.classList.add('hidden');
+    }
+    
+    // Animações
+    animateLimbs(delta);
+    animateAnimals(delta);
+    
+    renderer.render(scene, camera);
+}
+loop();
+
+// Redimensionar
+window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+
