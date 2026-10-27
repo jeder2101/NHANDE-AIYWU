@@ -6,17 +6,17 @@
     <title>Tape Marangatu 3D - Guardiões da Memória Nhandewa</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome para Ícones -->
+    <!-- FontAwesome icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Outfit:wght@300;400;600;800&family=Cinzel:wght@700&display=swap" rel="stylesheet">
-    <!-- Motor Three.js 3D -->
+    <!-- Three.js 3D Engine -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     
     <style>
         body {
             font-family: 'Outfit', sans-serif;
-            background-color: #87ceeb;
+            background-color: #7dd3fc;
             color: #f0fdf4;
             user-select: none;
             touch-action: manipulation;
@@ -74,9 +74,10 @@
             box-shadow: 0 15px 35px rgba(245, 158, 11, 0.4);
         }
 
+        /* Compass HUD styling */
         .compass-ring {
-            width: 50px;
-            height: 50px;
+            width: 56px;
+            height: 56px;
             border-radius: 50%;
             border: 3px solid #facc15;
             background: rgba(15, 38, 24, 0.85);
@@ -89,10 +90,10 @@
             top: 50%;
             left: 50%;
             width: 4px;
-            height: 34px;
-            margin-top: -17px;
+            height: 40px;
+            margin-top: -20px;
             margin-left: -2px;
-            transition: transform 0.1s linear;
+            transition: transform 0.05s linear;
         }
 
         ::-webkit-scrollbar { width: 6px; }
@@ -102,7 +103,7 @@
 </head>
 <body class="h-screen w-screen relative">
 
-    <!-- TELA INICIAL: ESCOLHA DE PERSONAGEM -->
+    <!-- CHARACTER SELECTION SCREEN -->
     <div id="character-select-screen" class="absolute inset-0 z-50 bg-gradient-to-br from-[#02130b] via-[#0b2b18] to-[#041208] flex items-center justify-center p-4">
         <div class="glass-card-amber max-w-xl w-full rounded-3xl p-6 md:p-8 border-2 border-amber-500/50 text-center shadow-2xl relative overflow-hidden">
             <div class="absolute -top-12 -right-12 w-40 h-40 bg-amber-500/15 rounded-full blur-3xl pointer-events-none"></div>
@@ -113,49 +114,56 @@
                     Tape Marangatu
                 </h1>
                 <p class="text-xs md:text-sm text-emerald-200/90 mt-2">
-                    Escolhe o teu guardião para percorrer o caminho sinuoso da floresta, desviar dos animais escondidos e desvendar a Kwatiá.
+                    Escolhe o teu guardião para percorrer a trilha sinuosa da floresta, desviar dos animais escondidos e aprender a Kwatiá.
                 </p>
             </div>
 
+            <!-- Character Cards -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                 <div onclick="selectCharacter('konomi')" class="character-card glass-card p-5 rounded-2xl border-2 border-emerald-500/30 flex flex-col items-center">
-                    <div class="w-20 h-20 rounded-full bg-amber-600/40 border-2 border-amber-400 flex items-center justify-center text-4xl mb-3 shadow-inner">👦🏽</div>
+                    <div class="w-20 h-20 rounded-full bg-amber-600/40 border-2 border-amber-400 flex items-center justify-center text-4xl mb-3 shadow-inner">
+                        👦🏽
+                    </div>
                     <h3 class="font-game text-xl text-amber-300">Konomi</h3>
                     <p class="text-xs text-emerald-300/80 mt-1 text-center">O jovem explorador das trilhas da mata.</p>
                 </div>
 
                 <div onclick="selectCharacter('kunhatai')" class="character-card glass-card p-5 rounded-2xl border-2 border-emerald-500/30 flex flex-col items-center">
-                    <div class="w-20 h-20 rounded-full bg-emerald-600/40 border-2 border-amber-400 flex items-center justify-center text-4xl mb-3 shadow-inner">👧🏽</div>
+                    <div class="w-20 h-20 rounded-full bg-emerald-600/40 border-2 border-amber-400 flex items-center justify-center text-4xl mb-3 shadow-inner">
+                        👧🏽
+                    </div>
                     <h3 class="font-game text-xl text-amber-300">Kunhataĩ</h3>
                     <p class="text-xs text-emerald-300/80 mt-1 text-center">A jovem guardiã dos saberes ancestrais.</p>
                 </div>
             </div>
 
-            <div class="text-[11px] text-emerald-400/70 font-medium">Clica num dos personagens para começar o jogo 3D</div>
+            <div class="text-[11px] text-emerald-400/70 font-medium">
+                Clica num dos personagens para começar o jogo 3D
+            </div>
         </div>
     </div>
 
-    <!-- Interface Superior do Jogo -->
+    <!-- Header HUD -->
     <header id="game-header" class="absolute top-0 left-0 w-full px-4 py-3 flex justify-between items-center z-20 pointer-events-auto hidden">
         <div class="glass-card px-4 py-2 rounded-xl flex items-center space-x-3">
-            <div id="player-avatar-icon" class="w-10 h-10 rounded-full bg-amber-600 border-2 border-amber-300 flex items-center justify-center text-amber-100 font-bold text-xl shadow-lg">👦🏽</div>
+            <div id="player-avatar-icon" class="w-10 h-10 rounded-full bg-amber-600 border-2 border-amber-300 flex items-center justify-center text-amber-100 font-bold text-xl shadow-lg">
+                👦🏽
+            </div>
             <div>
-                <h1 class="font-game text-sm md:text-lg font-bold bg-gradient-to-r from-amber-300 to-emerald-400 bg-clip-text text-transparent">Tape Marangatu 3D</h1>
-                <div class="flex items-center space-x-2 mt-1">
-                    <span class="text-[10px] text-emerald-300 font-semibold">Vida:</span>
-                    <div class="w-28 h-2.5 bg-emerald-950 rounded-full overflow-hidden border border-emerald-500/40 shadow-inner">
-                        <div id="health-bar-fill" class="w-full h-full bg-gradient-to-r from-red-600 to-emerald-500 transition-all duration-300"></div>
-                    </div>
-                </div>
+                <h1 class="font-game text-sm md:text-lg font-bold bg-gradient-to-r from-amber-300 to-emerald-400 bg-clip-text text-transparent">
+                    Tape Marangatu 3D
+                </h1>
+                <p id="player-name-display" class="text-[10px] text-emerald-300/80">Guardião: Konomi</p>
             </div>
         </div>
 
         <div class="flex items-center space-x-4">
+            <!-- 3D Compass HUD -->
             <div class="compass-ring flex items-center justify-center" title="Bússola de Orientação">
                 <span class="absolute top-0.5 text-[9px] font-bold text-amber-400">N</span>
                 <div id="compass-needle" class="compass-needle flex flex-col justify-between items-center">
-                    <div class="w-0 h-0 border-l-[3px] border-l-transparent border-r-[3px] border-r-transparent border-b-[12px] border-b-red-500"></div>
-                    <div class="w-0 h-0 border-l-[3px] border-l-transparent border-r-[3px] border-r-transparent border-t-[12px] border-t-white"></div>
+                    <div class="w-0 h-0 border-l-[3px] border-l-transparent border-r-[3px] border-r-transparent border-b-[14px] border-b-red-500"></div>
+                    <div class="w-0 h-0 border-l-[3px] border-l-transparent border-r-[3px] border-r-transparent border-t-[14px] border-t-white"></div>
                 </div>
             </div>
 
@@ -169,7 +177,7 @@
     <!-- Canvas 3D -->
     <div id="canvas-container" class="w-full h-full cursor-grab active:cursor-grabbing"></div>
 
-    <!-- Botão de Ação / Interatividade -->
+    <!-- Action Button -->
     <div class="absolute bottom-6 right-6 z-20 flex flex-col items-end space-y-2 pointer-events-auto">
         <button id="btn-interact" onclick="checkCurrentProximity()" class="hidden glass-card bg-amber-500 hover:bg-amber-400 text-amber-950 font-bold px-6 py-3.5 rounded-2xl shadow-xl flex items-center space-x-2 text-sm border-2 border-amber-200 animate-glow">
             <i class="fas fa-book-open text-lg"></i>
@@ -177,26 +185,26 @@
         </button>
     </div>
 
-    <!-- Controles Touch -->
+    <!-- Mobile Touch Controls -->
     <div id="touch-controls" class="absolute bottom-6 left-6 grid grid-cols-3 gap-2 w-36 h-36 md:hidden z-20 pointer-events-auto hidden">
         <div></div>
         <button id="btn-up" class="btn-touch rounded-t-xl text-emerald-300 text-xl font-bold flex items-center justify-center">▲</button>
         <div></div>
         <button id="btn-left" class="btn-touch rounded-l-xl text-emerald-300 text-xl font-bold flex items-center justify-center">◄</button>
-        <button onclick="triggerJump()" class="btn-touch rounded-lg text-amber-300 text-xs font-bold flex items-center justify-center">PULAR</button>
+        <button id="btn-jump" onclick="triggerJump()" class="btn-touch rounded-lg text-amber-300 text-xs font-bold flex items-center justify-center">PULAR</button>
         <button id="btn-right" class="btn-touch rounded-r-xl text-emerald-300 text-xl font-bold flex items-center justify-center">►</button>
         <div></div>
         <button id="btn-down" class="btn-touch rounded-b-xl text-emerald-300 text-xl font-bold flex items-center justify-center">▼</button>
         <div></div>
     </div>
 
-    <!-- Dica -->
-    <div id="keyboard-tip" class="hidden md:flex absolute bottom-4 left-4 glass-card px-4 py-2 rounded-xl text-[11px] text-emerald-300/90 items-center space-x-3 z-20 hidden">
-        <i class="fas fa-mouse text-amber-400"></i>
-        <span><b>WASD / Setas</b> andar | <b>ESPAÇO</b> Pular/Interagir | <b>Rato Dt.</b> Câmara | Cuidado com os animais escondidos!</span>
+    <!-- Controls Tip Overlay -->
+    <div id="keyboard-tip" class="hidden md:flex absolute bottom-4 left-4 glass-card px-4 py-2 rounded-xl text-[11px] text-emerald-300/90 items-center space-x-3 z-20">
+        <i class="fas fa-mouse text-amber-400 text-sm"></i>
+        <span><b>WASD / Setas</b> mover | <b>ESPAÇO</b> Pular / Interagir | <b>Arrastar Rato</b> Girar Câmara 360° | <b>Scroll</b> Zoom</span>
     </div>
 
-    <!-- MODAL: Leitura da Kwatiá -->
+    <!-- MODAL: Kwatiá Reading -->
     <div id="read-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
         <div class="kwatia-paper max-w-lg w-full p-6 relative max-h-[90vh] flex flex-col justify-between">
             <div class="flex justify-between items-start border-b-2 border-amber-900/30 pb-3">
@@ -208,7 +216,9 @@
             </div>
 
             <div class="my-4 flex-1 overflow-y-auto space-y-3 pr-1">
-                <div id="kwatia-illustration" class="w-full h-36 bg-amber-100 rounded-xl border-2 border-amber-800/30 flex items-center justify-center text-6xl shadow-inner">🌽</div>
+                <div id="kwatia-illustration" class="w-full h-36 bg-amber-100 rounded-xl border-2 border-amber-800/30 flex items-center justify-center text-6xl shadow-inner">
+                    🌽
+                </div>
                 <div id="kwatia-text-list" class="space-y-2 font-semibold text-sm text-amber-950 font-serif"></div>
             </div>
 
@@ -219,7 +229,7 @@
         </div>
     </div>
 
-    <!-- MODAL: Perguntas -->
+    <!-- MODAL: Quiz Modal -->
     <div id="question-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
         <div class="glass-card max-w-md w-full rounded-2xl p-6 border-2 border-amber-400/60 shadow-2xl">
             <div class="flex items-center space-x-3 mb-4 border-b border-emerald-500/30 pb-3">
@@ -239,18 +249,18 @@
         </div>
     </div>
 
-    <!-- Lógica 3D Three.js Completa -->
+    <!-- Game Logic & Three.js Engine -->
     <script>
         let selectedCharacter = null;
         let gameStarted = false;
         let currentPhase = 1;
         let activeInteractiveObject = null;
-        let playerHealth = 100;
 
+        // PEDAGOGICAL QUIZ BANK
         const quizBank = {
             phase1: [
                 {
-                    question: "No caderno didático da Kwatiá, qual expressão refere-se ao milho branco?",
+                    question: "No caderno didático da Kwatiá, qual expressão se refere especificamente ao milho branco?",
                     options: [
                         { text: "Awati Ũ", correct: false },
                         { text: "Awati Morõti", correct: true },
@@ -300,197 +310,487 @@
         };
 
         const gameData = {
-            phase1: { letter: "A a A a", title: "AWATI", icon: "🌽", lines: ["AWATI MORÕTI", "AWATI Ũ", "AWATI PARÁ", "AWATI PYNTA", "AWATI DJEGWÁ", "AWATI MARA'ẼY"] },
-            phase2: { letter: "DJ dj Dj dj", title: "DJAGWARETE", icon: "🐆", lines: ["DJAGWARETE YY REMBERÉ", "DJAGWARETE IPARA PORÃ", "DJAGWARETE IPOTXY ATSY", "DJAGWARETE O'OKWE U'Á", "DJAGWARETE KA'AGWY ETE REGWA", "DJAGWARETE YYAKÁ RARÕÁ", "DJAGWARETE NHANDẼ PY'Y ÃWÃ O'Á YWYRUPI"] }
+            phase1: {
+                letter: "A a A a",
+                title: "AWATI",
+                icon: "🌽",
+                lines: ["AWATI MORÕTI", "AWATI Ũ", "AWATI PARÁ", "AWATI PYNTA", "AWATI DJEGWÁ", "AWATI MARA'ẼY"]
+            },
+            phase2: {
+                letter: "DJ dj Dj dj",
+                title: "DJAGWARETE",
+                icon: "🐆",
+                lines: [
+                    "DJAGWARETE YY REMBERÉ", "DJAGWARETE IPARA PORÃ", "DJAGWARETE IPOTXY ATSY",
+                    "DJAGWARETE O'OKWE U'Á", "DJAGWARETE KA'AGWY ETE REGWA", "DJAGWARETE YYAKÁ RARÕÁ",
+                    "DJAGWARETE NHANDẼ PY'Y ÃWÃ O'Á YWYRUPI"
+                ]
+            }
         };
 
+        // --- THREE.JS DAYTIME & INFINITE HORIZON SETUP ---
         const container = document.getElementById('canvas-container');
         const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x87ceeb);
-        scene.fog = new THREE.FogExp2(0xa0e0ff, 0.012);
+        
+        scene.background = new THREE.Color(0x87ceeb); // Bright daytime sky
+        scene.fog = new THREE.FogExp2(0x9be2ff, 0.009); // Dense fog blending sky into terrain horizon
 
         const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         container.appendChild(renderer.domElement);
 
-        scene.add(new THREE.AmbientLight(0xfffaed, 0.7));
-        const sunLight = new THREE.DirectionalLight(0xfff5cc, 1.2);
-        sunLight.position.set(40, 60, 20);
+        // --- DAYLIGHTING & SUN ---
+        const ambientLight = new THREE.AmbientLight(0xfffaed, 0.75);
+        scene.add(ambientLight);
+
+        const sunLight = new THREE.DirectionalLight(0xfff5cc, 1.25);
+        sunLight.position.set(40, 70, 30);
         sunLight.castShadow = true;
+        sunLight.shadow.mapSize.width = 2048;
+        sunLight.shadow.mapSize.height = 2048;
+        sunLight.shadow.camera.near = 0.5;
+        sunLight.shadow.camera.far = 250;
+        const d = 60;
+        sunLight.shadow.camera.left = -d;
+        sunLight.shadow.camera.right = d;
+        sunLight.shadow.camera.top = d;
+        sunLight.shadow.camera.bottom = -d;
         scene.add(sunLight);
 
-        // Terreno
-        const terrain = new THREE.Mesh(new THREE.PlaneGeometry(300, 300), new THREE.MeshLambertMaterial({ color: 0x2e7d32 }));
+        const sunMesh = new THREE.Mesh(
+            new THREE.SphereGeometry(5, 16, 16),
+            new THREE.MeshBasicMaterial({ color: 0xfff066 })
+        );
+        sunMesh.position.set(90, 150, 50);
+        scene.add(sunMesh);
+
+        // --- LARGE TERRAIN ---
+        const terrainGeo = new THREE.PlaneGeometry(350, 350, 32, 32);
+        const terrainMat = new THREE.MeshLambertMaterial({ color: 0x2e7d32 });
+        const terrain = new THREE.Mesh(terrainGeo, terrainMat);
         terrain.rotation.x = -Math.PI / 2;
+        terrain.receiveShadow = true;
         scene.add(terrain);
 
-        // --- CAMINHO SINUOSO (COM CURVAS) ---
-        const pathPoints = [
-            new THREE.Vector3(0, 0.03, 45),
-            new THREE.Vector3(0, 0.03, 20),
-            new THREE.Vector3(-6, 0.03, 0),
-            new THREE.Vector3(5, 0.03, -20),
-            new THREE.Vector3(0, 0.03, -45)
+        // --- CURVED WINDING TRAIL (TRILHA SINUOSA) ---
+        // Smooth spline defining the winding trail curve
+        const curvePoints = [
+            new THREE.Vector3(0, 0, 45),
+            new THREE.Vector3(3, 0, 30),
+            new THREE.Vector3(-6, 0, 15),
+            new THREE.Vector3(-4, 0, 0),
+            new THREE.Vector3(5, 0, -15),
+            new THREE.Vector3(2, 0, -30),
+            new THREE.Vector3(0, 0, -50)
         ];
-        const curve = new THREE.CatmullRomCurve3(pathPoints);
-        const pathGeo = new THREE.TubeGeometry(curve, 64, 3.2, 8, false);
-        const pathMat = new THREE.MeshLambertMaterial({ color: 0x8d6e63 });
-        const windingPath = new THREE.Mesh(pathGeo, pathMat);
-        scene.add(windingPath);
+        const pathSpline = new THREE.CatmullRomCurve3(curvePoints);
 
-        // Floresta densa nas bordas
-        function createRealisticTree(x, z, scale = 1) {
+        // Draw curved dirt trail mesh
+        const trailGeometry = new THREE.PlaneGeometry(8, 140, 32, 64);
+        const trailVertices = trailGeometry.attributes.position;
+        // Warp plane along spline
+        for (let i = 0; i < trailVertices.count; i++) {
+            const u = (trailVertices.getY(i) + 70) / 140; // Normalize 0 to 1
+            const pointOnCurve = pathSpline.getPointAt(Math.max(0, Math.min(1, u)));
+            const tangent = pathSpline.getTangentAt(Math.max(0, Math.min(1, u)));
+            const normal = new THREE.Vector3(-tangent.z, 0, tangent.x).normalize();
+            
+            const offsetX = trailVertices.getX(i);
+            const finalPos = pointOnCurve.clone().add(normal.multiplyScalar(offsetX));
+            trailVertices.setXYZ(i, finalPos.x, finalPos.z, 0.03); // Y is Z for Plane before rotation
+        }
+        trailGeometry.computeVertexNormals();
+
+        const pathMat = new THREE.MeshLambertMaterial({ color: 0x8d6e63, side: THREE.DoubleSide });
+        const curvedPathMesh = new THREE.Mesh(trailGeometry, pathMat);
+        curvedPathMesh.rotation.x = -Math.PI / 2;
+        curvedPathMesh.receiveShadow = true;
+        scene.add(curvedPathMesh);
+
+        // Helper function: get trail X position at any Z coordinate
+        function getTrailXAtZ(z) {
+            const u = Math.max(0, Math.min(1, (45 - z) / 95));
+            return pathSpline.getPointAt(u).x;
+        }
+
+        // --- DENSE TREES AND BUSHES FOR CAMOUFLAGE ---
+        function createTree(x, z, scale = 1) {
+            const treeGroup = new THREE.Group();
+            
+            const trunkGeo = new THREE.CylinderGeometry(0.4 * scale, 0.7 * scale, 9 * scale, 8);
+            const trunkMat = new THREE.MeshLambertMaterial({ color: 0x4e342e });
+            const trunk = new THREE.Mesh(trunkGeo, trunkMat);
+            trunk.position.y = (4.5) * scale;
+            trunk.castShadow = true;
+            treeGroup.add(trunk);
+
+            const leafColors = [0x1b5e20, 0x2e7d32, 0x388e3c];
+            for(let i = 0; i < 3; i++) {
+                const leavesGeo = new THREE.DodecahedronGeometry((3.6 - i * 0.6) * scale);
+                const leavesMat = new THREE.MeshLambertMaterial({ color: leafColors[i], flatShading: true });
+                const leaves = new THREE.Mesh(leavesGeo, leavesMat);
+                leaves.position.y = (7 + i * 2.2) * scale;
+                leaves.castShadow = true;
+                treeGroup.add(leaves);
+            }
+
+            treeGroup.position.set(x, 0, z);
+            scene.add(treeGroup);
+            return treeGroup;
+        }
+
+        function createBush(x, z, scale = 1) {
+            const bushGroup = new THREE.Group();
+            const bushMat = new THREE.MeshLambertMaterial({ color: 0x2e7d32, flatShading: true });
+            for (let i = 0; i < 4; i++) {
+                const sphere = new THREE.Mesh(new THREE.DodecahedronGeometry((0.8 + Math.random() * 0.4) * scale), bushMat);
+                sphere.position.set((Math.random() - 0.5) * scale, (0.5 + Math.random() * 0.3) * scale, (Math.random() - 0.5) * scale);
+                sphere.castShadow = true;
+                bushGroup.add(sphere);
+            }
+            bushGroup.position.set(x, 0, z);
+            scene.add(bushGroup);
+            return bushGroup;
+        }
+
+        // Generate dense forest borders along winding path
+        for (let z = -70; z <= 70; z += 10) {
+            const trailX = getTrailXAtZ(z);
+            createTree(trailX - 9 - Math.random() * 25, z + (Math.random() - 0.5) * 4, 1 + Math.random() * 0.4);
+            createTree(trailX + 9 + Math.random() * 25, z + (Math.random() - 0.5) * 4, 1 + Math.random() * 0.4);
+
+            // Foliage/Bushes along trail edges for hiding animals
+            createBush(trailX - 4.5 - Math.random() * 2, z, 1.2);
+            createBush(trailX + 4.5 + Math.random() * 2, z, 1.2);
+        }
+
+        // --- PROCEDURAL CHARACTER MODEL & ORIGINAL ANIMATION (KONOMI & KUNHATAĨ) ---
+        function buildCharacterModel(isKunhatai = false) {
             const group = new THREE.Group();
-            const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.4*scale, 0.7*scale, 9*scale), new THREE.MeshLambertMaterial({ color: 0x4e342e }));
-            trunk.position.y = 4.5*scale;
-            group.add(trunk);
-            const leaves = new THREE.Mesh(new THREE.DodecahedronGeometry(3.5*scale), new THREE.MeshLambertMaterial({ color: 0x1b5e20, flatShading: true }));
-            leaves.position.y = 8*scale;
-            group.add(leaves);
-            group.position.set(x, 0, z);
-            scene.add(group);
-        }
-        for (let i = -120; i <= 120; i += 14) {
-            createRealisticTree(-22 - Math.random()*25, i);
-            createRealisticTree(22 + Math.random()*25, i);
+
+            // Colors
+            const skinColor = 0xb87352;
+            const clothesColor = isKunhatai ? 0x059669 : 0xd97706; // Emerald vs Amber
+            const hairColor = 0x1c1917;
+
+            // Torso
+            const torsoGeo = new THREE.CylinderGeometry(0.38, 0.32, 1.1, 8);
+            const torsoMat = new THREE.MeshLambertMaterial({ color: clothesColor });
+            const torso = new THREE.Mesh(torsoGeo, torsoMat);
+            torso.position.y = 1.0;
+            torso.castShadow = true;
+            group.add(torso);
+
+            // Head
+            const headGeo = new THREE.SphereGeometry(0.38, 16, 16);
+            const skinMat = new THREE.MeshLambertMaterial({ color: skinColor });
+            const head = new THREE.Mesh(headGeo, skinMat);
+            head.position.y = 1.8;
+            head.castShadow = true;
+            group.add(head);
+
+            // Hair
+            const hairGeo = isKunhatai 
+                ? new THREE.ConeGeometry(0.48, 0.9, 12) 
+                : new THREE.SphereGeometry(0.4, 12, 12);
+            const hairMat = new THREE.MeshLambertMaterial({ color: hairColor });
+            const hair = new THREE.Mesh(hairGeo, hairMat);
+            hair.position.set(0, 1.95, isKunhatai ? -0.1 : -0.05);
+            if (isKunhatai) hair.rotation.x = -0.3;
+            group.add(hair);
+
+            // Red Feather / Cocar Detail
+            const featherGeo = new THREE.ConeGeometry(0.08, 0.55, 4);
+            const featherMat = new THREE.MeshBasicMaterial({ color: 0xef4444 });
+            const feather = new THREE.Mesh(featherGeo, featherMat);
+            feather.position.set(isKunhatai ? 0.2 : 0, 2.2, -0.1);
+            feather.rotation.z = isKunhatai ? -0.3 : 0;
+            group.add(feather);
+
+            // Arms (Pivoted for procedural swiveling animation)
+            const armGeo = new THREE.CylinderGeometry(0.1, 0.08, 0.7);
+
+            const leftArmPivot = new THREE.Group();
+            leftArmPivot.position.set(-0.48, 1.45, 0);
+            const leftArm = new THREE.Mesh(armGeo, skinMat);
+            leftArm.position.y = -0.35;
+            leftArmPivot.add(leftArm);
+            group.add(leftArmPivot);
+
+            const rightArmPivot = new THREE.Group();
+            rightArmPivot.position.set(0.48, 1.45, 0);
+            const rightArm = new THREE.Mesh(armGeo, skinMat);
+            rightArm.position.y = -0.35;
+            rightArmPivot.add(rightArm);
+            group.add(rightArmPivot);
+
+            // Legs (Pivoted for walking animation)
+            const legGeo = new THREE.CylinderGeometry(0.12, 0.09, 0.75);
+
+            const leftLegPivot = new THREE.Group();
+            leftLegPivot.position.set(-0.2, 0.7, 0);
+            const leftLeg = new THREE.Mesh(legGeo, skinMat);
+            leftLeg.position.y = -0.375;
+            leftLegPivot.add(leftLeg);
+            group.add(leftLegPivot);
+
+            const rightLegPivot = new THREE.Group();
+            rightLegPivot.position.set(0.2, 0.7, 0);
+            const rightLeg = new THREE.Mesh(legGeo, skinMat);
+            rightLeg.position.y = -0.375;
+            rightLegPivot.add(rightLeg);
+            group.add(rightLegPivot);
+
+            group.position.set(0, 0, 35);
+            return {
+                mesh: group,
+                head, torso,
+                leftArmPivot, rightArmPivot,
+                leftLegPivot, rightLegPivot
+            };
         }
 
-        // Elementos 3D do Jogo (Awati e Djagwarete)
+        let player = buildCharacterModel(false);
+        scene.add(player.mesh);
+
+        // --- LANDMARKS / OBJECTIVES ---
+
+        // 1. AWATI (Corn Stalk - Phase 1 Landmark)
         const awatiGroup = new THREE.Group();
-        const stalk = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.2, 4.2), new THREE.MeshLambertMaterial({ color: 0x689f38 }));
+        const stalkMat = new THREE.MeshLambertMaterial({ color: 0x65a30d });
+        const stalk = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.2, 4.2, 8), stalkMat);
         stalk.position.y = 2.1;
         awatiGroup.add(stalk);
-        const ring1 = new THREE.Mesh(new THREE.RingGeometry(1.4, 1.8, 16), new THREE.MeshBasicMaterial({ color: 0xfbc02d, side: THREE.DoubleSide }));
+        for (let i = 0; i < 5; i++) {
+            const leaf = new THREE.Mesh(new THREE.ConeGeometry(0.4, 2.5, 5), stalkMat);
+            leaf.position.set(0, 1 + i * 0.6, 0);
+            leaf.rotation.z = (i % 2 === 0 ? 1 : -1) * 0.7;
+            awatiGroup.add(leaf);
+        }
+        const corn = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.2, 1.4, 8), new THREE.MeshLambertMaterial({ color: 0xeab308 }));
+        corn.position.set(0.35, 2.3, 0);
+        corn.rotation.z = -0.4;
+        awatiGroup.add(corn);
+
+        const ring1 = new THREE.Mesh(new THREE.RingGeometry(1.4, 1.9, 24), new THREE.MeshBasicMaterial({ color: 0xfacc15, side: THREE.DoubleSide }));
         ring1.rotation.x = -Math.PI / 2;
         ring1.position.y = 0.05;
         awatiGroup.add(ring1);
-        awatiGroup.position.set(-6, 0, 0); // Posicionado na curva sinuosa
+
+        const awatiX = getTrailXAtZ(15) - 4;
+        awatiGroup.position.set(awatiX, 0, 15);
         scene.add(awatiGroup);
 
+        // 2. DJAGWARETE (Jaguar 3D Model - Phase 2 Landmark)
         const jaguarGroup = new THREE.Group();
-        const jagBody = new THREE.Mesh(new THREE.BoxGeometry(1.4, 1.1, 2.8), new THREE.MeshLambertMaterial({ color: 0xf57c00 }));
+        const jagMat = new THREE.MeshLambertMaterial({ color: 0xd97706 });
+        const jagBody = new THREE.Mesh(new THREE.BoxGeometry(1.4, 1.1, 2.8), jagMat);
         jagBody.position.y = 1.1;
+        jagBody.castShadow = true;
         jaguarGroup.add(jagBody);
-        const ring2 = new THREE.Mesh(new THREE.RingGeometry(1.6, 2.1, 16), new THREE.MeshBasicMaterial({ color: 0xffb300, side: THREE.DoubleSide }));
+
+        const jagHead = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.9, 1.1), jagMat);
+        jagHead.position.set(0, 1.7, 1.6);
+        jagHead.castShadow = true;
+        jaguarGroup.add(jagHead);
+
+        const spotMat = new THREE.MeshBasicMaterial({ color: 0x451a03 });
+        for(let s = 0; s < 8; s++) {
+            const spot = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.3, 0.05), spotMat);
+            spot.position.set((s % 2 === 0 ? 0.71 : -0.71), 1.1 + (s % 3) * 0.2, -0.8 + s * 0.3);
+            jaguarGroup.add(spot);
+        }
+
+        const ring2 = new THREE.Mesh(new THREE.RingGeometry(1.6, 2.2, 24), new THREE.MeshBasicMaterial({ color: 0xf59e0b, side: THREE.DoubleSide }));
         ring2.rotation.x = -Math.PI / 2;
         ring2.position.y = 0.05;
         jaguarGroup.add(ring2);
-        jaguarGroup.position.set(0, 0, -45);
+
+        const jagX = getTrailXAtZ(-35);
+        jaguarGroup.position.set(jagX, 0, -35);
         scene.add(jaguarGroup);
 
-        // --- ANIMAIS OCULTOS & COMPORTAMENTOS NATURAIS ---
-        
-        // 1. MBO'I (Cobra Cascavel escondida)
+        // --- CAMOUFLAGED ANIMALS WITH NATURAL PROCEDURAL BEHAVIOR ---
+
+        // 1. MBO'I (Cobra Cascavel 🐍) - Undulating S-curve movement on ground leaves
         const mboiGroup = new THREE.Group();
-        const snakeMat = new THREE.MeshLambertMaterial({ color: 0x33691e });
-        for(let b=0; b<6; b++) {
-            const seg = new THREE.Mesh(new THREE.SphereGeometry(0.22, 8, 8), snakeMat);
-            seg.position.set(b*0.28, 0.15, 0);
+        const mboiSegments = [];
+        const snakeMat = new THREE.MeshLambertMaterial({ color: 0x3f6212 });
+        for (let b = 0; b < 9; b++) {
+            const seg = new THREE.Mesh(new THREE.SphereGeometry(0.25 - b * 0.018, 8, 8), snakeMat);
+            seg.castShadow = true;
+            mboiSegments.push(seg);
             mboiGroup.add(seg);
         }
-        mboiGroup.position.set(-3, 0, 12);
+        // Hiding bush patch for cobra
+        const cobraBushX = getTrailXAtZ(5) + 3.2;
+        createBush(cobraBushX, 5, 1.5);
+        mboiGroup.position.set(cobraBushX - 0.5, 0.1, 5);
         scene.add(mboiGroup);
 
-        // 2. NHANDU (Aranha Gigante na mata)
+        // 2. NHANDU (Aranha Gigante 🕷️) - Camouflaged on silk web between trees
         const nhanduGroup = new THREE.Group();
-        const spiderMat = new THREE.MeshLambertMaterial({ color: 0x212121 });
-        const spiderBody = new THREE.Mesh(new THREE.SphereGeometry(0.35, 8, 8), spiderMat);
-        spiderBody.position.y = 0.3;
+        const spiderMat = new THREE.MeshLambertMaterial({ color: 0x18181b });
+        const spiderBody = new THREE.Mesh(new THREE.SphereGeometry(0.45, 10, 10), spiderMat);
+        spiderBody.scale.set(1, 0.7, 1.3);
         nhanduGroup.add(spiderBody);
-        nhanduGroup.position.set(-7, 0, -15);
+
+        const spiderLegs = [];
+        for (let l = 0; l < 8; l++) {
+            const legPivot = new THREE.Group();
+            const legMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.03, 0.9), spiderMat);
+            legMesh.position.set(l < 4 ? 0.45 : -0.45, -0.2, 0);
+            legMesh.rotation.z = l < 4 ? -0.8 : 0.8;
+            legPivot.add(legMesh);
+            legPivot.position.set(0, 0, (l % 4) * 0.22 - 0.33);
+            spiderLegs.push(legPivot);
+            nhanduGroup.add(legPivot);
+        }
+
+        // Web thread line
+        const threadGeo = new THREE.CylinderGeometry(0.01, 0.01, 8);
+        const threadMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.6 });
+        const webThread = new THREE.Mesh(threadGeo, threadMat);
+        webThread.position.y = 4;
+        nhanduGroup.add(webThread);
+
+        const nhanduTreeX = getTrailXAtZ(-12) - 3.8;
+        nhanduGroup.position.set(nhanduTreeX, 4.5, -12); // Elevated in canopy/web
         scene.add(nhanduGroup);
 
-        // 3. ANGUDJÁ (Preá da Mata correndo)
+        // 3. ANGUDJÁ (Rato/Preá 🐀) - Quick random dash between bushes
         const angudjaGroup = new THREE.Group();
-        const rat = new THREE.Mesh(new THREE.SphereGeometry(0.3, 8, 8), new THREE.MeshLambertMaterial({ color: 0x6d4c41 }));
-        rat.scale.set(1, 0.6, 1.3);
-        rat.position.y = 0.2;
-        angudjaGroup.add(rat);
-        angudjaGroup.position.set(4, 0, 8);
+        const ratMat = new THREE.MeshLambertMaterial({ color: 0x57534e });
+        const ratBody = new THREE.Mesh(new THREE.SphereGeometry(0.3, 8, 8), ratMat);
+        ratBody.scale.set(0.8, 0.7, 1.4);
+        ratBody.position.y = 0.2;
+        ratBody.castShadow = true;
+        angudjaGroup.add(ratBody);
+
+        const ratSnout = new THREE.Mesh(new THREE.ConeGeometry(0.15, 0.3, 8), ratMat);
+        ratSnout.rotation.x = -Math.PI / 2;
+        ratSnout.position.set(0, 0.2, 0.5);
+        angudjaGroup.add(ratSnout);
+
+        const ratX = getTrailXAtZ(25) + 3.8;
+        createBush(ratX, 25, 1.3);
+        createBush(ratX - 6, 25, 1.3);
+        angudjaGroup.position.set(ratX, 0, 25);
         scene.add(angudjaGroup);
 
-        // --- PERSONAGEM (AVATAR ORIGINAL DETALHADO E ANIMADO) ---
-        const playerGroup = new THREE.Group();
-        const bodyMat = new THREE.MeshLambertMaterial({ color: 0xd97706 });
-        const pBody = new THREE.Mesh(new THREE.CapsuleGeometry(0.45, 0.9, 4, 8), bodyMat);
-        pBody.position.y = 0.95;
-        playerGroup.add(pBody);
-        
-        const headMat = new THREE.MeshLambertMaterial({ color: 0xb45309 });
-        const pHead = new THREE.Mesh(new THREE.SphereGeometry(0.35, 8, 8), headMat);
-        pHead.position.y = 1.65;
-        playerGroup.add(pHead);
-
-        // Pernas para animação
-        const legMat = new THREE.MeshLambertMaterial({ color: 0x78350f });
-        const leftLeg = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.6), legMat);
-        leftLeg.position.set(-0.18, 0.3, 0);
-        playerGroup.add(leftLeg);
-        const rightLeg = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.6), legMat);
-        rightLeg.position.set(0.18, 0.3, 0);
-        playerGroup.add(rightLeg);
-        
-        playerGroup.position.set(0, 0, 42);
-        scene.add(playerGroup);
-
-        // Controlo de Câmara Livre
+        // --- CAMERA SYSTEM (360 ORBIT WITH MOUSE) ---
         let isMouseDown = false;
-        let prevMousePos = { x: 0, y: 0 };
-        let cameraYaw = 0;
-        let cameraPitch = 0.35;
-        let cameraDist = 12;
+        let previousMousePosition = { x: 0, y: 0 };
+        let cameraAngleYaw = 0;
+        let cameraAnglePitch = 0.35;
+        let cameraDistance = 12;
 
-        container.addEventListener('mousedown', () => isMouseDown = true);
+        container.addEventListener('mousedown', (e) => {
+            isMouseDown = true;
+            previousMousePosition = { x: e.clientX, y: e.clientY };
+        });
+
         container.addEventListener('mousemove', (e) => {
             if (!isMouseDown) return;
-            cameraYaw -= (e.clientX - prevMousePos.x) * 0.008;
-            cameraPitch = Math.max(0.1, Math.min(1.2, cameraPitch + (e.clientY - prevMousePos.y) * 0.008));
-            prevMousePos = { x: e.clientX, y: e.clientY };
-        });
-        window.addEventListener('mouseup', () => isMouseDown = false);
-        container.addEventListener('wheel', (e) => cameraDist = Math.max(6, Math.min(22, cameraDist + e.deltaY * 0.01)));
-        container.addEventListener('mousemove', (e) => prevMousePos = { x: e.clientX, y: e.clientY });
+            const deltaX = e.clientX - previousMousePosition.x;
+            const deltaY = e.clientY - previousMousePosition.y;
 
-        let playerVelocityY = 0, isJumping = false;
+            cameraAngleYaw -= deltaX * 0.007;
+            cameraAnglePitch = Math.max(0.1, Math.min(1.2, cameraAnglePitch + deltaY * 0.007));
+
+            previousMousePosition = { x: e.clientX, y: e.clientY };
+        });
+
+        window.addEventListener('mouseup', () => isMouseDown = false);
+        container.addEventListener('contextmenu', e => e.preventDefault());
+
+        container.addEventListener('wheel', (e) => {
+            cameraDistance = Math.max(6, Math.min(26, cameraDistance + e.deltaY * 0.015));
+        });
+
+        // --- CONTROLS & JUMP SYSTEM ---
+        let playerVelocityY = 0;
+        let isJumping = false;
+        const gravity = -22;
+
         function triggerJump() {
-            if (!isJumping) { playerVelocityY = 8; isJumping = true; }
+            if (!isJumping) {
+                playerVelocityY = 8.5;
+                isJumping = true;
+            }
         }
 
         const keys = {};
         let touchDir = { x: 0, z: 0 };
+
         window.addEventListener('keydown', e => {
             keys[e.key.toLowerCase()] = true;
             if (e.key === ' ' || e.code === 'Space') {
-                if (activeInteractiveObject) openKwatiaModal(); else triggerJump();
+                if (activeInteractiveObject) {
+                    openKwatiaModal();
+                } else {
+                    triggerJump();
+                }
             }
         });
         window.addEventListener('keyup', e => keys[e.key.toLowerCase()] = false);
 
+        const setupTouch = (id, x, z) => {
+            const btn = document.getElementById(id);
+            if (!btn) return;
+            btn.addEventListener('touchstart', (e) => { e.preventDefault(); touchDir.x = x; touchDir.z = z; });
+            btn.addEventListener('touchend', (e) => { e.preventDefault(); touchDir.x = 0; touchDir.z = 0; });
+        };
+        setupTouch('btn-up', 0, -1);
+        setupTouch('btn-down', 0, 1);
+        setupTouch('btn-left', -1, 0);
+        setupTouch('btn-right', 1, 0);
+
         function selectCharacter(char) {
             selectedCharacter = char;
             gameStarted = true;
+
+            // Rebuild character visually if Kunhatai is chosen
+            if (char === 'kunhatai') {
+                scene.remove(player.mesh);
+                player = buildCharacterModel(true);
+                scene.add(player.mesh);
+            }
+
             document.getElementById('character-select-screen').classList.add('hidden');
             document.getElementById('game-header').classList.remove('hidden');
             document.getElementById('touch-controls').classList.remove('hidden');
-            document.getElementById('keyboard-tip').classList.remove('hidden');
 
             if (char === 'konomi') {
                 document.getElementById('player-avatar-icon').innerText = "👦🏽";
+                document.getElementById('player-name-display').innerText = "Guardião: Konomi";
             } else {
                 document.getElementById('player-avatar-icon').innerText = "👧🏽";
+                document.getElementById('player-name-display').innerText = "Guardiã: Kunhataĩ";
             }
         }
 
+        // --- MAIN GAME LOOP & ANIMATION ---
         const clock = new THREE.Clock();
+
+        // Variables for animal behavioral AI
+        let ratTargetX = ratX;
+        let ratTimer = 0;
 
         function animate() {
             requestAnimationFrame(animate);
-            if (!gameStarted) { renderer.render(scene, camera); return; }
+
+            if (!gameStarted) {
+                renderer.render(scene, camera);
+                return;
+            }
 
             const delta = clock.getDelta();
+            const time = clock.getElapsedTime();
             const speed = 9 * delta;
             let moveX = 0, moveZ = 0;
 
@@ -499,65 +799,114 @@
             if (keys['a'] || keys['arrowleft']) moveX -= 1;
             if (keys['d'] || keys['arrowright']) moveX += 1;
 
-            if (touchDir.x !== 0 || touchDir.z !== 0) { moveX = touchDir.x; moveZ = touchDir.z; }
-
-            if (moveX !== 0 || moveZ !== 0) {
-                const moveAngle = Math.atan2(moveX, moveZ) + cameraYaw;
-                playerGroup.rotation.y = moveAngle;
-                playerGroup.position.x += Math.sin(moveAngle) * speed;
-                playerGroup.position.z += Math.cos(moveAngle) * speed;
-
-                // Animação de pernas
-                leftLeg.rotation.x = Math.sin(clock.getElapsedTime() * 12) * 0.5;
-                rightLeg.rotation.x = -Math.sin(clock.getElapsedTime() * 12) * 0.5;
+            if (touchDir.x !== 0 || touchDir.z !== 0) {
+                moveX = touchDir.x;
+                moveZ = touchDir.z;
             }
 
-            if (isJumping) {
-                playerGroup.position.y += playerVelocityY * delta;
-                playerVelocityY += -22 * delta;
-                if (playerGroup.position.y <= 0) { playerGroup.position.y = 0; isJumping = false; }
-            }
+            const isMoving = (moveX !== 0 || moveZ !== 0);
 
-            // --- COMPORTAMENTOS NATURAIS DOS ANIMAIS ---
-            const time = clock.getElapsedTime();
-            mboiGroup.position.x += Math.sin(time * 3.5) * 0.025; // Cobra rastejando em zigue-zague
-            angudjaGroup.position.z += Math.cos(time * 4.5) * 0.035; // Preá correndo pela moita
+            // Movement & Procedural Character Animation
+            if (isMoving) {
+                const moveAngle = Math.atan2(moveX, moveZ) + cameraAngleYaw;
+                player.mesh.rotation.y = moveAngle;
 
-            // --- SISTEMA DE DANO POR PROXIMIDADE ---
-            const hostileAnimals = [mboiGroup, nhanduGroup, angudjaGroup];
-            hostileAnimals.forEach(animal => {
-                if (playerGroup.position.distanceTo(animal.position) < 2.0) {
-                    playerHealth = Math.max(0, playerHealth - 18 * delta);
-                    document.getElementById('health-bar-fill').style.width = playerHealth + '%';
-                    if (playerHealth <= 0) {
-                        alert("Cuidado com os animais da mata! Tenta novamente.");
-                        playerHealth = 100;
-                        playerGroup.position.set(0, 0, 42);
-                    }
+                let nextX = player.mesh.position.x + Math.sin(moveAngle) * speed;
+                let nextZ = player.mesh.position.z + Math.cos(moveAngle) * speed;
+
+                // Invisible forest barrier for Phase 1
+                if (currentPhase === 1 && nextZ < -8) {
+                    nextZ = -8;
                 }
+
+                player.mesh.position.x = Math.max(-18, Math.min(18, nextX));
+                player.mesh.position.z = Math.max(-55, Math.min(48, nextZ));
+
+                // Natural Procedural Walking Animation
+                const walkCycle = time * 11;
+                player.leftLegPivot.rotation.x = Math.sin(walkCycle) * 0.65;
+                player.rightLegPivot.rotation.x = -Math.sin(walkCycle) * 0.65;
+                player.leftArmPivot.rotation.x = -Math.sin(walkCycle) * 0.6;
+                player.rightArmPivot.rotation.x = Math.sin(walkCycle) * 0.6;
+                player.torso.position.y = 1.0 + Math.abs(Math.sin(walkCycle * 2)) * 0.06;
+                player.head.rotation.y = Math.sin(walkCycle) * 0.08;
+            } else {
+                // Idle breathing animation
+                player.leftLegPivot.rotation.x = 0;
+                player.rightLegPivot.rotation.x = 0;
+                player.leftArmPivot.rotation.x = Math.sin(time * 2) * 0.05;
+                player.rightArmPivot.rotation.x = -Math.sin(time * 2) * 0.05;
+                player.torso.position.y = 1.0 + Math.sin(time * 2) * 0.02;
+            }
+
+            // Jump Physics & Animation
+            if (isJumping) {
+                player.mesh.position.y += playerVelocityY * delta;
+                playerVelocityY += gravity * delta;
+
+                player.leftLegPivot.rotation.x = -0.4;
+                player.rightLegPivot.rotation.x = 0.4;
+
+                if (player.mesh.position.y <= 0) {
+                    player.mesh.position.y = 0;
+                    playerVelocityY = 0;
+                    isJumping = false;
+                }
+            }
+
+            // --- BEHAVIORAL ANIMAL ANIMATIONS ---
+
+            // 1. Mbo'i (Cobra) - Sinusoidal Slithering Motion
+            for (let i = 0; i < mboiSegments.length; i++) {
+                const wave = Math.sin(time * 4 - i * 0.4) * 0.35;
+                mboiSegments[i].position.set(wave, 0, i * 0.32);
+            }
+
+            // 2. Nhandu (Aranha) - Descending/Ascending thread movement & leg twitches
+            const spiderY = 2.5 + Math.sin(time * 1.5) * 1.8;
+            nhanduGroup.position.y = spiderY;
+            webThread.scale.set(1, (6 - spiderY) / 4, 1);
+            webThread.position.y = (6 - spiderY) / 2;
+            spiderLegs.forEach((leg, idx) => {
+                leg.rotation.z = Math.sin(time * 6 + idx) * 0.2;
             });
 
-            // Câmara 3ª Pessoa
-            camera.position.x = playerGroup.position.x + Math.sin(cameraYaw) * cameraDist * Math.cos(cameraPitch);
-            camera.position.y = playerGroup.position.y + Math.sin(cameraPitch) * cameraDist;
-            camera.position.z = playerGroup.position.z + Math.cos(cameraYaw) * cameraDist * Math.cos(cameraPitch);
-            camera.lookAt(playerGroup.position.x, playerGroup.position.y + 1, playerGroup.position.z);
+            // 3. Angudjá (Rato) - Sudden erratic bursts between bushes
+            ratTimer += delta;
+            if (ratTimer > 2.5) {
+                ratTimer = 0;
+                ratTargetX = (ratTargetX === ratX) ? (ratX - 6) : ratX;
+            }
+            angudjaGroup.position.x += (ratTargetX - angudjaGroup.position.x) * delta * 5;
+            angudjaGroup.rotation.y = (ratTargetX > angudjaGroup.position.x) ? Math.PI / 2 : -Math.PI / 2;
 
-            // Bússola
+            // Camera Tracking 360 Orbit
+            camera.position.x = player.mesh.position.x + Math.sin(cameraAngleYaw) * cameraDistance * Math.cos(cameraAnglePitch);
+            camera.position.y = player.mesh.position.y + Math.sin(cameraAnglePitch) * cameraDistance;
+            camera.position.z = player.mesh.position.z + Math.cos(cameraAngleYaw) * cameraDistance * Math.cos(cameraAnglePitch);
+            camera.lookAt(player.mesh.position.x, player.mesh.position.y + 1.2, player.mesh.position.z);
+
+            // Update Compass HUD Needle
             const needle = document.getElementById('compass-needle');
-            if (needle) needle.style.transform = `rotate(${cameraYaw * 180 / Math.PI}deg)`;
+            if (needle) {
+                const deg = (cameraAngleYaw * 180 / Math.PI);
+                needle.style.transform = `rotate(${deg}deg)`;
+            }
 
-            // Proximidade com Fases e Objetivos
-            const distAwati = playerGroup.position.distanceTo(awatiGroup.position);
-            const distJaguar = playerGroup.position.distanceTo(jaguarGroup.position);
+            // Proximity Check for Interactions
+            const distAwati = player.mesh.position.distanceTo(awatiGroup.position);
+            const distJaguar = player.mesh.position.distanceTo(jaguarGroup.position);
             const interactBtn = document.getElementById('btn-interact');
+            const interactLabel = document.getElementById('interact-label');
 
-            if (currentPhase === 1 && distAwati < 4.5) {
+            if (currentPhase === 1 && distAwati < 4.8) {
                 activeInteractiveObject = 'phase1';
                 interactBtn.classList.remove('hidden');
-            } else if (currentPhase === 2 && distJaguar < 4.5) {
+                interactLabel.innerText = "Ler Kwatiá (A - AWATI)";
+            } else if (currentPhase === 2 && distJaguar < 4.8) {
                 activeInteractiveObject = 'phase2';
                 interactBtn.classList.remove('hidden');
+                interactLabel.innerText = "Ler Kwatiá (DJ - DJAGWARETE)";
             } else {
                 activeInteractiveObject = null;
                 interactBtn.classList.add('hidden');
@@ -568,12 +917,17 @@
 
         animate();
 
-        function checkCurrentProximity() { if (activeInteractiveObject) openKwatiaModal(); }
+        // --- INTERACTION & MODAL HANDLERS ---
+        function checkCurrentProximity() {
+            if (activeInteractiveObject) openKwatiaModal();
+        }
+
         function openKwatiaModal() {
             const data = gameData[activeInteractiveObject];
             document.getElementById('kwatia-letter').innerText = data.letter;
             document.getElementById('kwatia-title').innerText = data.title;
             document.getElementById('kwatia-illustration').innerText = data.icon;
+
             const listContainer = document.getElementById('kwatia-text-list');
             listContainer.innerHTML = '';
             data.lines.forEach(line => {
@@ -589,8 +943,10 @@
             closeModal('read-modal');
             const questions = quizBank[activeInteractiveObject];
             const selectedQ = questions[Math.floor(Math.random() * questions.length)];
+
             document.getElementById('question-prompt').innerText = selectedQ.question;
             const shuffledOptions = [...selectedQ.options].sort(() => Math.random() - 0.5);
+
             const optionsBox = document.getElementById('options-container');
             optionsBox.innerHTML = '';
             shuffledOptions.forEach(opt => {
@@ -606,15 +962,15 @@
         function answerQuestion(isCorrect) {
             if (isCorrect) {
                 if (currentPhase === 1) {
-                    alert("✨ AGUYJEVETE! Resposta Correta! O caminho sinuoso está livre para a fase do Djagwarete.");
+                    alert("✨ AGUYJEVETE! Resposta Correta!\n\nA passagem pela trilha sinuosa foi liberada!");
                     currentPhase = 2;
                     document.getElementById('phase-indicator').innerText = "Fase 2: O Desafio do DJAGWARETE";
-                } else {
-                    alert("🎉 PARABÉNS! Concluíste com sabedoria a jornada no Tape Marangatu!");
+                } else if (currentPhase === 2) {
+                    alert("🎉 PARABÉNS! Concluíste a caminhada sagrada no Tape Marangatu!");
                 }
                 closeModal('question-modal');
             } else {
-                alert("Nhananderõ! Resposta incorreta. Releia com atenção o caderno da Kwatiá.");
+                alert("Nhananderõ! Resposta incorreta. Releia a Kwatiá com atenção!");
             }
         }
 
