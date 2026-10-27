@@ -578,3 +578,41 @@ html, body {
         overflow-y: auto !important;
     }
 }
+
+
+/* =====================================================
+   MINIJOGOS EDUCATIVOS ALEATÓRIOS — 20 FASES
+===================================================== */
+#question-modal > .glass-card {
+    max-height: min(90dvh, 780px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+#options-container { display: flex; flex-direction: column; gap: 10px; }
+.activity-option { touch-action: manipulation; min-height: 42px; }
+.activity-option:focus-visible, .activity-letter:focus-visible { outline: 3px solid #facc15; outline-offset: 2px; }
+.activity-note { color: #a7f3d0; font-size: 12px; text-align: center; }
+.activity-color-board { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.activity-color-column { display: flex; flex-direction: column; gap: 8px; }
+.activity-swatch { min-height: 48px; font-size: 28px !important; background: rgba(2, 25, 16, .8) !important; }
+.activity-color-label { min-height: 48px; font-size: 12px !important; }
+.activity-selected { outline: 3px solid #facc15 !important; background: rgba(180, 83, 9, .75) !important; }
+.activity-matched { border-color: #86efac !important; background: rgba(21, 128, 61, .85) !important; opacity: .95; }
+.activity-wrong { border-color: #fb7185 !important; background: rgba(159, 18, 57, .85) !important; }
+.activity-crossword { display: flex; justify-content: center; flex-wrap: wrap; gap: 3px; margin: 8px 0 4px; }
+.activity-letter { width: clamp(24px, 7vw, 38px); height: clamp(34px, 8vw, 44px); border: 2px solid #b45309; border-radius: 5px; background: #fff7ed; color: #451a03; text-align: center; text-transform: uppercase; font-weight: 900; font-size: 17px; }
+.activity-submit { border: 2px solid #fcd34d !important; color: #052e16 !important; background: linear-gradient(135deg,#fde68a,#f59e0b) !important; font-weight: 900 !important; text-align: center !important; }
+.activity-word-grid { display: grid; gap: 3px; width: 100%; max-width: 440px; margin: 0 auto; }
+.activity-grid-letter { min-width: 0; min-height: 27px; padding: 3px 0 !important; border-radius: 5px !important; font-size: clamp(10px, 2.7vw, 14px) !important; font-weight: 900 !important; text-align: center !important; }
+.activity-scramble-bank, .activity-scramble-answer { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; min-height: 46px; padding: 6px; border: 1px dashed rgba(167,243,208,.35); border-radius: 10px; }
+.activity-letter-pick { width: 38px; min-height: 38px; padding: 4px !important; font-size: 17px !important; font-weight: 900 !important; }
+@media (max-width: 420px) {
+  #question-modal { padding: 8px !important; }
+  #question-modal > .glass-card { padding: 14px !important; max-height: calc(var(--app-height, 100dvh) - 16px); }
+  .activity-grid-letter { min-height: 23px; }
+}
+@media (pointer: coarse) and (orientation: landscape) {
+  #question-modal { padding: 8px !important; }
+  #question-modal > .glass-card { max-height: calc(var(--app-height, 100dvh) - 12px); padding: 14px !important; }
+  #question-modal .activity-word-grid { max-width: 390px; }
+}
