@@ -416,3 +416,136 @@ button {
     }
 }
 
+
+
+/* =====================================================
+   CORREÇÃO DE ROTAÇÃO E DIMENSÕES REAIS DO VIEWPORT
+   Sobrescreve regras antigas para evitar cortes e sobreposições.
+   ===================================================== */
+html {
+    width: 100%;
+    height: 100%;
+    height: 100dvh;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+}
+body {
+    width: 100% !important;
+    height: 100%;
+    height: 100dvh;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    box-sizing: border-box;
+}
+#canvas-container {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100%;
+    height: 100dvh !important;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden !important;
+}
+#canvas-container canvas {
+    display: block !important;
+    position: absolute;
+    inset: 0;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    touch-action: none;
+}
+
+/* As áreas seguras são aplicadas aos controles, não ao body inteiro. */
+#game-header {
+    padding-top: max(6px, env(safe-area-inset-top, 0px)) !important;
+    padding-left: max(8px, env(safe-area-inset-left, 0px)) !important;
+    padding-right: max(8px, env(safe-area-inset-right, 0px)) !important;
+}
+.mobile-controls {
+    left: 0 !important;
+    right: 0 !important;
+    bottom: max(8px, env(safe-area-inset-bottom, 0px)) !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+@media (orientation: landscape) and (max-height: 600px) and (pointer: coarse) {
+    .mobile-controls {
+        top: 0 !important;
+        bottom: 0 !important;
+        height: 100% !important;
+        padding-top: max(8px, env(safe-area-inset-top, 0px)) !important;
+        padding-bottom: max(8px, env(safe-area-inset-bottom, 0px)) !important;
+        padding-left: max(12px, env(safe-area-inset-left, 0px)) !important;
+        padding-right: max(12px, env(safe-area-inset-right, 0px)) !important;
+        align-items: flex-end !important;
+    }
+    #game-header { gap: 4px !important; }
+    #game-header > div:first-child { max-width: 37vw !important; }
+    #game-header > div:last-child { gap: 4px !important; }
+    #survival-hud { top: max(46px, calc(8px + env(safe-area-inset-top, 0px))) !important; }
+    #rotate-screen-button { top: max(6px, env(safe-area-inset-top, 0px)) !important; }
+    #landscape-hint { display: none !important; }
+}
+@media (orientation: portrait) and (pointer: coarse) {
+    .mobile-controls {
+        top: auto !important;
+        height: clamp(112px, 21dvh, 158px) !important;
+        bottom: max(8px, env(safe-area-inset-bottom, 0px)) !important;
+    }
+}
+
+
+/* =====================================================
+   VERSÃO PC — layout amplo e controles por teclado/mouse
+   ===================================================== */
+@media (pointer: fine) and (min-width: 900px) {
+    html, body { width:100%; height:100%; min-height:100%; overflow:hidden; cursor:default; }
+    #canvas-container { position:fixed; inset:0; width:100vw; height:100vh; height:100dvh; }
+    #canvas-container canvas { width:100%; height:100%; display:block; }
+    #touch-controls, #rotate-screen-button, #landscape-hint, #device-warning { display:none !important; }
+    #keyboard-tip { display:flex !important; position:fixed; left:22px; bottom:18px; max-width:min(760px, calc(100vw - 44px)); padding:12px 16px; font-size:12px; line-height:1.5; pointer-events:none; }
+    #game-header { padding:18px 22px 0; gap:14px; align-items:flex-start; }
+    #game-header > div:first-child { max-width:unset; min-width:250px; padding:10px 14px; }
+    #game-header > div:last-child { gap:12px; }
+    #game-header #phase-indicator { max-width:unset; font-size:13px; }
+    #game-header .compass-ring { width:58px; height:58px; }
+    #survival-hud { top:104px; left:50%; transform:translateX(-50%); width:min(620px, 48vw); }
+    #survival-hud > div { padding:10px 14px; gap:12px; }
+    #start-screen, #character-select-screen { padding:24px; }
+    .start-shell { width:min(100%, 980px); max-height:calc(100dvh - 48px); padding:clamp(28px, 3vw, 46px) !important; border-radius:32px; }
+    .start-title { font-size:clamp(3.5rem, 6vw, 6rem); line-height:1; }
+    .start-emblem { width:96px; height:96px; font-size:58px; }
+    .start-subtitle { font-size:clamp(1rem, 1.3vw, 1.25rem); }
+    .start-details > div { padding:16px; }
+    .start-details > div > div:first-child { font-size:30px; }
+    .start-cta { min-height:58px; font-size:1.15rem; cursor:pointer; }
+    .pc-controls-card { margin:0 auto 22px; width:min(100%, 760px); padding:14px 18px; border:1px solid rgba(110,231,183,.3); border-radius:18px; background:rgba(0,0,0,.25); color:#ecfdf5; text-align:left; }
+    .pc-controls-title { margin-bottom:10px; color:#fcd34d; font-size:11px; font-weight:800; letter-spacing:.16em; text-align:center; }
+    .pc-controls-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px 18px; font-size:12px; align-items:center; }
+    .pc-controls-grid span { display:flex; flex-wrap:wrap; align-items:center; gap:4px; }
+    .pc-controls-grid strong { margin-left:5px; color:#d1fae5; font-weight:600; }
+    .pc-controls-grid kbd { display:inline-flex; min-width:25px; height:25px; padding:0 6px; align-items:center; justify-content:center; border:1px solid rgba(253,230,138,.65); border-radius:6px; background:rgba(6,30,20,.9); color:#fde68a; font-family:inherit; font-size:10px; font-weight:800; box-shadow:0 2px 0 rgba(0,0,0,.45); }
+    .character-panel { max-width:900px; padding:36px !important; }
+    .character-card { cursor:pointer; transition:transform .18s ease, border-color .18s ease, background .18s ease; }
+    .character-card:hover { transform:translateY(-4px); border-color:rgba(252,211,77,.8); background-color:rgba(20,83,45,.3); }
+    button, [role="button"], .character-card { cursor:pointer; }
+}
+@media (pointer: fine) and (min-width: 900px) and (max-height: 700px) {
+    .start-shell { display:grid; grid-template-columns:minmax(0,1fr) minmax(300px,.8fr); align-items:center; column-gap:26px; padding:22px !important; }
+    .start-copy { grid-column:1; grid-row:1 / span 3; }
+    .start-details { grid-column:2; margin-top:8px; margin-bottom:12px; }
+    .pc-controls-card { grid-column:2; margin-bottom:12px; padding:10px 12px; }
+    #start-game-button { grid-column:2; }
+    .start-shell > p { grid-column:2; }
+    .start-emblem { width:72px; height:72px; font-size:42px; margin-bottom:8px; }
+    .start-subtitle { margin-top:10px; }
+}
+@media (pointer: fine) and (min-width: 900px) {
+    #read-modal, #question-modal, #game-over-modal { overscroll-behavior:contain; }
+}
