@@ -2,954 +2,503 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Karumbé: Guardiões da Memória / Nhande Ayvu</title>
-    <!-- Tailwind CSS CDN -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Karumbé & Nhande Ayvu - Guardiões da Memória Nhandewa</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts: Inter e Montserrat -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Montserrat:wght@500;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        * {
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Outfit:wght@300;400;600;800&display=swap');
+        
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #0b1d13;
+            color: #f0fdf4;
             user-select: none;
-            -webkit-user-select: none;
             touch-action: manipulation;
         }
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #0f1912;
-            color: #e2e8f0;
-            overflow: hidden;
+
+        .font-game {
+            font-family: 'Fredoka', cursive;
         }
-        h1, h2, h3, .font-heading {
-            font-family: 'Montserrat', sans-serif;
+
+        .forest-gradient {
+            background: radial-gradient(circle at center, #143823 0%, #08140c 100%);
         }
-        /* Estilo Glassmorphism / Vidro Fosco */
-        .glass-panel {
-            background: rgba(18, 38, 26, 0.75);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(74, 222, 128, 0.2);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
-        }
+
         .glass-card {
-            background: rgba(30, 58, 41, 0.6);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(134, 239, 172, 0.15);
+            background: rgba(18, 43, 27, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(74, 222, 128, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
+
+        canvas {
+            image-rendering: pixelated;
+            border-radius: 1rem;
+        }
+
+        .btn-touch {
+            background: rgba(34, 197, 94, 0.2);
+            border: 2px solid rgba(74, 222, 128, 0.4);
+            backdrop-filter: blur(4px);
+        }
+
+        .btn-touch:active {
+            background: rgba(34, 197, 94, 0.5);
+            transform: scale(0.95);
+        }
+
         /* Custom Scrollbar */
         ::-webkit-scrollbar {
-            width: 6px;
+            width: 8px;
         }
         ::-webkit-scrollbar-track {
-            background: rgba(15, 25, 18, 0.6);
+            background: #08140c;
         }
         ::-webkit-scrollbar-thumb {
-            background: #2e7d32;
+            background: #22c55e;
             border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #4caf50;
-        }
-        /* Animação Pulsação */
-        @keyframes pulse-slow {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.85; transform: scale(1.02); }
-        }
-        .pulse-element {
-            animation: pulse-slow 3s infinite ease-in-out;
         }
     </style>
 </head>
-<body class="h-screen w-screen flex flex-col justify-between overflow-hidden relative select-none">
+<body class="h-screen w-screen overflow-hidden flex flex-col forest-gradient">
 
-    <!-- CANVAS DO JOGO 2D -->
-    <div id="game-container" class="absolute inset-0 w-full h-full z-0">
-        <canvas id="gameCanvas" class="w-full h-full block bg-emerald-950"></canvas>
-    </div>
-
-    <!-- HUD SUPERIOR (Barra de Progresso e Botões de Controle) -->
-    <header class="relative z-10 p-3 sm:p-4 flex justify-between items-center pointer-events-none">
-        <!-- Título / Logotipo -->
-        <div class="glass-panel px-4 py-2 rounded-2xl flex items-center space-x-3 pointer-events-auto border-emerald-500/30">
-            <div class="w-10 h-10 rounded-full bg-emerald-700/80 flex items-center justify-center text-emerald-200 shadow-md">
-                <i class="fa-solid fa-leaf text-lg"></i>
+    <!-- Header / Navbar -->
+    <header class="w-full px-4 py-3 flex justify-between items-center z-10 glass-card rounded-b-xl border-b border-emerald-500/30">
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-full bg-emerald-600 border-2 border-amber-400 flex items-center justify-center text-amber-300 font-bold text-xl shadow-lg">
+                🐢
             </div>
             <div>
-                <h1 class="text-sm sm:text-base font-bold text-emerald-300 leading-tight">Karumbé & Nhande Ayvu</h1>
-                <p class="text-xs text-emerald-100/70 font-medium">Guardiões da Memória Nhandewa</p>
+                <h1 class="font-game text-xl md:text-2xl font-bold bg-gradient-to-r from-emerald-400 to-amber-300 bg-clip-text text-transparent">
+                    Karumbé & Nhande Ayvu
+                </h1>
+                <p class="text-xs text-emerald-300/80">Guardiões da Memória Nhandewa</p>
             </div>
         </div>
 
-        <!-- Estatísticas / Progresso do Vocabulário -->
-        <div class="glass-panel px-4 py-2 rounded-2xl flex items-center space-x-4 pointer-events-auto">
-            <div class="flex items-center space-x-2" title="Palavras Nhandewa Aprendidas">
-                <i class="fa-solid fa-book-bookmark text-amber-400 text-lg"></i>
-                <span id="score-counter" class="font-bold text-amber-300 text-sm sm:text-base">0 / 6</span>
+        <!-- Quest Tracker & Actions -->
+        <div class="flex items-center space-x-3">
+            <div class="hidden md:flex items-center bg-emerald-950/80 border border-emerald-500/40 px-3 py-1.5 rounded-lg text-xs space-x-2">
+                <i class="fas fa-scroll text-amber-400"></i>
+                <span id="quest-text" class="text-emerald-200 font-medium">Missão: Fale com o Ancião Xejaru na Opy</span>
             </div>
-            <div class="h-5 w-px bg-emerald-800"></div>
-            <!-- Botão Mute / Áudio -->
-            <button id="btn-sound" class="text-emerald-300 hover:text-emerald-100 transition focus:outline-none">
-                <i class="fa-solid fa-volume-high text-lg"></i>
-            </button>
-        </div>
 
-        <!-- Menu Principal / Botões Modais -->
-        <div class="flex items-center space-x-2 sm:space-x-3 pointer-events-auto">
-            <button id="btn-dictionary" class="glass-panel hover:bg-emerald-800/50 text-emerald-200 px-3 py-2 rounded-xl flex items-center space-x-2 text-xs sm:text-sm font-semibold transition border-emerald-500/30">
-                <i class="fa-solid fa-book-open text-amber-400"></i>
-                <span class="hidden md:inline">Caderno de Campo</span>
+            <button onclick="openModal('caderno-modal')" class="bg-amber-600/30 hover:bg-amber-600/50 border border-amber-500/50 text-amber-200 text-xs px-3 py-1.5 rounded-lg flex items-center space-x-1.5 transition">
+                <i class="fas fa-book-bookmark"></i>
+                <span class="hidden sm:inline">Caderno de Campo</span>
             </button>
-            <button id="btn-studio" class="glass-panel hover:bg-emerald-800/50 text-emerald-200 px-3 py-2 rounded-xl flex items-center space-x-2 text-xs sm:text-sm font-semibold transition border-emerald-500/30">
-                <i class="fa-solid fa-microphone-lines text-sky-400"></i>
-                <span class="hidden md:inline">Estúdio de Captação</span>
-            </button>
-            <button id="btn-help" class="glass-panel hover:bg-emerald-800/50 text-emerald-200 p-2 rounded-xl text-xs sm:text-sm font-semibold transition border-emerald-500/30 w-9 h-9 flex items-center justify-center">
-                <i class="fa-solid fa-circle-question text-emerald-300 text-lg"></i>
+
+            <button onclick="openModal('estudio-modal')" class="bg-emerald-600/30 hover:bg-emerald-600/50 border border-emerald-500/50 text-emerald-200 text-xs px-3 py-1.5 rounded-lg flex items-center space-x-1.5 transition">
+                <i class="fas fa-microphone-lines"></i>
+                <span class="hidden sm:inline">Estúdio de Captação</span>
             </button>
         </div>
     </header>
 
-    <!-- PROMPT INTERATIVO DE APROXIMAÇÃO (Flutuante no Canvas) -->
-    <div id="interaction-prompt" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-20 z-10 hidden pointer-events-none">
-        <div class="glass-panel px-4 py-2 rounded-full text-xs sm:text-sm font-bold text-amber-300 border-amber-400/40 flex items-center space-x-2 animate-bounce shadow-lg">
-            <span class="bg-amber-500 text-slate-950 px-2 py-0.5 rounded-full text-xs">ESPAÇO</span>
-            <span id="prompt-text">Falar com o Ancião</span>
-        </div>
-    </div>
+    <!-- Main Game Area -->
+    <main class="flex-1 relative flex items-center justify-center p-2 sm:p-4">
+        <canvas id="gameCanvas" class="shadow-2xl border-2 border-emerald-600/40 bg-emerald-950 max-w-full max-h-full object-contain"></canvas>
 
-    <!-- CONTROLES MOBILE / TOUCH D-PAD -->
-    <div class="relative z-10 p-4 pointer-events-none flex justify-between items-end md:hidden mb-2">
-        <!-- D-Pad Direcional -->
-        <div class="grid grid-cols-3 gap-1 w-36 h-36 pointer-events-auto glass-panel p-2 rounded-full border-emerald-500/30 shadow-2xl">
+        <!-- Touch Controls (Mobile D-Pad) -->
+        <div id="touch-controls" class="absolute bottom-6 left-6 grid grid-cols-3 gap-2 w-36 h-36 md:hidden z-20">
             <div></div>
-            <button id="btn-up" class="w-full h-full bg-emerald-800/50 active:bg-emerald-600/80 rounded-t-xl flex items-center justify-center text-emerald-200 text-lg"><i class="fa-solid fa-caret-up"></i></button>
+            <button id="btn-up" class="btn-touch rounded-t-xl text-emerald-300 text-xl font-bold flex items-center justify-center">▲</button>
             <div></div>
-            <button id="btn-left" class="w-full h-full bg-emerald-800/50 active:bg-emerald-600/80 rounded-l-xl flex items-center justify-center text-emerald-200 text-lg"><i class="fa-solid fa-caret-left"></i></button>
-            <div class="flex items-center justify-center text-emerald-500/40 text-xs font-bold"><i class="fa-solid fa-compass"></i></div>
-            <button id="btn-right" class="w-full h-full bg-emerald-800/50 active:bg-emerald-600/80 rounded-r-xl flex items-center justify-center text-emerald-200 text-lg"><i class="fa-solid fa-caret-right"></i></button>
+            <button id="btn-left" class="btn-touch rounded-l-xl text-emerald-300 text-xl font-bold flex items-center justify-center">◄</button>
+            <div class="flex items-center justify-center text-xs text-emerald-500 font-game">D-PAD</div>
+            <button id="btn-right" class="btn-touch rounded-r-xl text-emerald-300 text-xl font-bold flex items-center justify-center">►</button>
             <div></div>
-            <button id="btn-down" class="w-full h-full bg-emerald-800/50 active:bg-emerald-600/80 rounded-b-xl flex items-center justify-center text-emerald-200 text-lg"><i class="fa-solid fa-caret-down"></i></button>
+            <button id="btn-down" class="btn-touch rounded-b-xl text-emerald-300 text-xl font-bold flex items-center justify-center">▼</button>
             <div></div>
         </div>
 
-        <!-- Botão Ação Mobile -->
-        <button id="btn-action-touch" class="pointer-events-auto w-16 h-16 rounded-full bg-gradient-to-br from-amber-500 to-amber-700 active:from-amber-600 active:to-amber-800 text-slate-950 font-bold text-xl flex items-center justify-center shadow-lg border-2 border-amber-300">
-            <i class="fa-solid fa-comment-dots"></i>
+        <!-- Action Button (Mobile) -->
+        <button id="btn-action" onclick="interactNPC()" class="absolute bottom-8 right-8 w-16 h-16 rounded-full bg-amber-500 border-2 border-amber-200 text-emerald-950 font-bold text-xl flex items-center justify-center shadow-lg md:hidden z-20 active:scale-90 transition">
+            💬
         </button>
-    </div>
+    </main>
 
-    <!-- MODAL 1: DIÁLOGO & DESAFIO LINGUÍSTICO (PUZZLE) -->
-    <div id="modal-dialog" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md hidden">
-        <div class="glass-panel w-full max-w-2xl rounded-3xl p-6 border-emerald-400/30 shadow-2xl relative flex flex-col max-h-[90vh] overflow-y-auto">
-            <!-- Cabeçalho NPC -->
-            <div class="flex items-center space-x-4 mb-4 pb-3 border-b border-emerald-800/60">
-                <div id="npc-avatar" class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-amber-700 to-emerald-800 border-2 border-amber-400 flex items-center justify-center text-2xl text-amber-200 shadow-md">
-                    <i class="fa-solid fa-user-ninja"></i>
+    <!-- Modal: Interação Ancião / Quiz -->
+    <div id="npc-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-card max-w-md w-full rounded-2xl p-6 border-2 border-amber-400/50 shadow-2xl relative">
+            <div class="flex items-center space-x-4 mb-4">
+                <div id="npc-avatar" class="w-16 h-16 rounded-full bg-amber-700 border-2 border-amber-300 flex items-center justify-center text-3xl shadow-inner">
+                    🧔‍♂️
                 </div>
                 <div>
-                    <h3 id="npc-name" class="text-xl font-bold text-amber-300">Xejaru - Sabedoria das Plantas</h3>
-                    <p id="npc-role" class="text-xs text-emerald-200/80 font-medium">Anciã Mantenedora da Tradição Guarani Nhandewa</p>
+                    <h3 id="npc-name" class="font-game text-xl text-amber-300">Ancião Xejaru</h3>
+                    <p id="npc-role" class="text-xs text-emerald-300">Guardião dos Saberes & Memória Linguística</p>
                 </div>
-                <button class="btn-close-modal ml-auto text-emerald-400 hover:text-emerald-100 text-xl p-2"><i class="fa-solid fa-xmark"></i></button>
             </div>
 
-            <!-- Diálogo Narrativo -->
-            <div id="dialog-text" class="text-sm sm:text-base text-emerald-100 leading-relaxed mb-6 bg-emerald-950/40 p-4 rounded-2xl border border-emerald-800/40">
-                "Nhyruã (seja bem-vindo). Para preservarmos nossa memória Nhandewa, precisamos cultivar a força das palavras. Ouça com o coração..."
+            <div class="bg-emerald-950/70 rounded-xl p-4 border border-emerald-500/30 mb-5">
+                <p id="npc-dialogue" class="text-sm text-emerald-100 leading-relaxed">
+                    "Mba'éichapa, Karumbé! Para proteger a nossa cultura, deves aprender as palavras dos nossos antepassados."
+                </p>
             </div>
 
-            <!-- Área do Puzzle Nhandewa -->
-            <div id="puzzle-area" class="space-y-4">
-                <div class="bg-emerald-900/40 p-4 rounded-2xl border border-emerald-700/40 flex flex-col items-center justify-center">
-                    <span class="text-xs font-semibold text-emerald-400 uppercase tracking-widest mb-2">Desafio de Escuta & Associação</span>
-                    
-                    <button id="btn-play-pronunciation" class="bg-amber-500 hover:bg-amber-400 active:scale-95 text-slate-950 font-bold px-5 py-2.5 rounded-xl flex items-center space-x-2 transition shadow-lg mb-3">
-                        <i class="fa-solid fa-volume-high text-lg"></i>
-                        <span id="nhandewa-word-display">Ouvir Palavra Nhandewa</span>
+            <!-- Puzzle Area -->
+            <div id="puzzle-box" class="space-y-3 mb-5">
+                <div class="flex justify-between items-center text-xs text-amber-300/90 font-semibold mb-1">
+                    <span>DESAFIO DE TRADUÇÃO:</span>
+                    <button onclick="playPhoneticSound()" class="text-emerald-400 hover:text-emerald-200 flex items-center space-x-1">
+                        <i class="fas fa-volume-high"></i> <span>Ouvir Pronúncia</span>
                     </button>
-                    
-                    <p id="phonetic-hint" class="text-xs text-emerald-300/80 italic text-center">Fonética: [ Pronúncia em Guarani Nhandewa ]</p>
                 </div>
-
-                <div class="text-xs font-semibold text-emerald-300 text-center uppercase tracking-wider">Qual é o significado correto em Português?</div>
-
-                <!-- Opções de Escolha -->
-                <div id="puzzle-options" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <!-- Opções inseridas dinamicamente pelo JS -->
+                <div id="word-target" class="text-center font-game text-2xl text-amber-200 bg-amber-950/40 py-2 rounded-lg border border-amber-500/30">
+                    "Y"
+                </div>
+                <div id="puzzle-options" class="grid grid-cols-2 gap-2 pt-2">
+                    <!-- Dinamicamente preenchido -->
                 </div>
             </div>
 
-            <!-- Feedback de Resposta -->
-            <div id="puzzle-feedback" class="mt-4 p-3 rounded-xl text-center text-sm font-bold hidden"></div>
+            <div class="flex justify-end">
+                <button onclick="closeModal('npc-modal')" class="px-4 py-2 bg-emerald-800 hover:bg-emerald-700 text-emerald-100 text-xs rounded-lg transition font-medium">
+                    Continuar Trilha
+                </button>
+            </div>
         </div>
     </div>
 
-    <!-- MODAL 2: CADERNO DE CAMPO / DICIONÁRIO NHANDEWA -->
-    <div id="modal-dictionary" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md hidden">
-        <div class="glass-panel w-full max-w-3xl rounded-3xl p-6 border-emerald-400/30 shadow-2xl relative flex flex-col max-h-[85vh]">
-            <div class="flex items-center justify-between mb-4 pb-3 border-b border-emerald-800/60">
-                <div class="flex items-center space-x-3">
-                    <i class="fa-solid fa-book-bookmark text-2xl text-amber-400"></i>
-                    <div>
-                        <h2 class="text-xl font-bold text-amber-300">Caderno de Campo & Memória</h2>
-                        <p class="text-xs text-emerald-200/70">Dicionário Vivo da Língua Guarani Nhandewa</p>
-                    </div>
-                </div>
-                <button class="btn-close-modal text-emerald-400 hover:text-emerald-100 text-xl p-2"><i class="fa-solid fa-xmark"></i></button>
+    <!-- Modal: Caderno de Campo -->
+    <div id="caderno-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-card max-w-xl w-full rounded-2xl p-6 border border-emerald-500/40 max-h-[85vh] flex flex-col">
+            <div class="flex justify-between items-center mb-4 border-b border-emerald-500/30 pb-3">
+                <h3 class="font-game text-xl text-amber-300 flex items-center space-x-2">
+                    <i class="fas fa-book-bookmark text-amber-400"></i>
+                    <span>Caderno de Campo - Vocabulário Nhandewa</span>
+                </h3>
+                <button onclick="closeModal('caderno-modal')" class="text-emerald-400 hover:text-emerald-200 text-lg">✕</button>
             </div>
 
-            <!-- Lista de Vocabulários Desbloqueados -->
             <div id="dictionary-list" class="flex-1 overflow-y-auto space-y-3 pr-2">
-                <!-- Verbetes injetados dinamicamente pelo JS -->
+                <!-- Preenchido via JS -->
             </div>
         </div>
     </div>
 
-    <!-- MODAL 3: ESTÚDIO DE CAPTAÇÃO E CRÉDITOS DOS ANCIÃOS -->
-    <div id="modal-studio" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md hidden">
-        <div class="glass-panel w-full max-w-3xl rounded-3xl p-6 border-sky-400/30 shadow-2xl relative flex flex-col max-h-[85vh] overflow-y-auto">
-            <div class="flex items-center justify-between mb-4 pb-3 border-b border-sky-800/60">
-                <div class="flex items-center space-x-3">
-                    <i class="fa-solid fa-microphone-lines text-2xl text-sky-400"></i>
-                    <div>
-                        <h2 class="text-xl font-bold text-sky-300">Estúdio de Captação & Memória Oral</h2>
-                        <p class="text-xs text-sky-200/70">Registro Etnográfico, Equipamentos e Respeito aos Anciãos</p>
-                    </div>
-                </div>
-                <button class="btn-close-modal text-emerald-400 hover:text-emerald-100 text-xl p-2"><i class="fa-solid fa-xmark"></i></button>
+    <!-- Modal: Estúdio de Captação -->
+    <div id="estudio-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-card max-w-lg w-full rounded-2xl p-6 border border-amber-500/40">
+            <div class="flex justify-between items-center mb-4 border-b border-emerald-500/30 pb-3">
+                <h3 class="font-game text-xl text-amber-300 flex items-center space-x-2">
+                    <i class="fas fa-microphone-lines text-amber-400"></i>
+                    <span>Estúdio de Captação & Salvaguarda</span>
+                </h3>
+                <button onclick="closeModal('estudio-modal')" class="text-emerald-400 hover:text-emerald-200 text-lg">✕</button>
             </div>
 
-            <div class="space-y-5 text-sm text-emerald-100">
-                <!-- Seção 1: Mestres do Saber -->
-                <div class="glass-card p-4 rounded-2xl border-amber-500/30">
-                    <h3 class="font-bold text-amber-300 text-base mb-2 flex items-center space-x-2">
-                        <i class="fa-solid fa-hands-holding-circle"></i>
-                        <span>Honra e Remuneração aos Mestres de Saberes</span>
-                    </h3>
-                    <p class="text-xs sm:text-sm text-emerald-200/90 leading-relaxed">
-                        Este projeto reconhece os Anciãos e Anciãs Guarani Nhandewa como **Detentores de Direitos Intelectuais e Culturais**. Todas as gravações sonoras, histórias e vocabulários foram coletados em campo mediante pagamento de direitos autorais de transmissão e remuneração direta como consultores linguísticos seniores, respeitando as diretrizes de ética em pesquisas com povos originários.
-                    </p>
-                </div>
-
-                <!-- Seção 2: Equipamentos do Estúdio -->
-                <div>
-                    <h3 class="font-bold text-sky-300 text-base mb-3 flex items-center space-x-2">
-                        <i class="fa-solid fa-sliders"></i>
-                        <span>Equipamentos de Gravação em Campo</span>
-                    </h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div class="glass-card p-3 rounded-xl">
-                            <div class="font-bold text-sky-200 text-xs mb-1 flex items-center space-x-2">
-                                <i class="fa-solid fa-record-vinyl text-red-400"></i>
-                                <span>Gravador Áudio Zoom H6</span>
-                            </div>
-                            <p class="text-xs text-emerald-200/70">Captação em 96kHz/24-bit em formato sem perda (WAV) para preservar todas as nuances das oclusivas e consoantes nasais do Nhandewa.</p>
-                        </div>
-
-                        <div class="glass-card p-3 rounded-xl">
-                            <div class="font-bold text-sky-200 text-xs mb-1 flex items-center space-x-2">
-                                <i class="fa-solid fa-microphone text-amber-400"></i>
-                                <span>Microfones Condensadores Par Shure SM81</span>
-                            </div>
-                            <p class="text-xs text-emerald-200/70">Resposta de frequência plana para captura fiel do ambiente da aldeia e timbres vocais sagrados dos cantos tradicionais.</p>
-                        </div>
+            <div class="text-xs text-emerald-100 space-y-3 leading-relaxed">
+                <p>
+                    <strong class="text-amber-300">Direção Técnica & ProAC 05/2026:</strong> Este protótipo integra a estratégia de salvaguarda fonética da língua Guarani Nhandewa.
+                </p>
+                <div class="bg-emerald-950/80 p-3 rounded-xl border border-emerald-500/30 space-y-2">
+                    <div class="flex items-center space-x-2 text-amber-400 font-semibold">
+                        <i class="fas fa-sliders"></i> <span>Equipamentos Previstos:</span>
                     </div>
+                    <ul class="list-disc list-inside space-y-1 text-emerald-200">
+                        <li>Gravador Portátil Zoom H6 (Captação de Alta Fidelidade 24-bit/96kHz)</li>
+                        <li>Microfones Condensadores Par Casado (Shure SM81)</li>
+                        <li>Tratamento e Remuneração Épica/Honroza dos Anciãos Consultores</li>
+                    </ul>
                 </div>
-
-                <!-- Seção 3: Ficha Técnica ProAC -->
-                <div class="glass-card p-4 rounded-2xl border-emerald-500/30">
-                    <h3 class="font-bold text-emerald-300 text-xs uppercase tracking-wider mb-2">Edital ProAC - Governo do Estado de São Paulo</h3>
-                    <p class="text-xs text-emerald-200/80">Projeto "Karumbé: Guardiões da Memória / Nhande Ayvu - A Jornada das Palavras". Fomento cultural para salvaguarda linguística da língua Guarani Nhandewa.</p>
-                </div>
+                <p class="text-emerald-300/80">
+                    Todas as gravações realizadas nas aldeias alimentam diretamente o motor de jogo e o dicionário digital interativo.
+                </p>
             </div>
         </div>
     </div>
 
-    <!-- MODAL 4: INSTRUÇÕES / AJUDA -->
-    <div id="modal-help" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md hidden">
-        <div class="glass-panel w-full max-w-lg rounded-3xl p-6 border-emerald-400/30 shadow-2xl relative flex flex-col">
-            <div class="flex items-center justify-between mb-4 pb-3 border-b border-emerald-800/60">
-                <h3 class="text-lg font-bold text-emerald-300">Como Jogar</h3>
-                <button class="btn-close-modal text-emerald-400 hover:text-emerald-100 text-xl p-2"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="space-y-3 text-sm text-emerald-200">
-                <div class="flex items-start space-x-3">
-                    <div class="bg-emerald-800 p-2 rounded-lg text-emerald-300 font-bold"><i class="fa-solid fa-keyboard"></i></div>
-                    <div>
-                        <strong class="text-emerald-100">Movimentação:</strong> Use as teclas <span class="bg-emerald-900 px-1.5 py-0.5 rounded text-amber-300">Setas</span> ou <span class="bg-emerald-900 px-1.5 py-0.5 rounded text-amber-300">WASD</span> (No celular, use o D-Pad virtual).
-                    </div>
-                </div>
-                <div class="flex items-start space-x-3">
-                    <div class="bg-emerald-800 p-2 rounded-lg text-emerald-300 font-bold"><i class="fa-solid fa-comments"></i></div>
-                    <div>
-                        <strong class="text-emerald-100">Interação com Anciãos:</strong> Aproxime-se dos guardiões na aldeia e pressione <span class="bg-emerald-900 px-1.5 py-0.5 rounded text-amber-300">ESPAÇO</span> ou toque no botão de conversa.
-                    </div>
-                </div>
-                <div class="flex items-start space-x-3">
-                    <div class="bg-emerald-800 p-2 rounded-lg text-emerald-300 font-bold"><i class="fa-solid fa-headphones"></i></div>
-                    <div>
-                        <strong class="text-emerald-100">Desafio Fonético:</strong> Ouça a pronúncia em Nhandewa e escolha o significado correto em Português para registrar no seu Caderno de Campo.
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- CÓDIGO DO MOTOR DO JOGO & LÓGICA DE ÁUDIO -->
+    <!-- Logic JavaScript -->
     <script>
-        /**
-         * KARUMBÉ: GUARDIÕES DA MEMÓRIA / NHANDE AYVU
-         * Jogo Educativo Cultural 2D em JavaScript Puro
-         */
-
-        // ------------------------------------------------------------------
-        // 1. BANCO DE DADOS CULTURAL & DICIONÁRIO NHANDEWA
-        // ------------------------------------------------------------------
-        const VOCABULARY_DB = [
-            {
-                id: 'nheengatu',
-                nhandewa: 'Nhande Ayvu',
-                phonetic: '[ ɲa-ⁿde a-jˈvu ]',
-                meaning: 'Nossa Língua / Nossa Fala Sagrada',
-                category: 'Cultura & Identidade',
-                desc: 'Refere-se à linguagem como dádiva divina e elo com os ancestrais no pensamento Guarani Nhandewa.',
-                unlocked: false,
-                options: ['Nossa Língua / Nossa Fala Sagrada', 'Água Cristalina da Serra', 'Semente do Milho Sagrado', 'Caminho das Estrelas']
-            },
-            {
-                id: 'karumbe',
-                nhandewa: 'Karumbé',
-                phonetic: '[ ka-ɾu-mˈbɛ ]',
-                meaning: 'Tartaruga / Jabuti (Guardião do Tempo)',
-                category: 'Fauna & Natureza',
-                desc: 'Símbolo de sabedoria, paciência e longa memória nas narrativas tradicionais da mata.',
-                unlocked: false,
-                options: ['Tartaruga / Jabuti', 'Pássaro do Alvorecer', 'Peixe Dourado do Rio', 'Aranha Tecelã']
-            },
-            {
-                id: 'xejaru',
-                nhandewa: 'Xejaru',
-                phonetic: '[ ʃe-ʒa-ˈɾu ]',
-                meaning: 'Minha Avó / Anciã Respeitada',
-                category: 'Família & Sociedade',
-                desc: 'Termo afetuoso e cerimonioso para referir-se às mulheres guardiãs da sabedoria medicinal e espiritual.',
-                unlocked: false,
-                options: ['Minha Avó / Anciã Respeitada', 'Criança Pequena', 'Guerreiro Valente', 'Chefe da Aldeia']
-            },
-            {
-                id: 'kaaguy',
-                nhandewa: 'Ka\'aguy',
-                phonetic: '[ ka-ʔa-ˈɡwɨ ]',
-                meaning: 'Mata Sagrada / Floresta',
-                category: 'Território',
-                desc: 'Espaço onde habitam os espíritos guardiões (Ijarakuery) e onde se busca a saúde física e espiritual.',
-                unlocked: false,
-                options: ['Mata Sagrada / Floresta', 'Fogo da Fogueira', 'Rio Grande', 'Céu Estrelado']
-            },
-            {
-                id: 'opy',
-                nhandewa: 'Opy',
-                phonetic: '[ o-ˈpɨ ]',
-                meaning: 'Casa de Reza / Espaço Cerimonial',
-                category: 'Arquitetura & Espiritualidade',
-                desc: 'Construção tradicional de pau-a-pique onde são realizados os cantos, danças e rituais de cura.',
-                unlocked: false,
-                options: ['Casa de Reza / Espaço Cerimonial', 'Canoa de Madeira', 'Arco e Flecha', 'Instrumento de Sopro']
-            },
-            {
-                id: 'yvy',
-                nhandewa: 'Yvy Marãe\'ỹ',
-                phonetic: '[ ɨ-ˈβɨ ma-ɾə-e-ˈʔɨ ]',
-                meaning: 'Terra Sem Males',
-                category: 'Cosmologia',
-                desc: 'Busca permanente de equilíbrio, paz e abundância na visão de mundo Guarani.',
-                unlocked: false,
-                options: ['Terra Sem Males', 'Chuva Forte de Verão', 'Vento do Norte', 'Fruto Amadurecido']
-            }
+        // --- Dados do Jogo ---
+        const dictionary = [
+            { word: "Y", translation: "Água", phonetic: "[ɨ]", audioNote: "Vogal central alta não-arredondada", category: "Natureza" },
+            { word: "Opy", translation: "Casa de Reza", phonetic: "[o'pɨ]", audioNote: "Local sagrado de oração e canto", category: "Cultura" },
+            { word: "Ka'aguy", translation: "Mata / Floresta", phonetic: "[kaʔa'ɡwɨ]", audioNote: "Glotal oclusiva na pausa central", category: "Natureza" },
+            { word: "Karumbé", translation: "Tartaruga / Cágado", phonetic: "[kaɾum'be]", audioNote: "Símbolo de paciência e memória", category: "Fauna" },
+            { word: "Nhande Ayvu", translation: "Nossa Linguagem / Fala", phonetic: "[ɲa'nde aj'vu]", audioNote: "Expressão da alma Nhandewa", category: "Cultura" }
         ];
 
-        // ------------------------------------------------------------------
-        // 2. MOTOR DE ÁUDIO SINTETIZADO (WEB AUDIO API)
-        // ------------------------------------------------------------------
-        class SoundEngine {
-            constructor() {
-                this.ctx = null;
-                this.isMuted = false;
-            }
+        let questStep = 0;
+        let currentNPC = null;
 
-            init() {
-                if (!this.ctx) {
-                    const AudioContext = window.AudioContext || window.webkitAudioContext;
-                    this.ctx = new AudioContext();
-                }
-            }
+        const npcs = [
+            { id: 'xejaru', name: 'Ancião Xejaru', role: 'Guardião dos Cantos Sagrados', x: 220, y: 180, icon: '🧔‍♂️', wordTarget: 'Y', options: ['Água', 'Fogo', 'Terra', 'Vento'], correct: 'Água', dialogue: "Mba'éichapa! Para atravessar a floresta, precisamos primeiro honrar a fonte de vida. Como dizemos Água em Nhandewa?" },
+            { id: 'xevyry', name: 'Anciã Xevyry', role: 'Mestra das Plantas & Tradição', x: 550, y: 320, icon: '👵🏽', wordTarget: "Ka'aguy", options: ['Rio', 'Mata / Floresta', 'Céu', 'Sol'], correct: 'Mata / Floresta', dialogue: "Nhande rko aguijá! A floresta nos dá alimento e remédio. Sabes qual é a palavra sagrada para Mata?" }
+        ];
 
-            playStep() {
-                if (this.isMuted) return;
-                this.init();
-                const osc = this.ctx.createOscillator();
-                const gain = this.ctx.createGain();
-                
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(120, this.ctx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(40, this.ctx.currentTime + 0.08);
-
-                gain.gain.setValueAtTime(0.05, this.ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.08);
-
-                osc.connect(gain);
-                gain.connect(this.ctx.destination);
-
-                osc.start();
-                osc.stop(this.ctx.currentTime + 0.08);
-            }
-
-            playSuccess() {
-                if (this.isMuted) return;
-                this.init();
-                const notes = [440, 554.37, 659.25, 880];
-                notes.forEach((freq, idx) => {
-                    const osc = this.ctx.createOscillator();
-                    const gain = this.ctx.createGain();
-                    
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(freq, this.ctx.currentTime + idx * 0.08);
-                    
-                    gain.gain.setValueAtTime(0, this.ctx.currentTime + idx * 0.08);
-                    gain.gain.linearRampToValueAtTime(0.15, this.ctx.currentTime + idx * 0.08 + 0.02);
-                    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + idx * 0.08 + 0.3);
-
-                    osc.connect(gain);
-                    gain.connect(this.ctx.destination);
-
-                    osc.start(this.ctx.currentTime + idx * 0.08);
-                    osc.stop(this.ctx.currentTime + idx * 0.08 + 0.3);
-                });
-            }
-
-            playError() {
-                if (this.isMuted) return;
-                this.init();
-                const osc = this.ctx.createOscillator();
-                const gain = this.ctx.createGain();
-
-                osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(180, this.ctx.currentTime);
-                osc.frequency.linearRampToValueAtTime(100, this.ctx.currentTime + 0.25);
-
-                gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.25);
-
-                osc.connect(gain);
-                gain.connect(this.ctx.destination);
-
-                osc.start();
-                osc.stop(this.ctx.currentTime + 0.25);
-            }
-
-            // Simula a fonética da palavra via sintese de fala nativa Web Speech
-            speakNhandewa(word) {
-                if ('speechSynthesis' in window) {
-                    window.speechSynthesis.cancel();
-                    const utterance = new SpeechSynthesisUtterance(word);
-                    utterance.lang = 'pt-BR';
-                    utterance.rate = 0.85;
-                    utterance.pitch = 0.95;
-                    window.speechSynthesis.speak(utterance);
-                }
-            }
-        }
-
-        const sound = new SoundEngine();
-
-        // ------------------------------------------------------------------
-        // 3. ESTADO GLOBAL DO JOGO & CANVAS
-        // ------------------------------------------------------------------
+        // --- Configuração do Canvas ---
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
 
-        let width = canvas.width = window.innerWidth;
-        let height = canvas.height = window.innerHeight;
+        function resizeCanvas() {
+            canvas.width = Math.min(800, window.innerWidth - 32);
+            canvas.height = Math.min(500, window.innerHeight - 180);
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
 
-        // Redimensionamento Inteligente
-        window.addEventListener('resize', () => {
-            width = canvas.width = window.innerWidth;
-            height = canvas.height = window.innerHeight;
-            initWorld();
-        });
-
-        // Controles de entrada
-        const keys = {
-            Up: false,
-            Down: false,
-            Left: false,
-            Right: false,
-            Interact: false
-        };
-
-        // Jogador (Karumbé / Jovem Guardião)
+        // --- Estado do Player ---
         const player = {
-            x: 0,
-            y: 0,
-            radius: 18,
-            speed: 3.5,
-            color: '#10b981',
-            facing: 'down',
-            isMoving: false
+            x: 100,
+            y: 250,
+            size: 24,
+            speed: 4,
+            color: '#f59e0b',
+            dx: 0,
+            dy: 0
         };
 
-        // NPCs (Anciãos da Aldeia)
-        let npcs = [];
-        let activeNpc = null;
+        // --- Sistema de Input ---
+        const keys = {};
+        window.addEventListener('keydown', e => keys[e.key] = true);
+        window.addEventListener('keyup', e => keys[e.key] = false);
 
-        // Elementos Decorativos da Aldeia (Árvores, Opy, Rio)
-        let mapElements = [];
+        // Touch Controls
+        const setupTouch = (id, dx, dy) => {
+            const btn = document.getElementById(id);
+            if (!btn) return;
+            btn.addEventListener('touchstart', (e) => { e.preventDefault(); player.dx = dx; player.dy = dy; });
+            btn.addEventListener('touchend', (e) => { e.preventDefault(); player.dx = 0; player.dy = 0; });
+        };
+        setupTouch('btn-up', 0, -1);
+        setupTouch('btn-down', 0, 1);
+        setupTouch('btn-left', -1, 0);
+        setupTouch('btn-right', 1, 0);
 
-        function initWorld() {
-            player.x = width / 2;
-            player.y = height / 2;
+        // --- Game Loop ---
+        function update() {
+            // Teclado
+            let mx = 0, my = 0;
+            if (keys['ArrowUp'] || keys['w'] || keys['W']) my -= 1;
+            if (keys['ArrowDown'] || keys['s'] || keys['S']) my += 1;
+            if (keys['ArrowLeft'] || keys['a'] || keys['A']) mx -= 1;
+            if (keys['ArrowRight'] || keys['d'] || keys['D']) mx += 1;
 
-            // Posição dos NPCs
-            npcs = [
-                {
-                    id: 1,
-                    name: 'Xejaru',
-                    title: 'Xejaru - Sabedoria das Plantas',
-                    role: 'Anciã Guardiã dos Saberes da Mata',
-                    x: width * 0.3,
-                    y: height * 0.35,
-                    color: '#f59e0b',
-                    vocabIndices: [0, 1, 2],
-                    visited: false
-                },
-                {
-                    id: 2,
-                    name: 'Xevyry',
-                    title: 'Xevyry - Cantos & Memória',
-                    role: 'Mestre Mantenedor das Tradições Orais',
-                    x: width * 0.7,
-                    y: height * 0.65,
-                    color: '#38bdf8',
-                    vocabIndices: [3, 4, 5],
-                    visited: false
-                }
-            ];
-
-            // Geração de Árvores e Elementos do Cenário
-            mapElements = [];
-            
-            // Opy (Casa de Reza tradicional)
-            mapElements.push({
-                type: 'opy',
-                x: width * 0.5,
-                y: height * 0.25,
-                w: 120,
-                h: 80
-            });
-
-            // Árvores da Mata Sagrada
-            for (let i = 0; i < 28; i++) {
-                const angle = (i / 28) * Math.PI * 2;
-                const rx = width * 0.42 + Math.cos(angle) * (width * 0.42);
-                const ry = height * 0.42 + Math.sin(angle) * (height * 0.38);
-                mapElements.push({
-                    type: 'tree',
-                    x: rx,
-                    y: ry,
-                    size: 22 + Math.random() * 14
-                });
+            if (mx !== 0 || my !== 0) {
+                player.x += mx * player.speed;
+                player.y += my * player.speed;
+            } else {
+                player.x += player.dx * player.speed;
+                player.y += player.dy * player.speed;
             }
+
+            // Limites da Tela
+            player.x = Math.max(player.size, Math.min(canvas.width - player.size, player.x));
+            player.y = Math.max(player.size, Math.min(canvas.height - player.size, player.y));
+
+            // Checar Proximidade com NPCs
+            npcs.forEach(npc => {
+                const dist = Math.hypot(player.x - npc.x, player.y - npc.y);
+                if (dist < 40 && keys[' ']) {
+                    triggerInteraction(npc);
+                }
+            });
         }
 
-        // ------------------------------------------------------------------
-        // 4. DESENHO E RENDERIZAÇÃO NO CANVAS
-        // ------------------------------------------------------------------
-        function drawWorld() {
-            // Fundo do Território (Verde Florestal Orgânico)
-            ctx.fillStyle = '#0f2416';
-            ctx.fillRect(0, 0, width, height);
+        function drawScenario() {
+            // Fundo Floresta
+            ctx.fillStyle = '#0f291e';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Desenhar Gramados e Textura do Chão
-            ctx.fillStyle = '#14331f';
-            for (let x = 40; x < width; x += 120) {
-                for (let y = 40; y < height; y += 120) {
-                    ctx.beginPath();
-                    ctx.arc(x, y, 35, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-            }
-
-            // Desenhar Trilhas / Caminhos da Aldeia
-            ctx.strokeStyle = '#28472f';
+            // Desenhar Trilha de Terra
+            ctx.strokeStyle = '#3d2612';
             ctx.lineWidth = 40;
             ctx.lineCap = 'round';
             ctx.beginPath();
-            ctx.moveTo(width * 0.3, height * 0.35);
-            ctx.lineTo(width * 0.5, height * 0.25);
-            ctx.lineTo(width * 0.7, height * 0.65);
+            ctx.moveTo(80, 250);
+            ctx.quadraticCurveTo(250, 150, 400, 250);
+            ctx.quadraticCurveTo(550, 350, 720, 250);
             ctx.stroke();
 
-            // Desenhar Elementos (Opy / Árvores)
-            mapElements.forEach(el => {
-                if (el.type === 'opy') {
-                    // Casa de Reza (Pau-a-pique / Palha)
-                    ctx.fillStyle = '#78350f';
-                    ctx.fillRect(el.x - el.w/2, el.y - el.h/2, el.w, el.h);
-                    
-                    // Telhado de Palha
-                    ctx.fillStyle = '#b45309';
-                    ctx.beginPath();
-                    ctx.moveTo(el.x - el.w/2 - 10, el.y - el.h/2);
-                    ctx.lineTo(el.x, el.y - el.h/2 - 30);
-                    ctx.lineTo(el.x + el.w/2 + 10, el.y - el.h/2);
-                    ctx.closePath();
-                    ctx.fill();
+            // Desenhar Rio Sinuoso
+            ctx.strokeStyle = '#0284c7';
+            ctx.lineWidth = 18;
+            ctx.beginPath();
+            ctx.moveTo(300, 0);
+            ctx.quadraticCurveTo(280, 250, 350, canvas.height);
+            ctx.stroke();
 
-                    // Rótulo da Casa de Reza
-                    ctx.fillStyle = '#fde68a';
-                    ctx.font = '600 12px Montserrat';
-                    ctx.textAlign = 'center';
-                    ctx.fillText('OPY (Casa de Reza)', el.x, el.y + 5);
-                } else if (el.type === 'tree') {
-                    // Tronco
-                    ctx.fillStyle = '#451a03';
-                    ctx.fillRect(el.x - 4, el.y, 8, el.size * 0.8);
+            // Desenhar OPY (Casa de Reza)
+            ctx.fillStyle = '#854d0e';
+            ctx.fillRect(350, 80, 100, 70);
+            ctx.fillStyle = '#a16207';
+            ctx.beginPath();
+            ctx.moveTo(330, 80);
+            ctx.lineTo(400, 30);
+            ctx.lineTo(470, 80);
+            ctx.fill();
+            ctx.fillStyle = '#fde047';
+            ctx.font = '12px Fredoka';
+            ctx.fillText("OPY (Casa de Reza)", 340, 25);
 
-                    // Copa da Árvore
-                    ctx.fillStyle = '#15803d';
-                    ctx.beginPath();
-                    ctx.arc(el.x, el.y - 6, el.size, 0, Math.PI * 2);
-                    ctx.fill();
-
-                    ctx.fillStyle = '#22c55e';
-                    ctx.beginPath();
-                    ctx.arc(el.x - el.size*0.3, el.y - el.size*0.4, el.size * 0.5, 0, Math.PI * 2);
-                    ctx.fill();
-                }
+            // Desenhar Árvores Decorativas
+            const trees = [{x:80,y:80},{x:200,y:380},{x:650,y:100},{x:700,y:400},{x:120,y:420}];
+            trees.forEach(t => {
+                ctx.fillStyle = '#15803d';
+                ctx.beginPath();
+                ctx.arc(t.x, t.y, 25, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#166534';
+                ctx.beginPath();
+                ctx.arc(t.x - 5, t.y - 5, 18, 0, Math.PI * 2);
+                ctx.fill();
             });
+        }
 
-            // Desenhar NPCs (Anciãos)
+        function drawEntities() {
+            // Desenhar NPCs
             npcs.forEach(npc => {
-                // Aura Interativa Pulsante
-                const pulse = Math.sin(Date.now() * 0.005) * 4;
+                // Brilho Indicador
                 ctx.fillStyle = 'rgba(251, 191, 36, 0.2)';
                 ctx.beginPath();
-                ctx.arc(npc.x, npc.y, 24 + pulse, 0, Math.PI * 2);
+                ctx.arc(npc.x, npc.y, 28, 0, Math.PI * 2);
                 ctx.fill();
 
-                // Corpo do NPC
-                ctx.fillStyle = npc.color;
-                ctx.beginPath();
-                ctx.arc(npc.x, npc.y, 16, 0, Math.PI * 2);
-                ctx.fill();
-
-                // Ícone / Detalhe
-                ctx.fillStyle = '#0f1912';
-                ctx.font = 'bold 12px Montserrat';
+                // Avatar / Ícone
+                ctx.font = '24px serif';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                ctx.fillText(npc.name[0], npc.x, npc.y);
+                ctx.fillText(npc.icon, npc.x, npc.y);
 
-                // Nome do Ancião sobre a cabeça
+                // Nome
                 ctx.fillStyle = '#fef08a';
-                ctx.font = '700 12px Montserrat';
-                ctx.fillText(npc.name, npc.x, npc.y - 28);
+                ctx.font = '11px Outfit';
+                ctx.fillText(npc.name, npc.x, npc.y - 25);
             });
 
-            // Desenhar Jogador (Karumbé)
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+            // Desenhar Karumbé (Jogador)
+            ctx.fillStyle = player.color;
             ctx.beginPath();
-            ctx.ellipse(player.x, player.y + 14, 14, 7, 0, 0, Math.PI * 2);
+            ctx.arc(player.x, player.y, player.size / 2, 0, Math.PI * 2);
             ctx.fill();
-
-            // Símbolo do Karumbé (Jabuti/Guardião - Verde com casco)
-            ctx.fillStyle = '#059669';
-            ctx.beginPath();
-            ctx.arc(player.x, player.y, player.radius, 0, Math.PI * 2);
-            ctx.fill();
-            
-            ctx.strokeStyle = '#34d399';
-            ctx.lineWidth = 3;
+            ctx.strokeStyle = '#fef08a';
+            ctx.lineWidth = 2;
             ctx.stroke();
 
-            // Detalhe Interno do Casco
-            ctx.fillStyle = '#047857';
-            ctx.beginPath();
-            ctx.arc(player.x, player.y, 10, 0, Math.PI * 2);
-            ctx.fill();
+            // Ícone do Tartaruga
+            ctx.font = '16px serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('🐢', player.x, player.y);
         }
 
-        // ------------------------------------------------------------------
-        // 5. LÓGICA DE MOVIMENTO E COLISÃO
-        // ------------------------------------------------------------------
-        let stepSoundTimer = 0;
+        function render() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawScenario();
+            drawEntities();
+            update();
+            requestAnimationFrame(render);
+        }
 
-        function updatePlayer() {
-            let dx = 0;
-            let dy = 0;
+        // --- Interações & UI ---
+        function triggerInteraction(npc) {
+            currentNPC = npc;
+            document.getElementById('npc-name').innerText = npc.name;
+            document.getElementById('npc-role').innerText = npc.role;
+            document.getElementById('npc-avatar').innerText = npc.icon;
+            document.getElementById('npc-dialogue').innerText = `"${npc.dialogue}"`;
+            document.getElementById('word-target').innerText = `"${npc.wordTarget}"`;
 
-            if (keys.Up) dy -= player.speed;
-            if (keys.Down) dy += player.speed;
-            if (keys.Left) dx -= player.speed;
-            if (keys.Right) dx += player.speed;
+            // Gerar Opções
+            const container = document.getElementById('puzzle-options');
+            container.innerHTML = '';
+            npc.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = "w-full py-2 bg-emerald-900/80 hover:bg-emerald-700 border border-emerald-500/40 text-emerald-100 text-xs rounded-lg transition font-medium";
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(opt, npc.correct);
+                container.appendChild(btn);
+            });
 
-            // Normalizar movimento diagonal
-            if (dx !== 0 && dy !== 0) {
-                dx *= 0.7071;
-                dy *= 0.7071;
-            }
+            openModal('npc-modal');
+        }
 
-            if (dx !== 0 || dy !== 0) {
-                player.x = Math.max(player.radius, Math.min(width - player.radius, player.x + dx));
-                player.y = Math.max(player.radius, Math.min(height - player.radius, player.y + dy));
-                player.isMoving = true;
-
-                // Som de Passos
-                stepSoundTimer++;
-                if (stepSoundTimer % 18 === 0) {
-                    sound.playStep();
-                }
-            } else {
-                player.isMoving = false;
-            }
-
-            // Verificar Proximidade com NPCs
-            let nearNpc = null;
+        function interactNPC() {
             npcs.forEach(npc => {
                 const dist = Math.hypot(player.x - npc.x, player.y - npc.y);
-                if (dist < 50) {
-                    nearNpc = npc;
+                if (dist < 60) {
+                    triggerInteraction(npc);
                 }
             });
+        }
 
-            const promptEl = document.getElementById('interaction-prompt');
-            if (nearNpc) {
-                activeNpc = nearNpc;
-                promptEl.classList.remove('hidden');
-                document.getElementById('prompt-text').textContent = `Falar com ${nearNpc.name}`;
-                if (keys.Interact) {
-                    openNpcDialog(nearNpc);
-                    keys.Interact = false;
-                }
+        function checkAnswer(selected, correct) {
+            if (selected === correct) {
+                alert("✨ Aguyjevete! Resposta correta. Palavra registrada no teu Caderno de Campo!");
+                closeModal('npc-modal');
+                questStep++;
+                updateQuestUI();
             } else {
-                activeNpc = null;
-                promptEl.classList.add('hidden');
+                alert("Tenta novamente! Ouve a pronúncia com atenção.");
             }
         }
 
-        // ------------------------------------------------------------------
-        // 6. LOOP PRINCIPAL DO CANVAS
-        // ------------------------------------------------------------------
-        function gameLoop() {
-            updatePlayer();
-            drawWorld();
-            requestAnimationFrame(gameLoop);
-        }
-
-        // ------------------------------------------------------------------
-        // 7. SISTEMA DE DIÁLOGO E PUZZLE LINGUÍSTICO
-        // ------------------------------------------------------------------
-        let currentPuzzleVocab = null;
-
-        function openNpcDialog(npc) {
-            const modal = document.getElementById('modal-dialog');
-            document.getElementById('npc-name').textContent = npc.title;
-            document.getElementById('npc-role').textContent = npc.role;
-
-            // Selecionar uma palavra ainda não resolvida deste NPC
-            const available = npc.vocabIndices.map(idx => VOCABULARY_DB[idx]);
-            const nextWord = available.find(item => !item.unlocked) || available[0];
-            
-            currentPuzzleVocab = nextWord;
-            setupPuzzle(nextWord);
-            modal.classList.remove('hidden');
-        }
-
-        function setupPuzzle(vocab) {
-            document.getElementById('dialog-text').innerHTML = `
-                "Nhyruã! Seja bem-vindo ao círculo de memórias. A palavra que guardamos hoje é 
-                <strong class="text-amber-300 font-bold">${vocab.nhandewa}</strong>. Ouça sua voz e escolha o verdadeiro sentido para que ela viva no Caderno de Campo."
-            `;
-
-            document.getElementById('nhandewa-word-display').textContent = `Ouvir "${vocab.nhandewa}"`;
-            document.getElementById('phonetic-hint').textContent = `Fonética Nhandewa: ${vocab.phonetic}`;
-            
-            const feedbackEl = document.getElementById('puzzle-feedback');
-            feedbackEl.classList.add('hidden');
-
-            // Embaralhar opções
-            const optionsContainer = document.getElementById('puzzle-options');
-            optionsContainer.innerHTML = '';
-            
-            const shuffled = [...vocab.options].sort(() => Math.random() - 0.5);
-
-            shuffled.forEach(optionText => {
-                const btn = document.createElement('button');
-                btn.className = 'w-full glass-card hover:bg-emerald-700/50 active:scale-95 p-3 rounded-xl text-left text-xs sm:text-sm text-emerald-100 font-medium transition border border-emerald-500/30 flex items-center justify-between';
-                btn.innerHTML = `<span>${optionText}</span> <i class="fa-solid fa-chevron-right text-emerald-400 opacity-60"></i>`;
-                
-                btn.onclick = () => checkAnswer(optionText, vocab);
-                optionsContainer.appendChild(btn);
-            });
-
-            // Configurar botão de escuta
-            document.getElementById('btn-play-pronunciation').onclick = () => {
-                sound.speakNhandewa(vocab.nhandewa);
-            };
-        }
-
-        function checkAnswer(selectedOption, vocab) {
-            const feedbackEl = document.getElementById('puzzle-feedback');
-            feedbackEl.classList.remove('hidden');
-
-            if (selectedOption === vocab.meaning) {
-                vocab.unlocked = true;
-                sound.playSuccess();
-                feedbackEl.className = 'mt-4 p-3 rounded-xl text-center text-sm font-bold bg-emerald-800/80 text-emerald-200 border border-emerald-400/40';
-                feedbackEl.innerHTML = `<i class="fa-solid fa-circle-check text-amber-300 mr-2"></i> Correto! "<strong>${vocab.nhandewa}</strong>" foi registrada no seu Caderno de Campo.`;
-                
-                updateScoreCounter();
-                renderDictionary();
-
-                setTimeout(() => {
-                    document.getElementById('modal-dialog').classList.add('hidden');
-                }, 2200);
-            } else {
-                sound.playError();
-                feedbackEl.className = 'mt-4 p-3 rounded-xl text-center text-sm font-bold bg-red-900/80 text-red-200 border border-red-500/40';
-                feedbackEl.innerHTML = `<i class="fa-solid fa-circle-xmark mr-2"></i> Ainda não é essa. Ouça a palavra com atenção novamente...`;
+        function updateQuestUI() {
+            const qText = document.getElementById('quest-text');
+            if (questStep === 1) {
+                qText.innerText = "Missão: Siga pela trilha e encontre a Anciã Xevyry";
+            } else if (questStep >= 2) {
+                qText.innerText = "Missão Cumprida: Você aprendeu os saberes básicos da aldeia!";
             }
         }
 
-        function updateScoreCounter() {
-            const count = VOCABULARY_DB.filter(v => v.unlocked).length;
-            document.getElementById('score-counter').textContent = `${count} / ${VOCABULARY_DB.length}`;
+        function playPhoneticSound() {
+            // Sintetizador Nativo Web Audio / Speech como fallback de protótipo
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(currentNPC ? currentNPC.wordTarget : "Y");
+                utterance.lang = 'es-ES'; // Aproximação fonética guarani
+                utterance.pitch = 0.9;
+                utterance.rate = 0.8;
+                window.speechSynthesis.speak(utterance);
+            }
         }
 
-        // ------------------------------------------------------------------
-        // 8. RENDERIZAÇÃO DO CADERNO DE CAMPO (DICIONÁRIO)
-        // ------------------------------------------------------------------
-        function renderDictionary() {
-            const listEl = document.getElementById('dictionary-list');
-            listEl.innerHTML = '';
-
-            VOCABULARY_DB.forEach(item => {
+        function populateDictionary() {
+            const list = document.getElementById('dictionary-list');
+            list.innerHTML = '';
+            dictionary.forEach(item => {
                 const card = document.createElement('div');
-                card.className = `glass-card p-4 rounded-2xl border transition ${item.unlocked ? 'border-amber-400/40 bg-emerald-950/40' : 'border-emerald-900/30 opacity-60'}`;
-                
-                if (item.unlocked) {
-                    card.innerHTML = `
-                        <div class="flex items-start justify-between">
-                            <div>
-                                <span class="text-[10px] uppercase font-bold text-emerald-400 tracking-wider bg-emerald-900/60 px-2 py-0.5 rounded-md">${item.category}</span>
-                                <h3 class="text-lg font-bold text-amber-300 mt-1">${item.nhandewa}</h3>
-                                <p class="text-xs text-amber-200/70 font-mono mb-2">${item.phonetic}</p>
-                            </div>
-                            <button onclick="sound.speakNhandewa('${item.nhandewa}')" class="bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 p-2.5 rounded-xl transition" title="Ouvir Pronúncia">
-                                <i class="fa-solid fa-volume-high"></i>
-                            </button>
+                card.className = "bg-emerald-950/60 p-3 rounded-xl border border-emerald-500/30 flex justify-between items-center";
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center space-x-2">
+                            <span class="font-game text-amber-300 font-bold">${item.word}</span>
+                            <span class="text-xs text-emerald-400/80">${item.phonetic}</span>
                         </div>
-                        <p class="text-sm font-bold text-emerald-100 mb-1">Significado: ${item.meaning}</p>
-                        <p class="text-xs text-emerald-200/80 leading-relaxed">${item.desc}</p>
-                    `;
-                } else {
-                    card.innerHTML = `
-                        <div class="flex items-center space-x-3">
-                            <i class="fa-solid fa-lock text-emerald-600 text-xl"></i>
-                            <div>
-                                <h3 class="text-sm font-bold text-emerald-500">Verbete Bloqueado</h3>
-                                <p class="text-xs text-emerald-600">Converse com os Anciãos na aldeia para revelar a palavra.</p>
-                            </div>
-                        </div>
-                    `;
-                }
-                listEl.appendChild(card);
+                        <p class="text-xs text-emerald-100 font-medium">${item.translation}</p>
+                        <p class="text-[10px] text-emerald-400/60">${item.audioNote}</p>
+                    </div>
+                    <button onclick="speakWord('${item.word}')" class="w-8 h-8 rounded-full bg-emerald-800/80 hover:bg-emerald-700 text-emerald-200 flex items-center justify-center text-xs transition">
+                        <i class="fas fa-volume-high"></i>
+                    </button>
+                `;
+                list.appendChild(card);
             });
         }
 
-        // ------------------------------------------------------------------
-        // 9. CONFIGURAÇÃO DE CONTROLES E MODAIS
-        // ------------------------------------------------------------------
-        function setupEventListeners() {
-            // Teclado
-            window.addEventListener('keydown', e => {
-                if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') keys.Up = true;
-                if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') keys.Down = true;
-                if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') keys.Left = true;
-                if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') keys.Right = true;
-                if (e.key === ' ' || e.key === 'Enter') keys.Interact = true;
-            });
-
-            window.addEventListener('keyup', e => {
-                if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') keys.Up = false;
-                if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') keys.Down = false;
-                if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') keys.Left = false;
-                if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') keys.Right = false;
-                if (e.key === ' ' || e.key === 'Enter') keys.Interact = false;
-            });
-
-            // D-Pad Touch Controls
-            const bindTouch = (btnId, keyName) => {
-                const btn = document.getElementById(btnId);
-                btn.addEventListener('touchstart', (e) => { e.preventDefault(); keys[keyName] = true; });
-                btn.addEventListener('touchend', (e) => { e.preventDefault(); keys[keyName] = false; });
-                btn.addEventListener('mousedown', () => { keys[keyName] = true; });
-                btn.addEventListener('mouseup', () => { keys[keyName] = false; });
-            };
-
-            bindTouch('btn-up', 'Up');
-            bindTouch('btn-down', 'Down');
-            bindTouch('btn-left', 'Left');
-            bindTouch('btn-right', 'Right');
-
-            document.getElementById('btn-action-touch').onclick = () => {
-                if (activeNpc) {
-                    openNpcDialog(activeNpc);
-                }
-            };
-
-            // Modais HUD
-            document.getElementById('btn-dictionary').onclick = () => {
-                renderDictionary();
-                document.getElementById('modal-dictionary').classList.remove('hidden');
-            };
-
-            document.getElementById('btn-studio').onclick = () => {
-                document.getElementById('modal-studio').classList.remove('hidden');
-            };
-
-            document.getElementById('btn-help').onclick = () => {
-                document.getElementById('modal-help').classList.remove('hidden');
-            };
-
-            // Fechar Modais
-            document.querySelectorAll('.btn-close-modal').forEach(btn => {
-                btn.onclick = (e) => {
-                    e.target.closest('.fixed').classList.add('hidden');
-                };
-            });
-
-            // Mute Button
-            const soundBtn = document.getElementById('btn-sound');
-            soundBtn.onclick = () => {
-                sound.isMuted = !sound.isMuted;
-                soundBtn.innerHTML = sound.isMuted 
-                    ? '<i class="fa-solid fa-volume-xmark text-lg text-red-400"></i>' 
-                    : '<i class="fa-solid fa-volume-high text-lg"></i>';
-            };
+        function speakWord(word) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(word);
+                utterance.lang = 'es-ES';
+                window.speechSynthesis.speak(utterance);
+            }
         }
 
-        // ------------------------------------------------------------------
-        // 10. INICIALIZAÇÃO GERAL DA APLICAÇÃO
-        // ------------------------------------------------------------------
-        window.onload = function() {
-            initWorld();
-            setupEventListeners();
-            renderDictionary();
-            gameLoop();
-        };
+        function openModal(id) {
+            document.getElementById(id).classList.remove('hidden');
+            if (id === 'caderno-modal') populateDictionary();
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+
+        // --- Inicialização ---
+        requestAnimationFrame(render);
     </script>
 </body>
 </html>
