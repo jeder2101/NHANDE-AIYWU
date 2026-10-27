@@ -1027,16 +1027,12 @@ let selectedCharacter = null;
             }
         }
 
-        // O jogo foi planejado para celular/tablet com toque; evita mostrar a interface de toque
-        // em computador convencional sem impedir tablets grandes com tela sensível ao toque.
+        // Versão PC: não bloqueia computadores sem tela de toque.
+        // Os controles de teclado já existentes continuam ativos e o CSS oculta os controles táteis.
         function detectTouchDevice() {
-            const hasTouch = (navigator.maxTouchPoints || 0) > 0 || ('ontouchstart' in window) || window.matchMedia('(pointer: coarse)').matches;
-            const wideDesktop = window.innerWidth >= 1024 && !hasTouch;
-            document.body.classList.toggle('desktop-no-touch', wideDesktop);
+            document.body.classList.remove('desktop-no-touch');
         }
         detectTouchDevice();
-        window.addEventListener('resize', detectTouchDevice, { passive: true });
-        window.addEventListener('orientationchange', () => setTimeout(detectTouchDevice, 120), { passive: true });
 
         function selectCharacter(char) {
             selectedCharacter = char;
@@ -1439,17 +1435,37 @@ let selectedCharacter = null;
             });
         }
 
+        // Redimensionamento robusto: usa a caixa real do canvas, não apenas innerWidth/innerHeight.
+        // Em celulares, a barra do navegador e a rotação podem atualizar essas medidas em momentos diferentes.
+        let resizeFramePending = false;
         function resizeGameViewport() {
-            const width = Math.max(1, window.innerWidth);
-            const height = Math.max(1, window.innerHeight);
-            camera.aspect = width / height;
-            camera.updateProjectionMatrix();
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, width < 700 ? 1.5 : 2));
-            renderer.setSize(width, height, false);
+            if (resizeFramePending) return;
+            resizeFramePending = true;
+            requestAnimationFrame(() => {
+                resizeFramePending = false;
+                const rect = container.getBoundingClientRect();
+                const width = Math.max(1, Math.round(rect.width || document.documentElement.clientWidth || window.innerWidth));
+                const height = Math.max(1, Math.round(rect.height || document.documentElement.clientHeight || window.innerHeight));
+                camera.aspect = width / height;
+                camera.updateProjectionMatrix();
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, width < 700 ? 1.5 : 2));
+                renderer.setSize(width, height, false);
+                renderer.domElement.style.width = width + 'px';
+                renderer.domElement.style.height = height + 'px';
+            });
+        }
+        function settleOrientationResize() {
+            // Alguns navegadores reportam o novo tamanho após a animação de rotação.
+            [0, 120, 300, 550].forEach(delay => setTimeout(resizeGameViewport, delay));
         }
         window.addEventListener('resize', resizeGameViewport, { passive: true });
-        window.addEventListener('orientationchange', () => setTimeout(resizeGameViewport, 150), { passive: true });
+        window.addEventListener('orientationchange', settleOrientationResize, { passive: true });
+        window.addEventListener('pageshow', settleOrientationResize, { passive: true });
         if (window.visualViewport) window.visualViewport.addEventListener('resize', resizeGameViewport, { passive: true });
+        if (screen.orientation && screen.orientation.addEventListener) {
+            screen.orientation.addEventListener('change', settleOrientationResize);
+        }
+        settleOrientationResize();
 
 // Funções chamadas pelos atributos onclick do index.html.
 // Mantém o HTML e o JavaScript externo comunicando-se como esperado.
