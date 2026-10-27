@@ -25,7 +25,7 @@
         }
 
         .glass-card {
-            background: rgba(18, 43, 27, 0.88);
+            background: rgba(18, 43, 27, 0.90);
             backdrop-filter: blur(12px);
             border: 1px solid rgba(74, 222, 128, 0.25);
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.45);
@@ -36,6 +36,17 @@
             color: #451a03;
             border: 4px solid #b45309;
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+        }
+
+        .character-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .character-card:hover {
+            transform: translateY(-5px);
+            border-color: #facc15;
+            background: rgba(20, 60, 35, 0.95);
         }
 
         .btn-touch {
@@ -56,25 +67,66 @@
 </head>
 <body class="h-screen w-screen relative">
 
-    <!-- Interface Superior (Topo) -->
-    <header class="absolute top-0 left-0 w-full px-4 py-3 flex justify-between items-center z-20 pointer-events-auto">
+    <!-- TELA INICIAL: ESCOLHA DE PERSONAGEM -->
+    <div id="character-select-screen" class="absolute inset-0 z-50 bg-gradient-to-br from-[#08140c] via-[#11301e] to-[#040c06] flex items-center justify-center p-4">
+        <div class="glass-card max-w-xl w-full rounded-3xl p-6 md:p-8 border-2 border-amber-500/40 text-center shadow-2xl relative overflow-hidden">
+            <div class="absolute -top-10 -right-10 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl"></div>
+            
+            <div class="mb-6">
+                <span class="text-xs uppercase tracking-widest text-amber-400 font-semibold">Jornada Ancestral</span>
+                <h1 class="font-game text-3xl md:text-4xl font-bold bg-gradient-to-r from-amber-300 via-emerald-300 to-amber-200 bg-clip-text text-transparent mt-1">
+                    Tape Marangatu
+                </h1>
+                <p class="text-xs md:text-sm text-emerald-200/80 mt-2">
+                    Escolhe o teu guardião para iniciar a caminhada sagrada na aldeia e aprender os saberes Nhandewa.
+                </p>
+            </div>
+
+            <!-- Seleção de Personagens -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                <!-- Konomi -->
+                <div onclick="selectCharacter('konomi')" class="character-card glass-card p-5 rounded-2xl border-2 border-emerald-500/30 flex flex-col items-center">
+                    <div class="w-20 h-20 rounded-full bg-amber-600/40 border-2 border-amber-400 flex items-center justify-center text-4xl mb-3 shadow-inner">
+                        👦🏽
+                    </div>
+                    <h3 class="font-game text-xl text-amber-300">Konomi</h3>
+                    <p class="text-xs text-emerald-300/80 mt-1 text-center">O jovem explorador das trilhas da floresta.</p>
+                </div>
+
+                <!-- Kunhataĩ -->
+                <div onclick="selectCharacter('kunhatai')" class="character-card glass-card p-5 rounded-2xl border-2 border-emerald-500/30 flex flex-col items-center">
+                    <div class="w-20 h-20 rounded-full bg-emerald-600/40 border-2 border-amber-400 flex items-center justify-center text-4xl mb-3 shadow-inner">
+                        👧🏽
+                    </div>
+                    <h3 class="font-game text-xl text-amber-300">Kunhataĩ</h3>
+                    <p class="text-xs text-emerald-300/80 mt-1 text-center">A jovem guardiã das memórias e da Kwatiá.</p>
+                </div>
+            </div>
+
+            <div class="text-[11px] text-emerald-400/60 font-medium">
+                Clica num dos personagens para começar a aventura 3D.
+            </div>
+        </div>
+    </div>
+
+    <!-- Interface Superior do Jogo (Oculta até começar) -->
+    <header id="game-header" class="absolute top-0 left-0 w-full px-4 py-3 flex justify-between items-center z-20 pointer-events-auto hidden">
         <div class="glass-card px-4 py-2 rounded-xl flex items-center space-x-3">
-            <div class="w-10 h-10 rounded-full bg-amber-600 border-2 border-amber-300 flex items-center justify-center text-amber-100 font-bold text-xl shadow-lg">
-                🐢
+            <div id="player-avatar-icon" class="w-10 h-10 rounded-full bg-amber-600 border-2 border-amber-300 flex items-center justify-center text-amber-100 font-bold text-xl shadow-lg">
+                👦🏽
             </div>
             <div>
-                <h1 class="font-game text-lg md:text-xl font-bold bg-gradient-to-r from-amber-300 to-emerald-400 bg-clip-text text-transparent">
+                <h1 class="font-game text-sm md:text-lg font-bold bg-gradient-to-r from-amber-300 to-emerald-400 bg-clip-text text-transparent">
                     Tape Marangatu 3D
                 </h1>
-                <p class="text-[10px] text-emerald-300/80">O Caminho Sagrado da Língua</p>
+                <p id="player-name-display" class="text-[10px] text-emerald-300/80">Guardião: Konomi</p>
             </div>
         </div>
 
-        <!-- Rastreador de Fases -->
         <div class="flex items-center space-x-2">
             <div class="glass-card px-4 py-2 rounded-xl text-xs flex items-center space-x-2">
                 <i class="fas fa-flag-checkered text-amber-400"></i>
-                <span id="phase-indicator" class="text-amber-200 font-semibold">Fase 1: O Segredo do AWATI (Milho)</span>
+                <span id="phase-indicator" class="text-amber-200 font-semibold">Fase 1: O Segredo do AWATI</span>
             </div>
         </div>
     </header>
@@ -91,7 +143,7 @@
     </div>
 
     <!-- Controles Touch (D-Pad Mobile) -->
-    <div id="touch-controls" class="absolute bottom-6 left-6 grid grid-cols-3 gap-2 w-36 h-36 md:hidden z-20 pointer-events-auto">
+    <div id="touch-controls" class="absolute bottom-6 left-6 grid grid-cols-3 gap-2 w-36 h-36 md:hidden z-20 pointer-events-auto hidden">
         <div></div>
         <button id="btn-up" class="btn-touch rounded-t-xl text-emerald-300 text-xl font-bold flex items-center justify-center">▲</button>
         <div></div>
@@ -104,7 +156,7 @@
     </div>
 
     <!-- Dica Teclado -->
-    <div class="hidden md:flex absolute bottom-4 left-4 glass-card px-3 py-1.5 rounded-lg text-[11px] text-emerald-300/80 items-center space-x-2 z-20">
+    <div id="keyboard-tip" class="hidden md:flex absolute bottom-4 left-4 glass-card px-3 py-1.5 rounded-lg text-[11px] text-emerald-300/80 items-center space-x-2 z-20 hidden">
         <i class="fas fa-keyboard"></i>
         <span>Caminhe com <b>WASD</b> ou <b>Setas</b>. Pressione <b>ESPAÇO</b> para interagir!</span>
     </div>
@@ -163,6 +215,7 @@
 
     <!-- Lógica do Jogo 3D -->
     <script>
+        let selectedCharacter = null;
         const gameData = {
             phase1: {
                 letter: "A a A a",
@@ -209,6 +262,26 @@
 
         let currentPhase = 1;
         let activeInteractiveObject = null;
+        let gameStarted = false;
+
+        function selectCharacter(char) {
+            selectedCharacter = char;
+            gameStarted = true;
+
+            // Atualizar UI
+            document.getElementById('character-select-screen').classList.add('hidden');
+            document.getElementById('game-header').classList.remove('hidden');
+            document.getElementById('touch-controls').classList.remove('hidden');
+            document.getElementById('keyboard-tip').classList.remove('hidden');
+
+            if (char === 'konomi') {
+                document.getElementById('player-avatar-icon').innerText = "👦🏽";
+                document.getElementById('player-name-display').innerText = "Guardião: Konomi";
+            } else {
+                document.getElementById('player-avatar-icon').innerText = "👧🏽";
+                document.getElementById('player-name-display').innerText = "Guardiã: Kunhataĩ";
+            }
+        }
 
         const container = document.getElementById('canvas-container');
         const scene = new THREE.Scene();
@@ -271,12 +344,11 @@
         jaguarGroup.position.set(0, 0, -25);
         scene.add(jaguarGroup);
 
-        // Jogador (Karumbé)
+        // Jogador (Avatar 3D)
         const playerGroup = new THREE.Group();
-        const shell = new THREE.Mesh(new THREE.SphereGeometry(1, 8, 8, 0, Math.PI * 2, 0, Math.PI / 2), new THREE.MeshLambertMaterial({ color: 0xd97706 }));
-        shell.position.y = 0.4;
-        shell.scale.set(1, 0.7, 1.2);
-        playerGroup.add(shell);
+        const playerBody = new THREE.Mesh(new THREE.CapsuleGeometry(0.5, 1, 4, 8), new THREE.MeshLambertMaterial({ color: 0xf59e0b }));
+        playerBody.position.y = 1;
+        playerGroup.add(playerBody);
         playerGroup.position.set(0, 0, 25);
         scene.add(playerGroup);
 
@@ -303,6 +375,11 @@
         const clock = new THREE.Clock();
         function animate() {
             requestAnimationFrame(animate);
+
+            if (!gameStarted) {
+                renderer.render(scene, camera);
+                return;
+            }
 
             const speed = 8 * clock.getDelta();
             let moveX = 0, moveZ = 0;
@@ -406,8 +483,8 @@
             }
         }
 
-        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
-        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+        function openModal(id) { document.getElementById(id).classList.add('flex'); document.getElementById(id).classList.remove('hidden'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('flex'); document.getElementById(id).classList.add('hidden'); }
 
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
