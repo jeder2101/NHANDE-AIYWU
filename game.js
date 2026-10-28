@@ -1351,22 +1351,58 @@ let selectedCharacter = null;
             if (activeInteractiveObject) openKwatiaModal();
         }
 
-        function openKwatiaModal() {
-            const data = gameData[activeInteractiveObject];
-            document.getElementById('kwatia-letter').innerText = data.letter;
-            document.getElementById('kwatia-title').innerText = data.title;
-            document.getElementById('kwatia-illustration').innerText = data.icon;
+   
+function openKwatiaModal() {
+    const data = gameData[activeInteractiveObject];
 
-            const listContainer = document.getElementById('kwatia-text-list');
-            listContainer.innerHTML = '';
-            data.lines.forEach(line => {
-                const p = document.createElement('p');
-                p.className = "border-b border-amber-900/15 pb-1 text-amber-950 font-serif font-bold";
-                p.innerText = line;
-                listContainer.appendChild(p);
-            });
-            openModal('read-modal');
-        }
+    // Impede erro se os dados da fase não existirem.
+    if (!data) {
+        console.warn(
+            "Dados não encontrados para:",
+            activeInteractiveObject
+        );
+        return;
+    }
+
+    const letra = document.getElementById('kwatia-letter');
+    const titulo = document.getElementById('kwatia-title');
+    const ilustracao = document.getElementById('kwatia-illustration');
+    const listContainer = document.getElementById('kwatia-text-list');
+
+    if (!letra || !titulo || !ilustracao || !listContainer) {
+        console.error(
+            "Não foram encontrados todos os elementos da janela de leitura."
+        );
+        return;
+    }
+
+    // Compatibilidade com os nomes usados nas 20 fases.
+    letra.innerText = data.letter ?? data.letra ?? "";
+    titulo.innerText = data.title ?? data.titulo ?? "";
+    ilustracao.innerText = data.icon ?? data.icone ?? "";
+
+    const linhas = Array.isArray(data.lines)
+        ? data.lines
+        : Array.isArray(data.linhas)
+        ? data.linhas
+        : [];
+
+    listContainer.innerHTML = "";
+
+    linhas.forEach(function (linha) {
+        const p = document.createElement('p');
+
+        p.className =
+            "border-b border-amber-900/15 pb-1 " +
+            "text-amber-950 font-serif font-bold";
+
+        p.innerText = String(linha);
+        listContainer.appendChild(p);
+    });
+
+    openModal('read-modal');
+}
+
 
         function openQuestionModal() {
             closeModal('read-modal');
