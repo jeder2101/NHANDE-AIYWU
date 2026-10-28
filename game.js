@@ -1388,28 +1388,122 @@ let selectedCharacter = null;
             openModal('question-modal');
         }
 
-        function answerQuestion(isCorrect) {
-            if (isCorrect) {
-                if (currentPhase === 1) {
-                    alert("✨ AGUYJEVETE! Resposta Correta!\n\nA passagem pela trilha sinuosa foi liberada!");
-                    currentPhase = 2;
-                    doubleDangerAnimalsForPhase();
-                    phaseTimeLeft = 90;
-                    updateSurvivalHUD();
-                    document.getElementById('phase-indicator').innerText = "Fase 2: O Desafio do DJAGWARETE";
-                    showGameFeedback('Fase 2 liberada! O tempo foi reiniciado. Fique atento aos animais.');
-                } else if (currentPhase === 2) {
-                    alert("🎉 PARABÉNS! Concluíste a caminhada sagrada no Tape Marangatu!");
-                    phaseTimeLeft = 90;
-                    playerHealth = 100;
-                    updateSurvivalHUD();
-                }
-                closeModal('question-modal');
-            } else {
-                alert("Nhananderõ! Resposta incorreta. Releia a Kwatiá com atenção!");
-            }
-        }
+function answerQuestion(isCorrect) {
+    if (!isCorrect) {
+        alert("Nhanderu! Resposta incorreta. Releia a Kwatiá e tente novamente.");
+        return;
+    }
 
+    // FASE 1: mantém a passagem original para o desafio 3D da onça.
+    if (currentPhase === 1) {
+        alert(
+            "✨ AGUYJEVETE! Resposta correta!\n\n" +
+            "A passagem pela trilha foi liberada!"
+        );
+
+        currentPhase = 2;
+        doubleDangerAnimalsForPhase();
+
+        phaseTimeLeft = 90;
+        updateSurvivalHUD();
+
+        document.getElementById("phase-indicator").innerText =
+            "Fase 2: O Desafio do DJAGWARETE";
+
+        showGameFeedback(
+            "Fase 2 liberada! Continue pela trilha e fique atento aos animais."
+        );
+
+        closeModal("question-modal");
+        return;
+    }
+
+    // FASE 2: mantém a etapa 3D existente e inicia os desafios de língua.
+    if (currentPhase === 2) {
+        currentPhase = 3;
+        activeInteractiveObject = "phase3";
+
+        phaseTimeLeft = 90;
+        updateSurvivalHUD();
+
+        document.getElementById("phase-indicator").innerText =
+            "Fase 3: Y — Água";
+
+        showGameFeedback(
+            "Desafio da língua iniciado! Responda às atividades para avançar."
+        );
+
+        closeModal("question-modal");
+
+        // Abre imediatamente a próxima atividade, sem depender
+        // da aproximação do personagem a um novo objeto 3D.
+        openQuestionModal();
+        return;
+    }
+
+    // FASES 3 A 19: avança pelos desafios de aprendizagem.
+    if (currentPhase >= 3 && currentPhase < 20) {
+        currentPhase++;
+
+        activeInteractiveObject = "phase" + currentPhase;
+
+        const nomesFases = {
+            3: "Y — Água",
+            4: "Ywyrá — Árvore",
+            5: "Ava — Pessoa",
+            6: "Nhanderu — Respeito",
+            7: "Cumprimentos",
+            8: "Pytyõ — Ajudar",
+            9: "Família",
+            10: "Animais",
+            11: "Plantas e natureza",
+            12: "Cores",
+            13: "Números",
+            14: "Ações e verbos",
+            15: "Formação de palavras",
+            16: "Escuta e pronúncia",
+            17: "Frases",
+            18: "Leitura e compreensão",
+            19: "Memória da língua",
+            20: "Desafio final"
+        };
+
+        const nomeFase = nomesFases[currentPhase] || "Desafio da língua";
+
+        document.getElementById("phase-indicator").innerText =
+            "Fase " + currentPhase + ": " + nomeFase;
+
+        showGameFeedback(
+            "Fase " + currentPhase + " liberada: " + nomeFase + "!"
+        );
+
+        closeModal("question-modal");
+        openQuestionModal();
+        return;
+    }
+
+    // FASE 20: conclusão do percurso de aprendizagem.
+    if (currentPhase === 20) {
+        closeModal("question-modal");
+
+        alert(
+            "🎉 AGUYJEVETE!\n\n" +
+            "Você concluiu as 20 fases do Tape Marangatu!\n\n" +
+            "Você percorreu desafios sobre Awati, Djagwarete, " +
+            "natureza, vocabulário, leitura e valorização da língua.\n\n" +
+            "Continue aprendendo com os falantes e os conhecimentos " +
+            "da sua comunidade!"
+        );
+
+        phaseTimeLeft = 90;
+        playerHealth = 100;
+        updateSurvivalHUD();
+
+        showGameFeedback(
+            "Percurso concluído! A língua vive na comunidade."
+        );
+    }
+}
         function openModal(id) { document.getElementById(id).classList.add('flex'); document.getElementById(id).classList.remove('hidden'); }
         function closeModal(id) { document.getElementById(id).classList.remove('flex'); document.getElementById(id).classList.add('hidden'); }
 
@@ -1476,3 +1570,396 @@ window.checkCurrentProximity = checkCurrentProximity;
 window.triggerJump = triggerJump;
 window.closeModal = closeModal;
 window.openQuestionModal = openQuestionModal;
+
+/* =========================================================
+   TAPE MARANGATU 3D — MOTOR DAS 20 FASES
+   Cole este bloco no FINAL do arquivo game.js.
+   Mantém os cenários e personagens 3D existentes.
+========================================================= */
+
+(function () {
+    "use strict";
+
+    const fasesTapeMarangatu = [
+        {
+            titulo: "Awati — O milho",
+            tipo: "quiz",
+            pergunta: "Qual palavra identifica o milho neste desafio?",
+            opcoes: ["Awati", "Mbo'i", "Nhandu"],
+            correta: "Awati"
+        },
+        {
+            titulo: "Djagwarete — A onça",
+            tipo: "charada",
+            pergunta: "Sou um grande felino da floresta. Quem sou eu?",
+            opcoes: ["Angudjá", "Djagwarete", "Awati"],
+            correta: "Djagwarete"
+        },
+        {
+            titulo: "Ligue a palavra",
+            tipo: "ligar",
+            pergunta: "Encontre a palavra usada neste jogo para cobra.",
+            opcoes: ["Mbo'i", "Nhandu", "Awati"],
+            correta: "Mbo'i"
+        },
+        {
+            titulo: "Conhecendo a aranha",
+            tipo: "quiz",
+            pergunta: "Qual palavra está associada à aranha neste jogo?",
+            opcoes: ["Nhandu", "Djagwarete", "Awati"],
+            correta: "Nhandu"
+        },
+        {
+            titulo: "Complete a frase",
+            tipo: "completar",
+            pergunta: "Complete: Awati significa ______ neste desafio.",
+            opcoes: ["milho", "cobra", "aranha"],
+            correta: "milho"
+        },
+        {
+            titulo: "Caça-palavras",
+            tipo: "cacapalavras",
+            pergunta: "Localize a palavra que identifica o milho.",
+            opcoes: ["AWATI", "MBOI", "NHANDU"],
+            correta: "AWATI"
+        },
+        {
+            titulo: "Animais da floresta",
+            tipo: "ligar",
+            pergunta: "Qual palavra corresponde à onça?",
+            opcoes: ["Djagwarete", "Awati", "Nhandu"],
+            correta: "Djagwarete"
+        },
+        {
+            titulo: "Cruzadinha",
+            tipo: "cruzadinha",
+            pergunta: "Digite a palavra usada neste jogo para milho.",
+            opcoes: [],
+            correta: "awati"
+        },
+        {
+            titulo: "Desafio da cobra",
+            tipo: "charada",
+            pergunta: "Qual palavra você deve encontrar para continuar a trilha?",
+            opcoes: ["Mbo'i", "Awati", "Angudjá"],
+            correta: "Mbo'i"
+        },
+        {
+            titulo: "Memória da floresta",
+            tipo: "quiz",
+            pergunta: "Qual palavra identifica a aranha neste jogo?",
+            opcoes: ["Nhandu", "Awati", "Djagwarete"],
+            correta: "Nhandu"
+        },
+        {
+            titulo: "Complete a palavra",
+            tipo: "completar",
+            pergunta: "Complete a palavra: A-W-A-__.",
+            opcoes: ["TI", "DU", "BO"],
+            correta: "TI"
+        },
+        {
+            titulo: "Desafio dos animais",
+            tipo: "ligar",
+            pergunta: "Escolha a palavra associada ao rato neste jogo.",
+            opcoes: ["Angudjá", "Nhandu", "Mbo'i"],
+            correta: "Angudjá"
+        },
+        {
+            titulo: "Caça-palavras da trilha",
+            tipo: "cacapalavras",
+            pergunta: "Encontre o nome da aranha.",
+            opcoes: ["DJAGWARETE", "NHANDU", "AWATI"],
+            correta: "NHANDU"
+        },
+        {
+            titulo: "Charada da mata",
+            tipo: "charada",
+            pergunta: "Qual destes nomes é associado à cobra no jogo?",
+            opcoes: ["Mbo'i", "Angudjá", "Awati"],
+            correta: "Mbo'i"
+        },
+        {
+            titulo: "Cruzadinha da onça",
+            tipo: "cruzadinha",
+            pergunta: "Digite o nome usado neste jogo para a onça.",
+            opcoes: [],
+            correta: "djagwarete"
+        },
+        {
+            titulo: "Complete a frase",
+            tipo: "completar",
+            pergunta: "Escolha a palavra que completa: A aranha é ______ neste jogo.",
+            opcoes: ["Nhandu", "Awati", "Angudjá"],
+            correta: "Nhandu"
+        },
+        {
+            titulo: "Desafio de associação",
+            tipo: "ligar",
+            pergunta: "Qual palavra corresponde ao milho?",
+            opcoes: ["Awati", "Mbo'i", "Djagwarete"],
+            correta: "Awati"
+        },
+        {
+            titulo: "Caça-palavras final",
+            tipo: "cacapalavras",
+            pergunta: "Encontre a palavra associada ao rato.",
+            opcoes: ["ANGUDJA", "AWATI", "NHANDU"],
+            correta: "ANGUDJA"
+        },
+        {
+            titulo: "Charada final",
+            tipo: "charada",
+            pergunta: "Qual destes nomes está associado à onça?",
+            opcoes: ["Djagwarete", "Mbo'i", "Nhandu"],
+            correta: "Djagwarete"
+        },
+        {
+            titulo: "Grande desafio — Karumbé",
+            tipo: "quiz",
+            pergunta: "Qual palavra identifica o milho neste conjunto de desafios?",
+            opcoes: ["Awati", "Nhandu", "Mbo'i"],
+            correta: "Awati"
+        }
+    ];
+
+    // Completa os dados das fases sem apagar as configurações existentes.
+    fasesTapeMarangatu.forEach(function (fase, indice) {
+        const numero = indice + 1;
+        const chave = "phase" + numero;
+
+        if (typeof gameData !== "undefined") {
+            gameData[chave] = {
+                titulo: fase.titulo,
+                letra: String(numero),
+                icone: "🌿",
+                linhas: [
+                    fase.titulo,
+                    "Desafio " + numero + " de 20",
+                    "Responda para avançar na trilha."
+                ]
+            };
+        }
+
+        if (typeof quizBank !== "undefined") {
+            quizBank[chave] = [{
+                question: fase.pergunta,
+                options: fase.opcoes,
+                answer: fase.correta
+            }];
+        }
+    });
+
+    let respostaDestaFase = false;
+    let faseEmExibicao = 1;
+
+    function normalizarResposta(valor) {
+        return String(valor || "")
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/[’']/g, "")
+            .trim()
+            .toLowerCase();
+    }
+
+    function abrirModalDePergunta() {
+        faseEmExibicao = currentPhase;
+        respostaDestaFase = false;
+
+        const fase = fasesTapeMarangatu[currentPhase - 1];
+        const modal = document.getElementById("question-modal");
+        const pergunta = document.getElementById("question-prompt");
+        const opcoes = document.getElementById("options-container");
+
+        if (!fase || !modal || !pergunta || !opcoes) {
+            console.error(
+                "Não foi possível abrir a fase. Confira os IDs do index.html:",
+                "question-modal, question-prompt e options-container."
+            );
+            return;
+        }
+
+        activeInteractiveObject = "phase" + currentPhase;
+        pergunta.textContent =
+            "FASE " + currentPhase + " — " + fase.titulo +
+            "\n\n" + fase.pergunta;
+
+        opcoes.innerHTML = "";
+
+        // A cruzadinha usa resposta digitada.
+        if (fase.tipo === "cruzadinha") {
+            const campo = document.createElement("input");
+            campo.type = "text";
+            campo.id = "resposta-fase";
+            campo.placeholder = "Digite sua resposta";
+            campo.autocomplete = "off";
+            campo.style.cssText =
+                "width:100%;padding:14px;margin:10px 0;" +
+                "font-size:18px;border-radius:10px;";
+
+            const enviar = document.createElement("button");
+            enviar.type = "button";
+            enviar.textContent = "Conferir resposta";
+            enviar.style.cssText =
+                "padding:12px 18px;margin:6px;border-radius:10px;" +
+                "cursor:pointer;font-size:16px;";
+
+            enviar.onclick = function () {
+                const digitada = document.getElementById("resposta-fase").value;
+                conferirResposta(digitada, fase.correta);
+            };
+
+            campo.addEventListener("keydown", function (evento) {
+                if (evento.key === "Enter") enviar.click();
+            });
+
+            opcoes.appendChild(campo);
+            opcoes.appendChild(enviar);
+        } else {
+            // Perguntas, charadas, associação, completar e caça-palavras.
+            const instrucoes = document.createElement("p");
+            instrucoes.textContent =
+                fase.tipo === "ligar"
+                    ? "🔗 DESAFIO DE ASSOCIAÇÃO: escolha a palavra correspondente."
+                    : fase.tipo === "cacapalavras"
+                    ? "🔎 CAÇA-PALAVRAS: encontre e selecione a palavra correta."
+                    : fase.tipo === "completar"
+                    ? "✏️ COMPLETE: escolha a opção que completa o desafio."
+                    : fase.tipo === "charada"
+                    ? "🧩 CHARADA: descubra a resposta."
+                    : "🌿 Escolha a resposta correta.";
+            instrucoes.style.cssText = "margin:8px 0 14px;font-weight:bold;";
+            opcoes.appendChild(instrucoes);
+
+            fase.opcoes.forEach(function (opcao) {
+                const botao = document.createElement("button");
+                botao.type = "button";
+                botao.textContent = opcao;
+                botao.style.cssText =
+                    "display:block;width:100%;padding:13px;margin:8px 0;" +
+                    "border:0;border-radius:10px;cursor:pointer;" +
+                    "font-size:17px;";
+
+                botao.onclick = function () {
+                    conferirResposta(opcao, fase.correta);
+                };
+
+                opcoes.appendChild(botao);
+            });
+        }
+
+        modal.style.display = "flex";
+        modal.style.visibility = "visible";
+        modal.style.opacity = "1";
+
+        const indicador = document.getElementById("phase-indicator");
+        if (indicador) {
+            indicador.textContent =
+                "Fase " + currentPhase + " / 20 — " + fase.titulo;
+        }
+    }
+
+    function conferirResposta(resposta, correta) {
+        if (respostaDestaFase || faseEmExibicao !== currentPhase) return;
+
+        if (normalizarResposta(resposta) !== normalizarResposta(correta)) {
+            alert("Ndaipóri! Tente novamente. 🌿");
+            return;
+        }
+
+        respostaDestaFase = true;
+        window.answerQuestion(true);
+    }
+
+    function responderFase(isCorrect) {
+        if (!isCorrect) {
+            alert("Tente novamente para continuar a trilha!");
+            return;
+        }
+
+        if (currentPhase !== faseEmExibicao) return;
+
+       
+        // Ao concluir a fase 1, multiplica os animais perigosos.
+        if (
+            currentPhase === 1 &&
+            typeof doubleDangerAnimalsForPhase === "function"
+        ) {
+            doubleDangerAnimalsForPhase();
+        }
+
+        // Se a fase 20 foi respondida, encerra a trilha.
+        if (currentPhase >= 20) {
+            if (typeof closeModal === "function") {
+                closeModal("question-modal");
+            } else {
+                const modal = document.getElementById("question-modal");
+                if (modal) modal.style.display = "none";
+            }
+
+            alert(
+                "🎉 AGUYJEVETE!\n\n" +
+                "Você concluiu as 20 fases do Tape Marangatu 3D!\n\n" +
+                "Parabéns por aprender e valorizar a língua Guarani Nhandewa."
+            );
+
+            isGameOver = false;
+            gameStarted = false;
+            currentPhase = 1;
+            playerHealth = 100;
+            phaseTimeLeft = 90;
+            collectedPowerUps = 0;
+            respostaDestaFase = false;
+            faseEmExibicao = 1;
+
+            const indicador = document.getElementById("phase-indicator");
+            if (indicador) indicador.textContent = "Fase 1 / 20";
+
+            if (typeof updateSurvivalHUD === "function") {
+                updateSurvivalHUD();
+            }
+
+            const inicio = document.getElementById("start-screen");
+            if (inicio) inicio.classList.remove("hidden");
+
+            const cabecalho = document.getElementById("game-header");
+            if (cabecalho) cabecalho.classList.add("hidden");
+
+            const controles = document.getElementById("touch-controls");
+            if (controles) controles.classList.add("hidden");
+
+            const hud = document.getElementById("survival-hud");
+            if (hud) hud.classList.add("hidden");
+
+            return;
+        }
+
+        // Avança para a próxima fase.
+        currentPhase++;
+        activeInteractiveObject = "phase" + currentPhase;
+        respostaDestaFase = false;
+
+        if (typeof phaseTimeLeft !== "undefined") {
+            phaseTimeLeft = 90;
+        }
+
+        if (typeof updateSurvivalHUD === "function") {
+            updateSurvivalHUD();
+        }
+
+        abrirModalDePergunta();
+    }
+
+    // Substitui as funções globais utilizadas pelos botões do jogo.
+    window.openQuestionModal = abrirModalDePergunta;
+    window.answerQuestion = responderFase;
+
+    // Também disponibiliza uma função de teste para abrir a fase atual.
+    window.abrirFaseTapeMarangatu = abrirModalDePergunta;
+
+    console.log(
+        "Tape Marangatu 3D: motor de 20 fases carregado.",
+        fasesTapeMarangatu
+    );
+})();
+
